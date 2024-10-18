@@ -1,0 +1,26 @@
+﻿<resubmitpanel>
+    <content>
+        <resubmitoption>
+            <div>
+                <label class="switch">
+                    <InputCheckbox @bind-Value="_generateMessageId" class="checkbox"/>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div>Generate new message id's</div>
+        </resubmitoption>
+        <resubmitoption>
+            <div>
+                <label class="switch">
+                    <InputCheckbox @bind-Value="_deleteMessages" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div>Delete from queue</div>
+        </resubmitoption>
+    </content>
+    <buttons>
+        <button class="primary" @onclick="async () => await SendAsync()">Send</button>
+        <button class="secondary" @onclick="async () => await CancelAsync()">Cancel</button>
+    </buttons>
+</resubmitpanel>

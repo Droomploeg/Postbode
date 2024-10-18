@@ -1,0 +1,50 @@
+﻿offcanvas {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: 100%;
+}
+
+    offcanvas titlebar {
+        display: flex;
+        font-size: 1.4em;
+        flex-direction: row;
+        height: 25px;
+        vertical-align: middle;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px;
+    }
+
+    offcanvas div {
+        flex: 1;
+    }
+
+    offcanvas close-button {
+        width: 25px;
+        height: 25px;
+        border-radius: 3px;
+    }
+
+    offcanvas content {
+        flex: 1;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+    }
+
+.open {
+    position: relative;
+    top: 0;
+    right: 0;
+    height: 100%;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(0);
+    z-index: 10;
+}
+
+.closed {
+    display: none;
+}

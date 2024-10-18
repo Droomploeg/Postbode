@@ -1,0 +1,36 @@
+﻿<table>
+    <thead>
+        <tr>
+            <th>Sequence</th>
+            <th>MessageId</th>
+            <th>CorrelationId</th>
+            <th>EnqueueTime</th>
+            <th>ExpiredAt</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Messages is null)
+        {
+            <tr>
+                <td colspan="5">Loading...</td>
+            </tr>
+        }
+        else if (!Messages.Any())
+        {
+            <tr colspan="5">No messages found</tr>
+        }
+        else
+        {
+            @foreach (var message in Messages)
+            {
+                <tr>
+                    <td>@message.SequenceNumber</td>
+                    <td>@message.MessageId</td>
+                    <td>@message.CorrelationId</td>
+                    <td>@message.EnqueuedTime</td>
+                    <td>@message.ExpiresAt</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

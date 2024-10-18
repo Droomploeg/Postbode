@@ -1,0 +1,162 @@
+﻿button {
+    background-color: rgb(255, 255, 255);
+    color: rgb(1, 1, 1);
+}
+    button:hover {
+        background-color: rgb(230, 230, 230);
+    }
+    button.primary {
+        background-color: rgb(0, 120, 210);
+        color: rgb(255, 255, 255);
+    }
+        button.primary:hover {
+            background-color: rgb(0, 90, 180);
+        }
+    button.secondary {
+        background-color: rgb(200, 200, 200);
+        color: rgb(1, 1, 1);
+    }
+        button.secondary:hover {
+            background-color: rgb(170, 170, 170);
+        }
+
+buttonbar {
+    border-bottom: 1px solid rgb(200, 200, 200);
+}
+    buttonbar button {
+        border-right: 1px solid rgb(200, 200, 200);
+    }
+
+top {
+    background-color: rgb(0, 100, 210);
+}
+    top a {
+        color: rgb(255, 255, 255);
+        text-decoration: none;
+    }
+        top a:visited {
+            color: rgb(255, 255, 255);
+            text-decoration: none;
+        }
+    top button {
+        background-color: rgb(0, 100, 210);
+        color: rgb(255, 255, 255);
+    }
+        top button:hover {
+            background-color: rgb(0, 80, 180);
+            height: 100%;
+        }
+    top login:hover {
+        background-color: rgb(0, 80, 180);
+    }
+
+gridcontrol tr.row-selected {
+    background-color: rgb(230, 230, 230);
+}
+    gridcontrol tr.row-selected button {
+        background-color: rgb(230, 230, 230);
+    }
+        gridcontrol tr.row-selected button:hover {
+            background-color: rgb(200, 200, 200);
+        }
+
+notification close-button:hover {
+    background-color: rgb(255, 27, 27);
+    color: rgb(255, 255, 255);
+}
+
+notification-item close-button:hover {
+    background-color: rgb(255, 27, 27);
+    color: rgb(255, 255, 255);
+}
+
+.generatedMessageId {
+    color: rgb(0, 100, 210);
+}
+
+
+offcanvas {
+    background-color: rgb(255, 255, 255);
+}
+    offcanvas close-button:hover {
+        background-color: rgb(255, 27, 27);
+        color: rgb(255, 255, 255);
+    }
+
+tabheader.selected:after {
+    background-color: rgb(0, 120, 210);
+}
+
+.dialog-title {
+    background-color: rgb(0, 100, 210);
+    color: rgb(255, 255, 255);
+}
+
+.selected-servicebus {
+    background-color: rgb(62, 191, 0);
+    color: rgb(0,0,0);
+}
+
+.entity-state-nomessages-active {
+    background-color: rgb(255, 255, 255);
+}
+
+.entity-state-nomessages-nosend {
+    background: linear-gradient(to bottom, rgb(100, 100, 100) 50%, rgb(255, 255, 255) 50%);
+}
+
+.entity-state-nomessages-noreceive {
+    background: linear-gradient(to bottom, rgb(255, 255, 255) 50%, rgb(100, 100, 100) 50%);
+}
+
+.entity-state-nomessages-inactive {
+    background: radial-gradient(to bottom, rgba(0, 0, 255, 0.25), rgb(0, 0, 0));
+}
+
+.entity-state-scheduledmessages-active {
+    background-color: rgb(200, 215, 0);
+}
+
+.entity-state-scheduledmessages-nosend {
+    background: linear-gradient(to bottom, rgb(100, 100, 100) 50%, rgb(200, 215, 0) 50%);
+}
+
+.entity-state-scheduledmessages-noreceive {
+    background: linear-gradient(to bottom, rgb(200, 215, 0) 50%, rgb(100, 100, 100) 50%);
+}
+
+.entity-state-scheduledmessages-inactive {
+    background: radial-gradient(to bottom, rgba(200, 215, 0, 0.25), rgb(0, 0, 0));
+}
+
+.entity-state-activemessages-active {
+    background-color: rgb(62, 191, 0);
+}
+
+.entity-state-activemessages-nosend {
+    background: linear-gradient(to bottom, rgb(100, 100, 100) 50%, rgb(62, 191, 0) 50%);
+}
+
+.entity-state-activemessages-noreceive {
+    background: linear-gradient(to bottom, rgb(62, 191, 0) 50%, rgb(100, 100, 100) 50%);
+}
+
+.entity-state-activemessages-inactive {
+    background: radial-gradient(rgba(62, 191, 0, 0.25), rgb(0, 0, 0));
+}
+
+.entity-state-deadlettermessages-active {
+    background-color: rgb(255, 27, 27);
+}
+
+.entity-state-deadlettermessages-nosend {
+    background: linear-gradient(to bottom, rgb(100, 100, 100) 50%, rgb(255, 27, 27) 50%);
+}
+
+.entity-state-deadlettermessages-noreceive {
+    background: linear-gradient(to bottom, rgb(255, 27, 27) 50%, rgb(100, 100, 100) 50%);
+}
+
+.entity-state-deadlettermessages-inactive {
+    background: radial-gradient(to bottom, rgba(255, 27, 27, 0.25), rgb(0, 0, 0));
+}

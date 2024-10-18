@@ -1,0 +1,64 @@
+﻿<form method="Post" @onsubmit="async () => await PeekAsync()" @formname="@PageConstants.QueueDetailPageWithParameters">
+    <AntiforgeryToken />
+
+    <TabControl TabChanged="ChangeMessageSourceAsync">
+        <TabItemControl Title="@ActiveMessageTabTitle" Tag="@MessageSource.ActiveMessage" Id="activeMessageCount" />
+        <TabItemControl Title="@DeadLetterMessageTabTitle" Tag="@MessageSource.DeadLetterMessage" Id="deadLetterMessageCount"/>
+    </TabControl>
+
+    <buttonbar>
+        <div>Message start index <InputNumber @bind-Value="@Model.StartIndex" class="number" /> </div>
+        <div>Number of messages<InputNumber @bind-Value="@Model.NumberOfMessages" class="number" /></div>
+        <button class="peek-button">Peek</button>
+        @if (_source == MessageSource.DeadLetterMessage)
+        {
+            <button class="resubmit-button" @onclick="async () => await ResubmitAllAsync()">Re-Submit All</button>
+        }
+        <button class="delete-button" @onclick="async () => await DeleteAllAsync()">Delete All</button>
+    </buttonbar>
+</form>
+
+<GridControl Items="@Messages"
+             TItem="ServiceBusReceivedMessage"
+             OnSelected="OnSelected">
+
+    <GridHeaderItemControl TItem="ServiceBusReceivedMessage">Seq</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="ServiceBusReceivedMessage">Message Id</GridHeaderItemControl>
+    @if (SessionEnabled)
+    {
+        <GridHeaderItemControl TItem="ServiceBusReceivedMessage">SessionId</GridHeaderItemControl>
+    }
+    <GridHeaderItemControl TItem="ServiceBusReceivedMessage">Subject</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="ServiceBusReceivedMessage">Delivery Count</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="ServiceBusReceivedMessage">Enqueued Time</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="ServiceBusReceivedMessage">Expires At</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="ServiceBusReceivedMessage">&nbsp;</GridHeaderItemControl>
+
+    <GridValueItemControl TItem="ServiceBusReceivedMessage">@context.SequenceNumber</GridValueItemControl>
+    <GridValueItemControl TItem="ServiceBusReceivedMessage">@context.MessageId</GridValueItemControl>
+    @if (SessionEnabled)
+    {
+        <GridValueItemControl TItem="ServiceBusReceivedMessage">@context.SessionId</GridValueItemControl>
+    }
+    <GridValueItemControl TItem="ServiceBusReceivedMessage">@context.Subject</GridValueItemControl>
+    <GridValueItemControl TItem="ServiceBusReceivedMessage">@context.DeliveryCount</GridValueItemControl>
+    <GridValueItemControl TItem="ServiceBusReceivedMessage">@context.EnqueuedTime</GridValueItemControl>
+    <GridValueItemControl TItem="ServiceBusReceivedMessage">@context.ExpiresAt</GridValueItemControl>
+    <GridValueItemControl TItem="ServiceBusReceivedMessage">
+        <div class="message-actions">
+            @{
+                var index = Messages!.ToList()!.IndexOf(context) + Model.StartIndex;
+            }
+            @if (_source == MessageSource.ActiveMessage && index == 1)
+            {
+                <button @onclick="async () => await DeadLetterAsync(context)" class="deadletter-button" alt="dead-letter"></button>
+                <button @onclick="async () => await DeleteAsync(context)" class="delete-button" alt="delete"></button>
+            }
+            @if (_source == MessageSource.DeadLetterMessage && index < 51)
+            {
+                <button @onclick="async () => await ResubmitAsync(context)" class="resubmit-button" alt="resubmit"></button>
+                <button @onclick="async () => await DeleteAsync(context)" class="delete-button" alt="delete"></button>
+            }
+        </div>
+    </GridValueItemControl>
+</GridControl>

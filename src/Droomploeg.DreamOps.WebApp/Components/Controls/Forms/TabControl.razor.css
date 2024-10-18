@@ -1,0 +1,54 @@
+﻿tabcontrol {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+tabheaders {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex: 0 0 auto;
+    overflow: auto;
+}
+
+tabheader {
+    padding: 0px 10px 10px 10px;
+    margin-bottom: 10px;
+    width: fit-content;
+    display: flex;
+    cursor: pointer;
+}
+
+    tabheader:first-child {
+        padding: 0px 10px 10px 0px;
+    }
+
+
+    tabheader.selected {
+        position: relative;
+    }
+
+        tabheader.selected:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 2px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        tabheader.selected:hover::after {
+            width: 60%;
+            left: 20%;
+        }
+
+tabcontent {
+    display: flex;
+    flex: 1 1 auto;
+    overflow: auto;
+}

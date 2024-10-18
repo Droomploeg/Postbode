@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Components\**" />
+      <Compile Remove="Pages\Overview\**" />
+      <Compile Remove="Pages\Queues\DetailPages\**" />
+      <Compile Remove="Pages\Topics\**" />
+      <EmbeddedResource Remove="Components\**" />
+      <EmbeddedResource Remove="Pages\Overview\**" />
+      <EmbeddedResource Remove="Pages\Queues\DetailPages\**" />
+      <EmbeddedResource Remove="Pages\Topics\**" />
+      <None Remove="Components\**" />
+      <None Remove="Pages\Overview\**" />
+      <None Remove="Pages\Queues\DetailPages\**" />
+      <None Remove="Pages\Topics\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="appsettings.Development.json" />
+      <None Remove="appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="appsettings.Development.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.1" />
+        <PackageReference Include="bunit" Version="1.31.3" />
+        <PackageReference Include="coverlet.collector" Version="6.0.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="FluentAssertions" Version="6.12.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
+        <PackageReference Include="xunit" Version="2.9.0" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Droomploeg.DreamOps.Core\Droomploeg.DreamOps.Core.csproj" />
+      <ProjectReference Include="..\..\src\Droomploeg.DreamOps.Infrastructure\Droomploeg.DreamOps.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\src\Droomploeg.DreamOps.WebApp\Droomploeg.DreamOps.WebApp.csproj" />
+    </ItemGroup>
+
+</Project>

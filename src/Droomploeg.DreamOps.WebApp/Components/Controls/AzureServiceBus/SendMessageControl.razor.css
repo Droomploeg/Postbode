@@ -1,0 +1,163 @@
+﻿form {
+    display: flex;
+    flex: 1;
+}
+
+control {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+content {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+}
+
+    content select {
+        margin: 3px 0 3px 0;
+        padding: 3px 0 3px 0;
+        max-width: 200px;
+        border-radius: 5px;
+    }
+
+    content label {
+        margin: 3px 0 3px 0;
+        padding: 3px 0 3px 0;
+    }
+
+
+buttons {
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+    buttons button {
+        margin: 5px;
+    }
+
+        buttons button:first-child {
+            margin-left: 0px;
+        }
+
+textarea {
+    margin: 3px 0 3px 0;
+    padding: 3px 3px 3px 3px;
+    resize: vertical;
+    max-height: 400px;
+    font-size: 1em;
+}
+
+tr {
+    border-bottom: 1px solid rgb(200, 200, 200);
+}
+
+tabcontrol {
+    width: 100%;
+}
+
+brokerproperties {
+    flex: 1;
+}
+
+    brokerproperties table {
+        flex: 0 0 auto;
+    }
+
+    brokerproperties .key {
+        width: 150px;
+    }
+
+    brokerproperties .prop-value {
+    }
+
+customproperties {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+    customproperties .key {
+        width: 150px;
+    }
+
+    customproperties td input {
+    }
+
+resubmit-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 0;
+}
+
+resubmitoption {
+    overflow: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+    resubmitoption div {
+        margin: 5px;
+        display: flex;
+    }
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 13px;
+}
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+
+.add-button {
+    width: 25px;
+    height: 25px;
+}
+
+.delete-button {
+    width: 25px;
+    height: 25px;
+}

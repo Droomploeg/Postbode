@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 80 80">
+    <!--<rect fill="none" stroke="rgb(0, 120, 200)" stroke-width="15" stroke-linejoin="round" stroke-dashoffset="" fill-rule="nonzero" id="svg_4" x="0" y="0" width="80" height="80" style="color: rgb(66, 196, 229);" class=""/>-->
+    <path transform="scale(3) translate(5, 5)" fill="rgb(0, 100, 200)"  d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
+</svg>

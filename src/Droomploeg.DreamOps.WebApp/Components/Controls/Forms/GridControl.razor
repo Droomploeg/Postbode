@@ -1,0 +1,64 @@
+﻿@typeparam TItem
+<CascadingValue Value="this">
+    <gridcontrol>
+        <table cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    @foreach (var headerItem in HeaderItems)
+                    {
+                        <th class="@headerItem.CssClass">
+                            @headerItem.ChildContent
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Items is not null)
+                {
+                    @if (Items.Any())
+                    {
+                        @foreach (var item in Items)
+                        {
+                            if (item?.Equals(SelectedItem) ?? false)
+                            {
+                                <tr class="row-selected" @onclick="async () => await SelectRowClickAsync(item)">
+                                    @foreach (var valueItem in ValueItems)
+                                    {
+                                        <td>
+                                            @valueItem.ChildContent(item)
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr @onclick="async () => await SelectRowClickAsync(item)">
+                                    @for (var index = 0; index < ValueItems.Count; index++)
+                                    {
+                                        var valueItem = ValueItems[index];
+                                        <td>
+                                            @valueItem.ChildContent(item)
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    }
+                    else if (HeaderItems.Count > 0)
+                    {
+                        <tr>
+                            <td colspan="@ValueItems.Count()">No items found</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="@ValueItems.Count()" id="loading">Loading...</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </gridcontrol>
+    @ChildContent
+</CascadingValue>

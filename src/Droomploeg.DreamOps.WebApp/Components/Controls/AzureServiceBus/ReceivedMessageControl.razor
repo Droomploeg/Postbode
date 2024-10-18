@@ -1,0 +1,19 @@
+﻿@inject ApplicationInsightsLink ApplicationInsightLink;
+
+<TabControl>
+    <TabItemControl Title="Message Body">
+            <div class="body">@_body</div>
+    </TabItemControl>
+    <TabItemControl Title="Message Properties">
+        <div class="properties">
+            <div class="property-grid">
+                <div class="title">Broker Properties</div>
+                <DictionaryControl Items="_brokerProperties" />
+            </div>
+            <div class="property-grid">
+                <div class="title">Custom Properties</div>
+                <DictionaryControl Items="_customProperties" />
+            </div>
+        </div>
+    </TabItemControl>
+</TabControl>

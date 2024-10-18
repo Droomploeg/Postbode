@@ -1,0 +1,31 @@
+﻿<CascadingValue Value="this">
+    <tabcontrol>
+        <tabheaders>
+            @if (TabItems is not null)
+            {
+                @foreach (var tabItem in TabItems)
+                {
+                    var selected = tabItem.IsSelected ? "selected" : "";
+                    if (tabItem.Id != null)
+                    {
+                        <tabheader class="@selected" @onclick="async () => await SelectTabAsync(tabItem)" id="@tabItem.Id">@tabItem.Title</tabheader>
+                    }
+                    else
+                    {
+                        <tabheader class="@selected" @onclick="async () => await SelectTabAsync(tabItem)">@tabItem.Title</tabheader>
+                    }
+                }
+            }
+        </tabheaders>
+        <tabcontent>
+            @if (TabItems is not null)
+            {
+                @foreach (var tabItem in TabItems.Where(tabItem => tabItem.IsSelected))
+                {
+                    @tabItem.ChildContent
+                }
+            }
+        </tabcontent>
+    </tabcontrol>
+    @ChildContent
+</CascadingValue>

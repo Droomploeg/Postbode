@@ -1,0 +1,62 @@
+﻿content {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+entity-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 0;
+    overflow: auto;
+    margin-right: 40px;
+}
+
+entity-details label {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+entity-info label {
+    display: inline-block;
+    margin-top: 10px;
+    width: 200px;
+    font-weight: normal;
+}
+
+chart-container {
+    display: block;
+    margin: 20px;
+    width: 200px;
+    height: 200px;
+    position: relative;
+}
+
+outer-donut-chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+/*    background: conic-gradient(lime 0% 80%, yellow 80% 90%, rgb(255 106 0) 90% 100%);
+*/    box-sizing: border-box;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+inner-donut-chart {
+    width: 140px;
+    height: 140px;
+    background: white;
+    border-radius: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+

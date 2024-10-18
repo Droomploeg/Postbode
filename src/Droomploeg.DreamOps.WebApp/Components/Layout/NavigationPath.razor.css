@@ -1,0 +1,61 @@
+﻿.path {
+    font-size: 0.8em;
+    color:rgb(200, 200, 200) ;
+    padding: 8px 40px 8px 40px;
+}
+
+.end {
+    padding: 0 5px 0 5px;
+}
+
+.path ::deep a {
+    color: rgb(0, 120, 200);
+    text-decoration: none;
+}
+
+    .path ::deep a:active {
+        color: rgb(0, 120, 200);
+        text-decoration: none;
+    }
+
+.path ::deep a:hover {
+    color: rgb(0, 120, 200);
+    text-decoration: none;
+}
+
+.item {
+    font-size: 1em;
+    margin: 0px 40px 0px 40px;
+    padding: 20px 0px 20px 55px;
+}
+
+
+.path-icon-topics {
+    background-size: 50px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-image: url('/images/topic.svg');
+    
+}
+
+.path-icon-queues {
+    background-size: 50px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-image: url('/images/queue.svg');
+}
+
+.path-icon-overview {
+    background-size: 40px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-image: url('/images/details.svg');
+}
+
+.path-icon-home {
+    background-size: 50px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-image: url('/images/servicebus.svg');
+}
+

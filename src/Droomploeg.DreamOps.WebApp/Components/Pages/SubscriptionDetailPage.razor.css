@@ -1,0 +1,19 @@
+﻿entity-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: auto;
+    padding: 0 20px 20px 0;
+}
+
+peekgrid {
+}
+
+details-panel {
+    display: flex;
+    flex-grow: 1;
+    grid-area: details;
+    overflow: auto;
+    padding-top: 7px;
+    border-top: 1px solid rgb(200, 200, 200);
+}

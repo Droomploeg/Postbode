@@ -1,0 +1,14 @@
+﻿@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <form action="@PageConstants.LogoutPath" method="post">
+            <AntiforgeryToken />
+            <input type="hidden" name="ReturnUrl" value="/" />
+            <button type="submit">Logout @context.User.Identity?.Name</button>
+        </form>
+    </Authorized>
+    <NotAuthorized>
+        <a href="@PageConstants.LoginPath">Login</a>
+    </NotAuthorized>
+</AuthorizeView>

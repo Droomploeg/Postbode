@@ -1,0 +1,95 @@
+.menu-toggler {
+    appearance: none;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    color: rgb(255, 255, 255);
+    position: absolute;
+    top: 15px;
+    left: 40px;
+    background: url('/images/menu.svg') no-repeat center/1.75rem;
+}
+
+input.menu-toggler {
+    border: 0px;
+}
+
+.topic-item {
+    background-size: 40px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-image: url('/images/topic.svg');
+}
+
+.queue-item {
+    background-size: 40px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-image: url('/images/queue.svg');
+}
+
+.overview-item {
+    background-size: 30px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-image: url('/images/details.svg');
+}
+
+.menu-title {
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-top: 10px;
+    padding: 8px 25px 8px 0px;
+    border-bottom: 1px solid rgb(200, 200, 200);
+}
+
+.menu-item {
+    font-size: 0.8em;
+    padding: 12px 5px 12px 45px;
+    color: rgb(0, 0, 0);
+}
+
+    .menu-item ::deep a {
+        color: rgb(0, 0, 0);
+        width: 100%;
+        color: rgb(0, 0, 0);
+        text-decoration: none;
+    }
+
+        .menu-item ::deep a:active {
+            background-color: rgba(255,255,255,0.37);
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+        }
+
+    .menu-item ::deep .a:hover {
+        background-color: rgba(255,255,255,0.1);
+        color: rgb(0, 0, 0);
+        text-decoration: none;
+    }
+
+.menu-scrollable {
+    display: none;
+}
+
+.menu-toggler:checked ~ .menu-scrollable {
+    display: block;
+}
+
+.menu-item-list {
+    padding: 10px 0px 0px 40px;
+}
+
+@media (min-width: 641px) {
+    .menu-toggler {
+        display: none;
+    }
+
+    .menu-scrollable {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+        /* Allow sidebar to scroll for tall menus */
+        height: calc(100vh - 140px);
+        overflow-y: auto;
+    }
+}

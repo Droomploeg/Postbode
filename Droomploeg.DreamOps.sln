@@ -1,0 +1,117 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9FE95816-922E-4CE0-9B9F-ADFCA6BCDA16}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{D3E95BF8-820F-445B-9F91-18967A58EE56}"
+	ProjectSection(SolutionItems) = preProject
+		pipelines\azure-pipelines.yml = pipelines\azure-pipelines.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{D5B9EA1C-75CA-42F1-9D58-31491806054C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Droomploeg.DreamOps.WebApp", "src\Droomploeg.DreamOps.WebApp\Droomploeg.DreamOps.WebApp.csproj", "{0068E3AB-0471-4D27-827C-F068C9EE07A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Droomploeg.DreamOps.Core", "src\Droomploeg.DreamOps.Core\Droomploeg.DreamOps.Core.csproj", "{6B794BFD-D823-49AD-B445-D7F17EC24C7A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Droomploeg.DreamOps.Infrastructure", "src\Droomploeg.DreamOps.Infrastructure\Droomploeg.DreamOps.Infrastructure.csproj", "{0B298745-BEA3-426F-8CC7-890993AF6A82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1B1CBDE9-9044-439E-858F-C2DB0E40A858}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5E13A685-8A39-451D-997F-295194FCED8B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Droomploeg.DreamOps.IntegrationsTests", "tests\Droomploeg.DreamOps.IntegrationsTests\Droomploeg.DreamOps.IntegrationsTests.csproj", "{3A873C9D-1294-4AEA-A3AA-35FC6C56ACB9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bicep", "bicep", "{C1B92FDC-D77A-430C-A2EB-8B27A438DC53}"
+	ProjectSection(SolutionItems) = preProject
+		bicep\main.bicep = bicep\main.bicep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "servicebus", "servicebus", "{E9ABA5CF-F85D-4630-A174-2AD6060A6291}"
+	ProjectSection(SolutionItems) = preProject
+		bicep\servicebus\assignRole.bicep = bicep\servicebus\assignRole.bicep
+		bicep\servicebus\serviceBus.bicep = bicep\servicebus\serviceBus.bicep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "keyvault", "keyvault", "{A6BB5E51-A637-46CC-8AD6-B7615DD288B8}"
+	ProjectSection(SolutionItems) = preProject
+		bicep\keyvault\accessPolicies.bicep = bicep\keyvault\accessPolicies.bicep
+		bicep\keyvault\assignRole.bicep = bicep\keyvault\assignRole.bicep
+		bicep\keyvault\keyvault.bicep = bicep\keyvault\keyvault.bicep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "managedIdentities", "managedIdentities", "{D17ECCF4-3EDA-4972-9E7D-B1631C991E14}"
+	ProjectSection(SolutionItems) = preProject
+		bicep\managedIdentities\userAssignedIdentities.bicep = bicep\managedIdentities\userAssignedIdentities.bicep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "appServices", "appServices", "{4C001B1F-896A-4A8E-A826-03404EF477AA}"
+	ProjectSection(SolutionItems) = preProject
+		bicep\appServices\appServicePlan.bicep = bicep\appServices\appServicePlan.bicep
+		bicep\appServices\appSettings.bicep = bicep\appServices\appSettings.bicep
+		bicep\appServices\webApp.bicep = bicep\appServices\webApp.bicep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "applicationInsights", "applicationInsights", "{FF057144-10FE-4A58-8BEF-10C130787967}"
+	ProjectSection(SolutionItems) = preProject
+		bicep\applicationInsights\applicationInsight.bicep = bicep\applicationInsights\applicationInsight.bicep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure", "azure", "{709918B1-AD6F-48D3-A212-7A6A9BD73F8C}"
+	ProjectSection(SolutionItems) = preProject
+		pipelines\azure\azure-keyvault-ip-restricties.sh = pipelines\azure\azure-keyvault-ip-restricties.sh
+		pipelines\azure\azure-keyvault-secret.sh = pipelines\azure\azure-keyvault-secret.sh
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0068E3AB-0471-4D27-827C-F068C9EE07A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0068E3AB-0471-4D27-827C-F068C9EE07A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0068E3AB-0471-4D27-827C-F068C9EE07A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0068E3AB-0471-4D27-827C-F068C9EE07A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B794BFD-D823-49AD-B445-D7F17EC24C7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B794BFD-D823-49AD-B445-D7F17EC24C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B794BFD-D823-49AD-B445-D7F17EC24C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B794BFD-D823-49AD-B445-D7F17EC24C7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B298745-BEA3-426F-8CC7-890993AF6A82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B298745-BEA3-426F-8CC7-890993AF6A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B298745-BEA3-426F-8CC7-890993AF6A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B298745-BEA3-426F-8CC7-890993AF6A82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A873C9D-1294-4AEA-A3AA-35FC6C56ACB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A873C9D-1294-4AEA-A3AA-35FC6C56ACB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A873C9D-1294-4AEA-A3AA-35FC6C56ACB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A873C9D-1294-4AEA-A3AA-35FC6C56ACB9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D3E95BF8-820F-445B-9F91-18967A58EE56} = {9FE95816-922E-4CE0-9B9F-ADFCA6BCDA16}
+		{D5B9EA1C-75CA-42F1-9D58-31491806054C} = {9FE95816-922E-4CE0-9B9F-ADFCA6BCDA16}
+		{0068E3AB-0471-4D27-827C-F068C9EE07A4} = {1B1CBDE9-9044-439E-858F-C2DB0E40A858}
+		{6B794BFD-D823-49AD-B445-D7F17EC24C7A} = {1B1CBDE9-9044-439E-858F-C2DB0E40A858}
+		{0B298745-BEA3-426F-8CC7-890993AF6A82} = {1B1CBDE9-9044-439E-858F-C2DB0E40A858}
+		{3A873C9D-1294-4AEA-A3AA-35FC6C56ACB9} = {5E13A685-8A39-451D-997F-295194FCED8B}
+		{C1B92FDC-D77A-430C-A2EB-8B27A438DC53} = {9FE95816-922E-4CE0-9B9F-ADFCA6BCDA16}
+		{E9ABA5CF-F85D-4630-A174-2AD6060A6291} = {C1B92FDC-D77A-430C-A2EB-8B27A438DC53}
+		{A6BB5E51-A637-46CC-8AD6-B7615DD288B8} = {C1B92FDC-D77A-430C-A2EB-8B27A438DC53}
+		{D17ECCF4-3EDA-4972-9E7D-B1631C991E14} = {C1B92FDC-D77A-430C-A2EB-8B27A438DC53}
+		{4C001B1F-896A-4A8E-A826-03404EF477AA} = {C1B92FDC-D77A-430C-A2EB-8B27A438DC53}
+		{FF057144-10FE-4A58-8BEF-10C130787967} = {C1B92FDC-D77A-430C-A2EB-8B27A438DC53}
+		{709918B1-AD6F-48D3-A212-7A6A9BD73F8C} = {D3E95BF8-820F-445B-9F91-18967A58EE56}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EE741678-64D1-4235-9E53-340C055B415A}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,12 @@
+﻿@inject NavigationManager NavigationManager
+@inject IServiceBusClientContext ServiceBusConnectionContext
+
+<div class="path">
+@foreach (var keyValue in _crumblePath)
+{
+    <NavLink href="@keyValue.Value">@keyValue.Key</NavLink>
+    <span class="end">&gt;</span>
+}
+</div>
+<div class="item @_icon">@_currentUrl</div>
+

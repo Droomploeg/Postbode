@@ -1,0 +1,24 @@
+﻿<input type="checkbox" title="Menu" class="menu-toggler" />
+
+    <div class="menu-scrollable" onclick="document.querySelector('.menu-toggler').click()">
+        <div class="menu-item-list">
+        @if (HasClientSelected)
+        {
+            <div class="menu-item overview-item">
+                <NavLink href="@PageConstants.OverviewPage">Overview</NavLink>
+            </div>
+
+            <div class="menu-title">Entities</div>
+
+            <div class="menu-item queue-item">
+                <NavLink href="@PageConstants.QueueOverviewPage">Queues</NavLink>
+            </div>
+
+            <div class="menu-item topic-item">
+                <NavLink href="@PageConstants.SubscriptionOverviewPage">Subscriptions</NavLink>
+            </div>
+        }
+    </div>
+</div>
+
+

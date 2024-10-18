@@ -1,0 +1,26 @@
+﻿.body {
+    display: flex;
+    flex: 1 1 auto;
+    border: 1px solid black;
+    white-space: pre-wrap;
+    overflow: auto;
+}
+
+.properties {
+    display: flex;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.property-grid {
+    flex-grow: inherit;
+    overflow: auto;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+@media (min-width: 641px) {
+    .properties div {
+        margin: 0px 5px 0px 5px;
+    }
+}

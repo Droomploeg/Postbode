@@ -1,0 +1,15 @@
+﻿<form method="Post" @onsubmit="async () => await SendAsync()" @formname="@PageConstants.QueueDetailPageWithParameters">
+    <control>
+        <content>
+            <AntiforgeryToken />
+            <label>Reason</label>
+            <InputText @bind-Value="Model.Reason" class="text" />
+            <label>Description</label>
+            <InputText @bind-Value="Model.Description" class="text" />
+        </content>
+        <buttons>
+            <button class="primary" type="submit">Send</button>
+            <button class="secondary" type="reset" @onclick="async () => await CancelAsync()">Cancel</button>
+        </buttons>
+    </control>
+</form>

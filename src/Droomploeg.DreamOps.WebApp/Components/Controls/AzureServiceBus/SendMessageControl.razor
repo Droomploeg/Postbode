@@ -1,0 +1,146 @@
+﻿<form method="Post" @onsubmit="async () => await SendAsync()" @formname="@PageConstants.QueueDetailPageWithParameters">
+    <control>
+            <AntiforgeryToken />
+            @if (Message is not null)
+            {
+                <resubmit-panel>
+                    <resubmitoption>
+                        <div>
+                            <label class="switch">
+                                <InputCheckbox @bind-Value="Model.GenenerateMessageId" class="checkbox" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div>Generate new message id's</div>
+                    </resubmitoption>
+
+                    <resubmitoption>
+                        <div>
+                            <label class="switch">
+                                <InputCheckbox @bind-Value="Model.DeleteMessageAfterResubmit" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div>Delete from queue</div>
+                    </resubmitoption>
+                </resubmit-panel>
+            }
+        <content>
+            <label>Content type</label>
+            <select id="ContentType" @bind="Model.ContentType">
+                <option value="application/json">application/json</option>
+                <option value="application/xml">application/xml</option>
+                <option value="text/plain">text/plain</option>
+            </select>
+            <label>Message Body</label>
+            <textarea rows="10" cols="50" id="Body" @bind="Model.Body" />
+            <TabControl>
+                <TabItemControl Title="Broker Properties">
+                    <brokerproperties>
+                        <table cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th class="key">Key</th>
+                                    <th class="value">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Message Id</td>
+                                    @if (Model.GenenerateMessageId)
+                                    {
+                                        <td><span class="generatedMessageId">Generated Message Id</span></td>
+                                    }
+                                    else
+                                    {
+                                        <td><InputText @bind-Value="@Model.MessageId" class="prop-value" /></td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td>Correlation Id</td>
+                                    <td><InputText @bind-Value="@Model.CorrelationId" class="prop-value" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Subject</td>
+                                    <td><InputText @bind-Value="@Model.Subject" class="prop-value" /></td>
+                                </tr>
+                                @if (SessionEnabled)
+                                {
+                                    <tr>
+                                        <td>Session Id</td>
+                                        <td><InputText @bind-Value="@Model.SessionId" class="prop-value" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reply To SessionId</td>
+                                        <td><InputText @bind-Value="@Model.ReplyToSessionId" class="prop-value" /></td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>Reply To</td>
+                                        <td><InputText @bind-Value="@Model.ReplyTo" class="prop-value" /></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </brokerproperties>
+                </TabItemControl>
+                <TabItemControl Title="Custom Properties">
+                    <customproperties>
+                        <button type="button" @onclick="AddCustomProperty" class="add-button"></button>
+                        <table cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th class="key">Key</th>
+                                    <th class="type">Type</th>
+                                    <th class="value">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var property in Model.CustomProperties)
+                                {
+                                    <tr>
+                                        <td><InputText @bind-Value="@property.Key" /></td>
+                                        <td>
+                                            <select id="DataType" @onchange="(ChangeEventArgs e) => ChangeDataType(property, e)">
+                                                <option value="@CustomerPropertyDataType.Text">Text</option>
+                                                <option value="@CustomerPropertyDataType.Number">Number</option>
+                                                <option value="@CustomerPropertyDataType.Boolean">Boolean</option>
+                                                <option value="@CustomerPropertyDataType.DateOnly">DateOnly</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            @switch (property.DataType)
+                                            {
+                                                case CustomerPropertyDataType.Text:
+                                                    <InputText @bind-Value="@property.TextValue" />
+                                                    break;
+                                                case CustomerPropertyDataType.Number:
+                                                    <InputNumber @bind-Value="@property.NumberValue" />
+                                                    break;
+                                                case CustomerPropertyDataType.Boolean:
+                                                    <InputCheckbox @bind-Value="@property.BooleanValue" />
+                                                    break;
+                                                case CustomerPropertyDataType.DateOnly:
+                                                    <InputDate @bind-Value="@property.DateOnly" />
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>
+                                            <button @onclick="() => RemoveCustomProperty(property)" class="delete-button" alt="delete" type="button"></button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </customproperties>
+                </TabItemControl>
+            </TabControl>
+        </content>
+        <buttons>
+            <button class="primary" type="submit">Send</button>
+            <button class="secondary" type="reset" @onclick="async () => await CancelAsync()">Cancel</button>
+        </buttons>
+    </control>
+</form>

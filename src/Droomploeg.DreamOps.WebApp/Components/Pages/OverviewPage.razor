@@ -1,0 +1,68 @@
+﻿@attribute [Route(PageConstants.OverviewPage)]
+@attribute [Authorize(Roles = AuthorisationRoles.GeneralAccess)]
+
+@inject ServiceBusService ServiceBusService;
+
+<content>
+    <entity-details>
+        <entity-content>
+            <chart-container>
+                <outer-donut-chart style="background: conic-gradient(@GetQueueGradient());">
+                </outer-donut-chart>
+                <inner-donut-chart>
+                    Queue
+                </inner-donut-chart>
+            </chart-container>
+            <entity-info>
+                <div>
+                    <label>Number of queues:</label>
+                    <value>@QueueCount</value>
+                </div>
+                <div>
+                    <label>Number of scheduled messages:</label>
+                    <value>@QueueScheduledMessageCount</value>
+                </div>
+                <div>
+                    <label>Number of active messages:</label>
+                    <value>@QueueActiveMessageCount</value>
+                </div>
+                <div>
+                    <label>Number of deadletter messages:</label>
+                    <value>@QueueDeadLetterMessageCount</value>
+                </div>
+            </entity-info>
+        </entity-content>
+    </entity-details>
+    <entity-details>
+        <entity-content>
+            <chart-container>
+                <outer-donut-chart style="background: conic-gradient(@GetSubscriptionGradient());">
+                </outer-donut-chart>
+                <inner-donut-chart>
+                    Subscriptions
+                </inner-donut-chart>
+            </chart-container>
+            <entity-info>
+                <div>
+                    <label>Number of subscriptions:</label>
+                    <value>@SubscriptionCount</value>
+                </div>
+                <div>
+                    <label>Number of scheduled messages:</label>
+                    <value>@SubscriptionScheduledMessageCount</value>
+                </div>
+
+                <div>
+                    <label>Number of active messages:</label>
+                    <value>@SubscriptionActiveMessageCount</value>
+                </div>
+                <div>
+                    <label>Number of deadletter messages:</label>
+                    <value>@SubscriptionDeadLetterMessageCount</value>
+                </div>
+            </entity-info>
+        </entity-content>
+    </entity-details>
+</content>
+
+

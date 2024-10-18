@@ -1,0 +1,188 @@
+page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+top {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+    top logo {
+        flex: 1;
+        white-space: nowrap;
+        background-image: url('/images/logo.svg');
+        background-repeat: no-repeat;
+        background-position-x: 0px;
+        background-position-y: -3px;
+        background-size: 20px;
+        color: rgb(255, 255, 255);
+    }
+
+    top logo title {
+        display: none;
+    }
+
+    top .notification-button {
+        background-image: url('/images/notification.svg');
+        background-position-x: center;
+        background-position-y: center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+        width: 40px;
+        height: 100%;
+        border-radius: 0px;
+    }
+
+    top login {
+        padding-left: 10px;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+middle {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+    middle div {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        overflow: auto;
+        padding: 0 0 0 0;
+    }
+
+path {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.menu-container {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 0;
+    overflow: auto;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    padding: 20px 00px 0px 40px;
+    overflow: auto;
+}
+
+.notification-container {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 0;
+    padding: 10px 0 10px 0;
+    width: 300px;
+    border-bottom: 1px solid rgb(200, 200, 200);
+}
+
+    .notification-item:first-child {
+        border-top: 1px solid rgb(200, 200, 200);
+    }
+
+    .notification-item div {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 0;
+        overflow: hidden;
+        height: 55px;
+        width: 100%;
+    }
+
+    .notification-item .icon {
+        flex: 0 0 auto;
+        background-size: 25px;
+        background-position-y: center;
+        width: 30px;
+    }
+
+    .notification-item .title {
+        font-weight: bold;
+        overflow: hidden;
+        max-width: 170px;
+        height: 20px;
+    }
+
+    .notification-item .message {
+        word-wrap: break-word;
+        max-width: 170px;
+        overflow: hidden;
+        height: 20px;
+    }
+
+    .notification-item .datetime {
+        font-size: 0.8em;
+        color: rgb(100, 100, 100);
+        max-width: 170px;
+        height: 15px;
+    }
+
+    .notification-item close-button {
+        margin: 10px;
+        width: 25px;
+        height: 25px;
+        border-radius: 3px;
+        flex: 0 0 auto;
+        color: rgb(200, 200, 200);
+    }
+
+        .notification-item close-button:hover {
+            color: rgb(255, 255, 255);
+        }
+
+@media (min-width: 641px) {
+    top logo {
+        padding-left: 80px;
+        background-position-x: 40px;
+    }
+
+    top logo title {
+        display: inline-block;
+    }
+
+    top login {
+        padding-right: 40px;
+    }
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }

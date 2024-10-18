@@ -1,0 +1,34 @@
+﻿form {
+    display: flex;
+    flex: 1;
+}
+
+control {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+content {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+}
+
+
+buttons {
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+    buttons button {
+        margin: 5px;
+    }
+
+        buttons button:first-child {
+            margin-left: 0px;
+        }

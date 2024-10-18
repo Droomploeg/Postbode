@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-ServiceBusTool-2e15fa53-7658-4557-9954-d79206e3e83a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Droomploeg.DreamOps.IntegrationsTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\images\notification.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Controls\AzureServiceBus\SendMessageControl.razor" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\notification.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\images\notification.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Droomploeg.DreamOps.Core\Droomploeg.DreamOps.Core.csproj" />
+    <ProjectReference Include="..\Droomploeg.DreamOps.Infrastructure\Droomploeg.DreamOps.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\Controls\AzureServiceBus\SendMessageControl.razor" />
+  </ItemGroup>
+</Project>

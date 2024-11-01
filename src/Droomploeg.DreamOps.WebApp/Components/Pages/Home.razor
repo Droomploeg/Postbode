@@ -1,17 +1,18 @@
 ﻿@attribute [Route(PageConstants.HomePage)]
-@attribute [Authorize(Roles = AuthorisationRoles.GeneralAccess)]
 @inject ServiceBusClientManager ServiceBusClientManager
 @inject NavigationManager NavigationManager
 
-<content>
-    <GridControl Items="@ServiceBusClientManager.Clients" TItem="string">
-        <GridHeaderItemControl TItem="string">Name</GridHeaderItemControl>
-        <GridValueItemControl TItem="string">
-            <span @onclick="() => SetClient(context)" >@context</span>
-            @if (IsSelected(context))
-            {
-                <span class="current selected-servicebus">Current</span>
-            }
-        </GridValueItemControl>
-    </GridControl>
-</content>
+<AuthorizeView Context="authContext">
+    <content>
+        <GridControl Items="@ServiceBusClientManager.Clients" TItem="string">
+            <GridHeaderItemControl TItem="string">Name</GridHeaderItemControl>
+            <GridValueItemControl TItem="string">
+                <span @onclick="() => SetClient(context)">@context</span>
+                @if (IsSelected(context))
+                {
+                    <span class="current selected-servicebus">Current</span>
+                }
+            </GridValueItemControl>
+        </GridControl>
+    </content>
+</AuthorizeView>

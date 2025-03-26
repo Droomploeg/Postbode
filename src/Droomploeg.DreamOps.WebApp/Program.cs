@@ -1,4 +1,5 @@
-﻿using Azure.Extensions.AspNetCore.Configuration.Secrets;
+﻿using Azure.Core;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Droomploeg.DreamOps.WebApp.Components;
 using Droomploeg.DreamOps.WebApp.Configurations;
@@ -13,6 +14,51 @@ var configuration = builder.Configuration;
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+var tenantId = configuration["AzureEntra:TenantId"];
+var clientId = configuration["AzureEntra:ClientId"];
+var clientSecret = configuration["AzureEntra:ClientSecret"];
+
+
+// entra
+// app registration
+
+// Expose an API
+// API URI: api://2e6735ba-f881-476f-8791-87a3a2209864/user_impersonation
+// Admins only
+// displayname: Access as a user
+// Admin consent description: Access groups on behalf of the logged in user
+
+// API Permission: 
+// add Microsoft.Graph -> User.Read (delegated)
+// add Azure Service Bus -> Microsoft.ServiceBus user_impersonation (delegated)
+// grant admin consent
+
+
+var browserCredential = new InteractiveBrowserCredential();
+var appScopes = new[] { "api://2e6735ba-f881-476f-8791-87a3a2209864/user_impersonation" };
+
+var oboToken = await browserCredential.GetTokenAsync(new TokenRequestContext(appScopes), CancellationToken.None);
+var oboScopes = new[] { "https://servicebus.azure.net/.default" };
+
+//Func<CancellationToken, Task<string>> getAssertionToken = async (cancellationToken) =>
+//{
+//    var miCbrowserCredentialred = new InteractiveBrowserCredential();
+//    var result = await browserCredential.GetTokenAsync(new TokenRequestContext(["https://servicebus.microsoft.com/.default"]), cancellationToken: cancellationToken);
+//    return result.Token;
+//};
+
+var options = new OnBehalfOfCredentialOptions
+{
+    AuthorityHost = AzureAuthorityHosts.AzurePublicCloud,
+};
+
+//var onBehalfOfCredential = new OnBehalfOfCredential(tenantId, clientId, clientSecret, oboToken, options);
+var onBehalfOfCredential = new OnBehalfOfCredential(tenantId, clientId, clientSecret, oboToken.Token, options);
+
+
+var serviceBusToken = await onBehalfOfCredential.GetTokenAsync(new TokenRequestContext(oboScopes), CancellationToken.None);
+
 
 var azureKeyVaultUri = configuration["AzureKeyVault"];
 var credentialOptions = new DefaultAzureCredentialOptions

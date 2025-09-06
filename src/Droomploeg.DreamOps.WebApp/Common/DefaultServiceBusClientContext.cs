@@ -4,5 +4,5 @@ namespace Droomploeg.DreamOps.WebApp.Common;
 
 public class DefaultServiceBusClientContext : IServiceBusClientContext
 {
-    public string CurrentClient { get; set; }
+    public string CurrentClient { get; set; } = string.Empty;
 }

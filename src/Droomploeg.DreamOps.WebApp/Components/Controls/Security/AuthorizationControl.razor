@@ -1,0 +1,38 @@
+﻿@switch(State)
+{
+    case AuthorizationState.Loading:
+        break;
+    case AuthorizationState.Authorized:
+        @ChildContent
+        break;
+    case AuthorizationState.Unauthorized:
+        <div>
+            Authorization failed: Please ensure you have the Azure Service Bus
+            @for(int index = 0; index < Roles.Length; index++)
+            {
+                var role = Roles[index];
+                var seperator = " ";
+                @switch(role)
+                {
+                    case AuthorizationRole.DataReceiver:
+                        @seperator
+                        <span>Data Reader</span>
+                        break;
+                    case AuthorizationRole.DataSender:
+                        @seperator
+                        <span>Data Sender</span>
+                        break;
+                    case AuthorizationRole.DataOwner:
+                        @seperator
+                        <span>Data Owner</span>
+                        break;
+                }
+                seperator = ", ";
+            }
+            role assigned.
+        </div>
+        break;
+    case AuthorizationState.TokenExpired:
+        <div>Authorization failed: Please try logging out and back in to refresh your access.</div>
+        break;
+}

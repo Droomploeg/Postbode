@@ -2,7 +2,9 @@
 using Droomploeg.DreamOps.Core.Models;
 using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
 using Droomploeg.DreamOps.WebApp.Components.Controls.AzureServiceBus.Models;
+using Droomploeg.DreamOps.WebApp.Components.Controls.Security;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Identity.Web;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
@@ -18,6 +20,7 @@ public partial class SubscriptionDetailPage
     [Parameter] public string TopicName { get; set; } = null!;
     [Parameter] public string SubscriptionName { get; set; } = null!;
 
+    private AuthorizationState _authorizationState = AuthorizationState.Loading;
     private Subscription? _subscription;
 
     private IEnumerable<ServiceBusReceivedMessage>? _receivedMessages;
@@ -59,9 +62,22 @@ public partial class SubscriptionDetailPage
 
     private async Task Refresh()
     {
-        _subscription = await ServiceBusService.GetSubscriptionAsync(TopicName, SubscriptionName);
-        _receivedMessages = [];
-        _selectedMessage = null;
+        try
+        {
+            _subscription = await ServiceBusService.GetSubscriptionAsync(TopicName, SubscriptionName);
+            _receivedMessages = [];
+            _selectedMessage = null;
+            _authorizationState = AuthorizationState.Authorized;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            _authorizationState = AuthorizationState.Unauthorized;
+        }
+        catch (MicrosoftIdentityWebChallengeUserException)
+        {
+            _authorizationState = AuthorizationState.TokenExpired;
+        }
+
         StateHasChanged();
     }
 

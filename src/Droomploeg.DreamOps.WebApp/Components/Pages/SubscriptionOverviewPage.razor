@@ -1,32 +1,33 @@
 ﻿@attribute [Route(PageConstants.SubscriptionOverviewPage)]
-@attribute [Authorize(Roles = AuthorisationRoles.GeneralAccess)]
 
 @inject ServiceBusService ServiceBusService;
 
-<div class="grid-container">
-    <buttonbar>
-        <button class="refresh-button" @onclick="RefreshAsync">Refresh</button>
-    </buttonbar>
+<AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
+    <div class="grid-container">
+        <buttonbar>
+            <button class="refresh-button" @onclick="RefreshAsync">Refresh</button>
+        </buttonbar>
 
-    <GridControl Items="@_subscriptions" TItem="Subscription">
-        <GridHeaderItemControl TItem="Subscription" CssClass="state">State</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Subscription" CssClass="topic">Topic</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Subscription" CssClass="subscription">Subscription</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Subscription" CssClass="activeMessages">Active messages</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Subscription" CssClass="scheduledMessages">Scheduled messages</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Subscription" CssClass="deadLetterMessages">Dead-letter messages</GridHeaderItemControl>
+        <GridControl Items="@_subscriptions" TItem="Subscription">
+            <GridHeaderItemControl TItem="Subscription" CssClass="state">State</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Subscription" CssClass="topic">Topic</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Subscription" CssClass="subscription">Subscription</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Subscription" CssClass="activeMessages">Active messages</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Subscription" CssClass="scheduledMessages">Scheduled messages</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Subscription" CssClass="deadLetterMessages">Dead-letter messages</GridHeaderItemControl>
 
-        <GridValueItemControl TItem="Subscription">
-            <span class="entity-state @EntityStateHelper.GetCssClass(@context.RuntimeState, @context.HealthState)"
-                  title="@EntityStateHelper.GetHelpTitle(context.RuntimeState, context.HealthState)">
-            </span>
-        </GridValueItemControl>
-        <GridValueItemControl TItem="Subscription">@context.TopicName</GridValueItemControl>
-        <GridValueItemControl TItem="Subscription">
-            <NavLink href="@GetLink(context)">@context.Name</NavLink>
-        </GridValueItemControl>
-        <GridValueItemControl TItem="Subscription">@context.RuntimeInfo.ActiveMessageCount</GridValueItemControl>
-        <GridValueItemControl TItem="Subscription">@context.RuntimeInfo.ScheduleMessageCount</GridValueItemControl>
-        <GridValueItemControl TItem="Subscription">@context.RuntimeInfo.DeadLetterMessageCount</GridValueItemControl>
-    </GridControl>
-</div>
+            <GridValueItemControl TItem="Subscription">
+                <span class="entity-state @EntityStateHelper.GetCssClass(@context.RuntimeState, @context.HealthState)"
+                      title="@EntityStateHelper.GetHelpTitle(context.RuntimeState, context.HealthState)">
+                </span>
+            </GridValueItemControl>
+            <GridValueItemControl TItem="Subscription">@context.TopicName</GridValueItemControl>
+            <GridValueItemControl TItem="Subscription">
+                <NavLink href="@GetLink(context)">@context.Name</NavLink>
+            </GridValueItemControl>
+            <GridValueItemControl TItem="Subscription">@context.RuntimeInfo.ActiveMessageCount</GridValueItemControl>
+            <GridValueItemControl TItem="Subscription">@context.RuntimeInfo.ScheduleMessageCount</GridValueItemControl>
+            <GridValueItemControl TItem="Subscription">@context.RuntimeInfo.DeadLetterMessageCount</GridValueItemControl>
+        </GridControl>
+    </div>
+</AuthorizationControl>

@@ -5,6 +5,7 @@
 /// </summary>
 public enum EntityHealthState
 {
+    Unknown = 0,
     NoMessages,
     HasScheduledMessages,
     HasActiveMessages,

@@ -1,9 +1,10 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Droomploeg.DreamOps.Core.Models;
-using Droomploeg.DreamOps.Core.Services;
 using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
 using Droomploeg.DreamOps.WebApp.Components.Controls.AzureServiceBus.Models;
+using Droomploeg.DreamOps.WebApp.Components.Controls.Security;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Identity.Web;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
@@ -33,6 +34,7 @@ public partial class QueueDetailPage
         { ResubmitSingleMessageOverlay, false }
     };
 
+    private AuthorizationState _authorizationState = AuthorizationState.Loading;
     private PeekModel? _peekModel;
 
     private bool SessionEnabled => _queue?.RequiresSession ?? false;
@@ -58,9 +60,22 @@ public partial class QueueDetailPage
 
     private async Task Refresh()
     {
-        _queue = await ServiceBusService.GetQueueByNameAsync(QueueName);
-        _receivedMessages = [];
-        _selectedMessage = null;
+        try
+        {
+            _queue = await ServiceBusService.GetQueueByNameAsync(QueueName);
+            _receivedMessages = [];
+            _selectedMessage = null;
+            _authorizationState = AuthorizationState.Authorized;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            _authorizationState = AuthorizationState.Unauthorized;
+        }
+        catch (MicrosoftIdentityWebChallengeUserException)
+        {
+            _authorizationState = AuthorizationState.TokenExpired;
+        }
+
         StateHasChanged();
     }
 

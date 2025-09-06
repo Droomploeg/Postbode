@@ -5,6 +5,7 @@
 /// </summary>
 public enum EntityRuntimeState
 {
+    Unknown = 0,
     Active,
     Disabled,
     SendDisabled,

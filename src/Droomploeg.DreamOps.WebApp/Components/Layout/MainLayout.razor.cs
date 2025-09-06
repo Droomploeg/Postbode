@@ -1,6 +1,5 @@
 ﻿using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Forms.Models;
-using Microsoft.AspNetCore.Components;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
@@ -13,7 +12,7 @@ public partial class MainLayout : IDisposable
     protected override void OnInitialized()
     {
         _timer = new Timer(UpdateNotification, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
-        
+
         base.OnInitialized();
     }
 
@@ -21,6 +20,11 @@ public partial class MainLayout : IDisposable
     {
         _timer?.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    public void HandleException(Exception exception)
+    {
+
     }
 
     public void UpdateNotification(object? state)

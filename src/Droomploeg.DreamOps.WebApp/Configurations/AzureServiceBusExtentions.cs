@@ -1,8 +1,11 @@
-﻿using Azure.Identity;
+﻿using Azure.Core;
+using Azure.Identity;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
 using Droomploeg.DreamOps.WebApp.Common;
 using Droomploeg.DreamOps.WebApp.Configurations.Options;
+using Droomploeg.DreamOps.WebApp.Security;
 using Microsoft.Extensions.Azure;
+using Microsoft.Identity.Web;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
@@ -14,7 +17,7 @@ public static class AzureServiceBusExtentions
         var clientManager = new ServiceBusClientManager(connectionList.Select(c => c.Name));
         foreach (var connection in connectionList)
         {
-            services.RegisterAzureServiceBusConnections(configuration, connection);
+            services.RegisterAzureServiceBusConnections(connection);
         }
         services.AddTransient<ApplicationInsightsLink>();
         services.AddSingleton(clientManager);
@@ -23,37 +26,18 @@ public static class AzureServiceBusExtentions
         return services;
     }
 
-    public static IServiceCollection RegisterAzureServiceBusConnections(this IServiceCollection services, IConfiguration configuration, AzureServiceBusConnection connection)
+    public static IServiceCollection RegisterAzureServiceBusConnections(this IServiceCollection services, AzureServiceBusConnection connection)
     {
-        var credentialOptions = new DefaultAzureCredentialOptions
+        services.AddAzureClients(builder =>
         {
-            ManagedIdentityClientId = configuration["Azure_Client_Id"],
-        };
-
-        if (!string.IsNullOrWhiteSpace(connection.ConnectionString))
-        {
-            services.AddAzureClients(builder =>
-            {
-                builder.AddServiceBusClient(connection.ConnectionString)
-                    .WithName(connection.Name);
-                builder.AddServiceBusAdministrationClient(connection.ConnectionString)
-                    .WithName(connection.Name);
-                builder
-                    .UseCredential(new DefaultAzureCredential(credentialOptions));
-            });
-        }
-        else
-        {
-            services.AddAzureClients(builder =>
-            {
-                builder.AddServiceBusClientWithNamespace(connection.FullyQualifiedNamespace)
-                    .WithName(connection.Name);
-                builder.AddServiceBusAdministrationClientWithNamespace(connection.FullyQualifiedNamespace)
-                    .WithName(connection.Name);
-                builder
-                    .UseCredential(new DefaultAzureCredential(credentialOptions));
-            });
-        }
+            builder.AddServiceBusClientWithNamespace(connection.FullyQualifiedNamespace)
+                .WithName(connection.Name)
+                .WithCredential(sp => new OnBehalfOfTokenCredential(sp, [OnBehalfOfTokenCredential.ServiceBusScope]));
+            builder.AddServiceBusAdministrationClientWithNamespace(connection.FullyQualifiedNamespace)
+                .WithName(connection.Name)
+                .WithCredential(sp => new OnBehalfOfTokenCredential(sp, [OnBehalfOfTokenCredential.ServiceBusScope]));
+        });
+    
         return services;
     }
 }

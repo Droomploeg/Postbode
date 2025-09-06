@@ -6,7 +6,7 @@ namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 public partial class Home
 {
     [CascadingParameter]
-    public IServiceBusClientContext ServiceBusContext { get; set; }
+    public IServiceBusClientContext ServiceBusContext { get; set; } = null!;
 
     protected override void OnAfterRender(bool firstRender)
     {

@@ -1,31 +1,31 @@
 ﻿@attribute [Route(PageConstants.QueueOverviewPage)]
-@attribute [Authorize(Roles = AuthorisationRoles.GeneralAccess)]
 
 @inject ServiceBusService ServiceBusService;
 
+<AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
+    <div class="grid-container">
+        <buttonbar>
+            <button class="refresh-button" @onclick="RefreshAsync">Refresh</button>
+        </buttonbar>
 
-<div class="grid-container">
-    <buttonbar>
-        <button class="refresh-button" @onclick="RefreshAsync">Refresh</button>
-    </buttonbar>
+        <GridControl Items="@_queues" TItem="Queue">
+            <GridHeaderItemControl TItem="Queue" CssClass="state">State</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Queue" CssClass="name">Name</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Queue" CssClass="activeMessages">Active messages</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Queue" CssClass="scheduledMessages">Scheduled messages</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Queue" CssClass="deadLetterMessages">Dead-letter messages</GridHeaderItemControl>
 
-    <GridControl Items="@_queues" TItem="Queue">
-        <GridHeaderItemControl TItem="Queue" CssClass="state">State</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Queue" CssClass="name">Name</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Queue" CssClass="activeMessages">Active messages</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Queue" CssClass="scheduledMessages">Scheduled messages</GridHeaderItemControl>
-        <GridHeaderItemControl TItem="Queue" CssClass="deadLetterMessages">Dead-letter messages</GridHeaderItemControl>
-
-        <GridValueItemControl TItem="Queue">
-            <span class="entity-state @EntityStateHelper.GetCssClass(@context.RuntimeState, @context.HealthState)"
-                  title="@EntityStateHelper.GetHelpTitle(context.RuntimeState, context.HealthState)">
-            </span>
-        </GridValueItemControl>
-        <GridValueItemControl TItem="Queue">
-            <NavLink href="@GetLink(context)">@context.Name</NavLink>
-        </GridValueItemControl>
-        <GridValueItemControl TItem="Queue">@context.RuntimeInfo.ActiveMessageCount</GridValueItemControl>
-        <GridValueItemControl TItem="Queue">@context.RuntimeInfo.ScheduleMessageCount</GridValueItemControl>
-        <GridValueItemControl TItem="Queue">@context.RuntimeInfo.DeadLetterMessageCount</GridValueItemControl>
-    </GridControl>
-</div>
+            <GridValueItemControl TItem="Queue">
+                <span class="entity-state @EntityStateHelper.GetCssClass(@context.RuntimeState, @context.HealthState)"
+                      title="@EntityStateHelper.GetHelpTitle(context.RuntimeState, context.HealthState)">
+                </span>
+            </GridValueItemControl>
+            <GridValueItemControl TItem="Queue">
+                <NavLink href="@GetLink(context)">@context.Name</NavLink>
+            </GridValueItemControl>
+            <GridValueItemControl TItem="Queue">@context.RuntimeInfo.ActiveMessageCount</GridValueItemControl>
+            <GridValueItemControl TItem="Queue">@context.RuntimeInfo.ScheduleMessageCount</GridValueItemControl>
+            <GridValueItemControl TItem="Queue">@context.RuntimeInfo.DeadLetterMessageCount</GridValueItemControl>
+        </GridControl>
+    </div>
+</AuthorizationControl>

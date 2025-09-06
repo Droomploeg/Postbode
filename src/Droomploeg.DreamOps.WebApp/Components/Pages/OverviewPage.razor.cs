@@ -1,4 +1,6 @@
 ﻿using Droomploeg.DreamOps.Core.Models;
+using Droomploeg.DreamOps.WebApp.Components.Controls.Security;
+using Microsoft.Identity.Web;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
@@ -7,22 +9,36 @@ public partial class OverviewPage
     private const string NoMessageColor = "rgb(250, 250, 250)";
     private const string ScheduledColor = "rgb(200, 215, 0)";
     private const string ActiveColor = "rgb(62, 191, 0)";
-    private const string DeadletterColor = "rgb(255, 27, 27)";
+    private const string DeadLetterColor = "rgb(255, 27, 27)";
 
     private readonly List<Queue> _queues = [];
     private readonly List<Topic> _topics = [];
+
+    private AuthorizationState _authorizationState = AuthorizationState.Loading;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var entities = await ServiceBusService.GetAllAsync<IEntity>();
-
             _queues.Clear();
             _topics.Clear();
 
-            _queues.AddRange(entities.OfType<Queue>());
-            _topics.AddRange(entities.OfType<Topic>());
+            try
+            {
+                var entities = await ServiceBusService.GetAllAsync<IEntity>();
+
+                _queues.AddRange(entities.OfType<Queue>());
+                _topics.AddRange(entities.OfType<Topic>());
+                _authorizationState = AuthorizationState.Authorized;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                _authorizationState = AuthorizationState.Unauthorized;
+            }
+            catch (MicrosoftIdentityWebChallengeUserException)
+            {
+                _authorizationState = AuthorizationState.TokenExpired;
+            }
 
             StateHasChanged();
         }
@@ -36,20 +52,19 @@ public partial class OverviewPage
     private long QueueDeadLetterMessageCount => _queues.Sum(q => q.RuntimeInfo.DeadLetterMessageCount);
     private long QueueScheduledMessageCount => _queues.Sum(q => q.RuntimeInfo.ScheduleMessageCount);
 
-    private float QueueActiveMessagePercentages => QueueTotalMessages > 0f ? (float)QueueActiveMessageCount / (float)QueueTotalMessages * 100f : 0f;
-    private float QueueDeadLetterMessagePercentages => QueueTotalMessages > 0f ? (float)QueueDeadLetterMessageCount / (float)QueueTotalMessages * 100f : 0f;
-    private float QueueScheduledMessagePercentages => QueueTotalMessages > 0f ? (float)QueueScheduledMessageCount / (float)QueueTotalMessages * 100f : 0f;
+    private float QueueActiveMessagePercentages => QueueTotalMessages > 0f ? QueueActiveMessageCount / (float)QueueTotalMessages * 100f : 0f;
+    private float QueueDeadLetterMessagePercentages => QueueTotalMessages > 0f ? QueueDeadLetterMessageCount / (float)QueueTotalMessages * 100f : 0f;
+    private float QueueScheduledMessagePercentages => QueueTotalMessages > 0f ? QueueScheduledMessageCount / (float)QueueTotalMessages * 100f : 0f;
 
     private long SubscriptionCount => _topics.Sum(t => t.Subscriptions.Length);
-
     private long SubscriptionTotalMessages => SubscriptionActiveMessageCount + SubscriptionScheduledMessageCount + SubscriptionDeadLetterMessageCount;
     private long SubscriptionActiveMessageCount => _topics.Sum(t => t.Subscriptions.Sum(s => s.RuntimeInfo.ActiveMessageCount));
     private long SubscriptionDeadLetterMessageCount => _topics.Sum(t => t.Subscriptions.Sum(s => s.RuntimeInfo.DeadLetterMessageCount));
     private long SubscriptionScheduledMessageCount => _topics.Sum(t => t.Subscriptions.Sum(s => s.RuntimeInfo.ScheduleMessageCount));
 
-    private float SubscriptionActiveMessagePercentages => SubscriptionTotalMessages > 0f ? (float)SubscriptionActiveMessageCount / (float)SubscriptionTotalMessages * 100f : 0f;
-    private float SubscriptionDeadLetterMessagePercentages => SubscriptionTotalMessages > 0f ? (float)SubscriptionDeadLetterMessageCount / (float)SubscriptionTotalMessages * 100f : 0f;
-    private float SubscriptionScheduledMessagePercentages => SubscriptionTotalMessages > 0f ? (float)SubscriptionScheduledMessageCount / (float)SubscriptionTotalMessages * 100f : 0f;
+    private float SubscriptionActiveMessagePercentages => SubscriptionTotalMessages > 0f ? SubscriptionActiveMessageCount / (float)SubscriptionTotalMessages * 100f : 0f;
+    private float SubscriptionDeadLetterMessagePercentages => SubscriptionTotalMessages > 0f ? SubscriptionDeadLetterMessageCount / (float)SubscriptionTotalMessages * 100f : 0f;
+    private float SubscriptionScheduledMessagePercentages => SubscriptionTotalMessages > 0f ? SubscriptionScheduledMessageCount / (float)SubscriptionTotalMessages * 100f : 0f;
 
     private string GetQueueGradient()
     {
@@ -87,7 +102,7 @@ public partial class OverviewPage
                 result += $"{color} {begin}% {end}%,";
             }
             begin = end;
-            color = DeadletterColor;
+            color = DeadLetterColor;
         }
 
         result += $"{color} {begin}% 100%";
@@ -108,7 +123,7 @@ public partial class OverviewPage
         if (SubscriptionScheduledMessagePercentages > 0.0f)
         {
             begin = (int)SubscriptionScheduledMessagePercentages;
-            color = ScheduledColor; 
+            color = ScheduledColor;
         }
 
         if (SubscriptionActiveMessagePercentages > 0.0f)
@@ -130,7 +145,7 @@ public partial class OverviewPage
                 result += $"{color} {begin}% {end}%,";
             }
             begin = end;
-            color = DeadletterColor;
+            color = DeadLetterColor;
         }
 
         result += $"{color} {begin}% 100%";

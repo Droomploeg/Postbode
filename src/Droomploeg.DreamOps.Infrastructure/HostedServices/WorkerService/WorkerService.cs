@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
-using System.Threading.Channels;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 
 namespace Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
 

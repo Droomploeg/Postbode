@@ -1,11 +1,8 @@
-﻿using Azure.Core;
-using Azure.Identity;
-using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
+﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
 using Droomploeg.DreamOps.WebApp.Common;
 using Droomploeg.DreamOps.WebApp.Configurations.Options;
 using Droomploeg.DreamOps.WebApp.Security;
 using Microsoft.Extensions.Azure;
-using Microsoft.Identity.Web;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
@@ -37,7 +34,7 @@ public static class AzureServiceBusExtentions
                 .WithName(connection.Name)
                 .WithCredential(sp => new OnBehalfOfTokenCredential(sp, [OnBehalfOfTokenCredential.ServiceBusScope]));
         });
-    
+
         return services;
     }
 }

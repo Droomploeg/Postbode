@@ -6,15 +6,15 @@ namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 public partial class Home
 {
     [CascadingParameter]
-    public IServiceBusClientContext ServiceBusContext { get; set; } = null!;
+    public IServiceBusInfoContext ServiceBusContext { get; set; } = null!;
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            if (ServiceBusClientManager.Clients.Length == 1)
+            if (ServiceBusClientManager.ServiceBusInformationList.Length == 1)
             {
-                ServiceBusContext.CurrentClient = ServiceBusClientManager.Clients[0];
+                ServiceBusContext.Current = ServiceBusClientManager.ServiceBusInformationList[0];
                 NavigationManager.NavigateTo(PageConstants.OverviewPage);
             }
 
@@ -23,14 +23,14 @@ public partial class Home
         base.OnAfterRender(firstRender);
     }
 
-    private bool IsSelected(string client)
+    private bool IsSelected(ServiceBusInfo client)
     {
-        return ServiceBusContext.CurrentClient == client;
+        return ServiceBusContext.Current == client;
     }
 
-    private void SetClient(string client)
+    private void SetClient(ServiceBusInfo selected)
     {
-        ServiceBusContext.CurrentClient = client;
+        ServiceBusContext.Current = selected;
         NavigationManager.NavigateTo(PageConstants.OverviewPage);
     }
 

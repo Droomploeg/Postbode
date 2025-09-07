@@ -3,11 +3,16 @@ using System.Collections.Concurrent;
 
 namespace Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
 
+/// <summary>
+/// Worker monitor.
+/// </summary>
+/// <param name="logger"><see cref="ILogger{TCategoryName}"/></param>
 public class WorkerMonitor(ILogger<WorkerMonitor> logger) : IWorkerMonitor
 {
     private readonly ILogger<WorkerMonitor> _logger = logger;
     private readonly ConcurrentDictionary<Guid, WorkItem> _items = [];
 
+    /// <inheritdoc cref="IWorkerMonitor.GetUpdatedWorkItems(DateTimeOffset)"/>
     public IEnumerable<WorkItem> GetUpdatedWorkItems(DateTimeOffset lastCheckTime)
     {
         return _items.Values
@@ -15,12 +20,14 @@ public class WorkerMonitor(ILogger<WorkerMonitor> logger) : IWorkerMonitor
             .OrderByDescending(_workItems => _workItems.Timestamp);
     }
 
+    /// <inheritdoc cref="IWorkerMonitor.GetWorkItems()"/>
     public IEnumerable<WorkItem> GetWorkItems()
     {
         return _items.Values
             .OrderByDescending(_workItems => _workItems.Timestamp);
     }
 
+    /// <inheritdoc cref="IWorkerMonitor.RegisterWorkItem(WorkItem)"/>
     public void RegisterWorkItem(WorkItem item)
     {
         try
@@ -33,6 +40,7 @@ public class WorkerMonitor(ILogger<WorkerMonitor> logger) : IWorkerMonitor
         }
     }
 
+    /// <inheritdoc cref="IWorkerMonitor.Unregister(Guid)"/>
     public void Unregister(Guid id)
     {
         try
@@ -45,6 +53,7 @@ public class WorkerMonitor(ILogger<WorkerMonitor> logger) : IWorkerMonitor
         }
     }
 
+    /// <inheritdoc cref="IWorkerMonitor.UnregisterAllFinishedWorkItems()"/>
     public void UnregisterAllFinishedWorkItems()
     {
         var closeItemIds = _items.Values

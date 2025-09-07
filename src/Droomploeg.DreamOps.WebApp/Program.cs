@@ -1,6 +1,5 @@
 ﻿using Droomploeg.DreamOps.WebApp.Components;
 using Droomploeg.DreamOps.WebApp.Configurations;
-using Droomploeg.DreamOps.WebApp.Middleware;
 using Droomploeg.DreamOps.WebApp.Security;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
@@ -60,10 +59,9 @@ builder.Services.AddAzureServiceBus(builder.Configuration);
 builder.Services.AddApplicationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddAuditLogging();
 
 var app = builder.Build();
-app.UseMiddleware<ServiceBusClientContextMiddleware>();
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -74,11 +72,13 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAuditEnrichment();
 
 app.MapLoginAndLogout();
 

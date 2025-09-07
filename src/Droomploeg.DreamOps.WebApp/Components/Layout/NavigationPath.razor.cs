@@ -41,21 +41,21 @@ public partial class NavigationPath : ComponentBase, IDisposable
         if (relativeUrl.StartsWith(PageConstants.QueueOverviewPage) || relativeUrl.StartsWith(PageConstants.QueueDetailPage))
         {
             _crumblePath.Add(new() { Key = "Home", Value = PageConstants.HomePage });
-            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.CurrentClient, Value = PageConstants.OverviewPage });
+            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.Current.Name, Value = PageConstants.OverviewPage });
             _crumblePath.Add(new() { Key = "Queues", Value = PageConstants.QueueOverviewPage });
             _icon = QueuesIcon;
         }
         else if (relativeUrl.StartsWith(PageConstants.SubscriptionOverviewPage) || relativeUrl.StartsWith(PageConstants.SubscriptionDetailPage))
         {
             _crumblePath.Add(new() { Key = "Home", Value = PageConstants.HomePage });
-            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.CurrentClient, Value = PageConstants.OverviewPage });
+            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.Current.Name, Value = PageConstants.OverviewPage });
             _crumblePath.Add(new() { Key = "Subscriptions", Value = PageConstants.SubscriptionOverviewPage });
             _icon = TopicsIcon;
         }
         else if (relativeUrl.StartsWith(PageConstants.OverviewPage))
         {
             _crumblePath.Add(new() { Key = "Home", Value = PageConstants.HomePage });
-            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.CurrentClient, Value = PageConstants.OverviewPage });
+            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.Current.Name, Value = PageConstants.OverviewPage });
             _icon = OverviewIcon;
         }
         else

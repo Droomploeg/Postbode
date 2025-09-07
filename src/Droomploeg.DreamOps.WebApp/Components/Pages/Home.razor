@@ -1,13 +1,13 @@
 ﻿@attribute [Route(PageConstants.HomePage)]
-@inject ServiceBusClientManager ServiceBusClientManager
+@inject ServiceBusManager ServiceBusClientManager
 @inject NavigationManager NavigationManager
 
 <AuthorizeView Context="authContext">
     <content>
-        <GridControl Items="@ServiceBusClientManager.Clients" TItem="string">
-            <GridHeaderItemControl TItem="string">Name</GridHeaderItemControl>
-            <GridValueItemControl TItem="string">
-                <span @onclick="() => SetClient(context)">@context</span>
+        <GridControl Items="@ServiceBusClientManager.ServiceBusInformationList" TItem="ServiceBusInfo">
+            <GridHeaderItemControl TItem="ServiceBusInfo">Name</GridHeaderItemControl>
+            <GridValueItemControl TItem="ServiceBusInfo">
+                <span @onclick="() => SetClient(context)">@context.Name</span>
                 @if (IsSelected(context))
                 {
                     <span class="current selected-servicebus">Current</span>

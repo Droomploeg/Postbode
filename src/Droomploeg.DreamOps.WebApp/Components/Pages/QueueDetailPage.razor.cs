@@ -99,12 +99,12 @@ public partial class QueueDetailPage
         if (_source == MessageSource.ActiveMessage)
         {
             _receivedMessages = null;
-            _receivedMessages = await EntityService.PeekAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await ActiveEntityService.PeekAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
         }
         else if (_source == MessageSource.DeadLetterMessage)
         {
             _receivedMessages = null;
-            _receivedMessages = await EntityService.PeekDeadletterAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await DeadLetterEntityService.PeekAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
         }
 
         _queue = await ServiceBusService.GetQueueByNameAsync(_queue.Name);
@@ -124,8 +124,8 @@ public partial class QueueDetailPage
             return;
         }
 
-        // todo bool back
-        await EntityService.DeadLetterMessageAsync(_queue!.Name, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
+        // todo general: bool back
+        await ActiveEntityService.DeadLetterMessageAsync(_queue!.Name, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
 
         _selectedMessage = null;
         CloseOverlaysAndDialogs();
@@ -145,11 +145,11 @@ public partial class QueueDetailPage
 
         if (_source == MessageSource.ActiveMessage)
         {
-            await EntityService.DeleteActiveMessageAsync(_queue!.Name, _selectedMessage, default);
+            await ActiveEntityService.DeleteMessageAsync(_queue!.Name, _selectedMessage, default);
         }
         if (_source == MessageSource.DeadLetterMessage)
         {
-            await EntityService.DeleteDeadletterMessageAsync(_queue!.Name, _selectedMessage, default);
+            await DeadLetterEntityService.DeleteMessageAsync(_queue!.Name, _selectedMessage, default);
         }
 
         _selectedMessage = null;
@@ -161,6 +161,7 @@ public partial class QueueDetailPage
         }
     }
 
+    //todo background: resubmit in background (queue)
     private async Task ResubmitSelectedMessageAsync(SendMessageModel model)
     {
         if (_selectedMessage == null)
@@ -169,7 +170,7 @@ public partial class QueueDetailPage
         }
 
         async Task action(CancellationToken cancellationToken) =>
-            await EntityService.ResubmitDeadletterMessageAsync(QueueName,
+            await DeadLetterEntityService.ResubmitMessageAsync(QueueName,
                 _selectedMessage,
                 model.ToSendMessage(),
                 new ResubmitOptions(model.GenenerateMessageId, model.DeleteMessageAfterResubmit),
@@ -186,12 +187,13 @@ public partial class QueueDetailPage
         }
     }
 
+    //todo background: send message in background (queue)
     private async Task SendMessageAsync(SendMessageModel model)
     {
         async Task action(CancellationToken cancellationToken) =>
-            await EntityService.SendMessageAsync(QueueName, [model.ToSendMessage()], cancellationToken);
+            await ActiveEntityService.SendMessageAsync(QueueName, [model.ToSendMessage()], cancellationToken);
 
-        // todo: const for action name
+        // todo general: const for action name
         var workItem = new WorkItem(QueueName, "Send messages", action);
         WorkerService.Register(workItem);
 
@@ -203,26 +205,28 @@ public partial class QueueDetailPage
         }
     }
 
+    //todo background: resubmit all message in background (queue)
     private void ResubmitAllMessages(bool generateMessageIds, bool deleteMesssages)
     {
         var resubmitOptions = new ResubmitOptions(generateMessageIds, deleteMesssages);
         async Task action(CancellationToken cancellationToken)
-            => await EntityService.ResubmitAllDeadletterMessagesAsync(QueueName, resubmitOptions, cancellationToken);
+            => await DeadLetterEntityService.ResubmitAllMessagesAsync(QueueName, resubmitOptions, cancellationToken);
 
-        // todo: const for action name
+        // todo general: const for action name
         var workItem = new WorkItem(QueueName, "Resubmit all dead-letter messages", action);
         WorkerService.Register(workItem);
 
         CloseOverlaysAndDialogs();
     }
 
+    //todo background: delete all message in background (queue)
     private void DeleteAllMessages()
     {
         Func<CancellationToken, Task> action = _source == MessageSource.ActiveMessage
-            ? async (cancellationToken) => await EntityService.DeleteAllActiveMessagesAsync(QueueName, cancellationToken)
-            : async (cancellationToken) => await EntityService.DeleteAllDeadLetterMessagesAsync(QueueName, cancellationToken);
+            ? async (cancellationToken) => await ActiveEntityService.DeleteAllMessagesAsync(QueueName, cancellationToken)
+            : async (cancellationToken) => await DeadLetterEntityService.DeleteAllMessagesAsync(QueueName, cancellationToken);
 
-        // todo: const for action name
+        // todo general: const for action name
         var workItem = new WorkItem(QueueName, "Delete all messages", action);
         WorkerService.Register(workItem);
 

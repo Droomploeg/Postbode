@@ -11,31 +11,20 @@ public class WorkerService(IWorkerMonitor monitor, ILogger<WorkerService> logger
     private readonly IWorkerMonitor _monitor = monitor;
     private readonly ILogger<WorkerService> _logger = logger;
     private readonly ConcurrentQueue<WorkItem> _queue = new();
-    //private readonly Channel<WorkItem> _queue = Channel.CreateUnbounded<WorkItem>();
 
-
-    /// <inheritdoc/>>
+    /// <inheritdoc cref="IWorkerService"/>
     public void Register(WorkItem workItem)
     {
         ArgumentNullException.ThrowIfNull(workItem);
 
         _queue.Enqueue(workItem);
         _monitor.RegisterWorkItem(workItem);
-        //if (_queue.Writer.TryWrite(workItem))
-        //{
-        //    _monitor.RegisterWorkItem(workItem);
-        //}
-        //else 
-        //{ 
-        //    _logger.LogError("Unable to register work item, possible already removed");
-        //}
     }
 
-    /// <inheritdoc/>>
+    /// <inheritdoc cref="IWorkerService"/>
     public async Task ExecuteNextAsync(CancellationToken cancellationToken)
     {
         if (_queue.TryDequeue(out var workItem))
-        //if (_queue.Reader.TryRead(out var workItem))
         {
             try
             {
@@ -48,5 +37,4 @@ public class WorkerService(IWorkerMonitor monitor, ILogger<WorkerService> logger
             }
         }
     }
-
 }

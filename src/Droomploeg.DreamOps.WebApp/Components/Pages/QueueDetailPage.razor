@@ -1,7 +1,8 @@
 ﻿@attribute [Route(PageConstants.QueueDetailPageWithParameters)]
 
 @inject ServiceBusService ServiceBusService;
-@inject QueueService<ServiceBusMessage, ServiceBusReceivedMessage> EntityService;
+@inject ActiveQueueService<ServiceBusMessage, ServiceBusReceivedMessage> ActiveEntityService;
+@inject DeadLetterQueueService<ServiceBusMessage, ServiceBusReceivedMessage> DeadLetterEntityService;
 @inject IWorkerService WorkerService;
 
 <AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataReceiver]">

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Azure;
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories;
 
 public class ServiceBusRepository(
-    IServiceBusClientContext context,
+    IServiceBusInfoContext context,
     IAzureClientFactory<ServiceBusAdministrationClient> adminClientFactory) : IServiceBusRepository
 {
     public async Task<IEnumerable<IEntity>> GetAllEntitiesAsync(CancellationToken cancellationToken = default)
@@ -28,7 +28,7 @@ public class ServiceBusRepository(
 
     public async Task<Queue> GetQueueAsync(string queue, CancellationToken cancellationToken = default)
     {
-        var adminClient = adminClientFactory.CreateClient(context.CurrentClient);
+        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
         var azureQueueResponse = await adminClient.GetQueueAsync(queue, cancellationToken);
         var azureQueue = azureQueueResponse.Value;
 
@@ -40,7 +40,7 @@ public class ServiceBusRepository(
 
     public async Task<Topic> GetTopicAsync(string topic, CancellationToken cancellationToken = default)
     {
-        var adminClient = adminClientFactory.CreateClient(context.CurrentClient);
+        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
         var azureTopicResponse = await adminClient.GetTopicAsync(topic, cancellationToken);
         var azureTopic = azureTopicResponse.Value;
         var azureTopicRuntimePropertiesResponse = await adminClient.GetTopicRuntimePropertiesAsync(azureTopic.Name, cancellationToken);
@@ -72,7 +72,7 @@ public class ServiceBusRepository(
 
     public async Task<Subscription> GetSubscriptionAsync(string topic, string subscription, CancellationToken cancellationToken = default)
     {
-        var adminClient = adminClientFactory.CreateClient(context.CurrentClient);
+        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
         var azureSubscriptionResponse = await adminClient.GetSubscriptionAsync(topic, subscription, cancellationToken);
         var azureSubscription = azureSubscriptionResponse.Value;
 
@@ -90,7 +90,7 @@ public class ServiceBusRepository(
 
     public async Task<IEnumerable<Queue>> GetAllQueuesAsync(CancellationToken cancellationToken = default)
     {
-        var adminClient = adminClientFactory.CreateClient(context.CurrentClient);
+        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
         var queues = new BlockingCollection<Queue>();
         var azureQueuesResponse = adminClient
             .GetQueuesAsync(cancellationToken)
@@ -113,7 +113,7 @@ public class ServiceBusRepository(
     {
         var topics = new List<Topic>();
 
-        var adminClient = adminClientFactory.CreateClient(context.CurrentClient);
+        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
         var azureTopicsReponse = adminClient.GetTopicsAsync(cancellationToken)
             .GetAsyncEnumerator(cancellationToken);
 

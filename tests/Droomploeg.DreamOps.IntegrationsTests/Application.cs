@@ -1,6 +1,5 @@
 ﻿using Bunit;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
-using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
 using Droomploeg.DreamOps.IntegrationsTests.Common.Configurations;
 using Droomploeg.DreamOps.IntegrationsTests.Common.ServiceBus;
 using Droomploeg.DreamOps.WebApp.Configurations;
@@ -12,7 +11,7 @@ namespace Droomploeg.DreamOps.IntegrationsTests;
 
 internal static class Application
 {
-    internal static void Setup(TestContext context, out string clientName)
+    internal static void Setup(TestContext context, out ServiceBusInfo serviceBusInfo)
     {
         var configuration = TestConfiguration.Configuration();
 
@@ -24,8 +23,8 @@ internal static class Application
 
 
         var connectionList = configuration.GetSection(AzureServiceBusConnection.SectionName).Get<List<AzureServiceBusConnection>>() ?? [];
-        clientName = connectionList[0].Name;
+        serviceBusInfo = new ServiceBusInfo(connectionList[0].Name, false);
 
-        context.Services.GetRequiredService<IServiceBusClientContext>().CurrentClient = clientName;
+        context.Services.GetRequiredService<IServiceBusInfoContext>().Current = serviceBusInfo;
     }
 }

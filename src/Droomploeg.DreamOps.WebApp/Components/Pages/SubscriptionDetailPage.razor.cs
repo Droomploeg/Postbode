@@ -96,12 +96,12 @@ public partial class SubscriptionDetailPage
         if (_source == MessageSource.ActiveMessage)
         {
             _receivedMessages = null;
-            _receivedMessages = await EntityService.PeekAsync(TopicName, SubscriptionName, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await ActiveEntityService.PeekAsync(TopicName, SubscriptionName, args.StartIndex, args.NumberOfMessages);
         }
         else if (_source == MessageSource.DeadLetterMessage)
         {
             _receivedMessages = null;
-            _receivedMessages = await EntityService.PeekDeadletterAsync(TopicName, SubscriptionName, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await DeadLetterEntityService.PeekAsync(TopicName, SubscriptionName, args.StartIndex, args.NumberOfMessages);
         }
 
         _subscription = await ServiceBusService.GetSubscriptionAsync(TopicName, SubscriptionName);
@@ -121,7 +121,7 @@ public partial class SubscriptionDetailPage
             return;
         }
 
-        await EntityService.DeadLetterMessageAsync(TopicName, SubscriptionName, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
+        await ActiveEntityService.DeadLetterMessageAsync(TopicName, SubscriptionName, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
 
         _selectedMessage = null;
         CloseOverlaysAndDialogs();
@@ -141,11 +141,11 @@ public partial class SubscriptionDetailPage
 
         if (_source == MessageSource.ActiveMessage)
         {
-            await EntityService.DeleteActiveMessageAsync(TopicName, SubscriptionName, _selectedMessage, default);
+            await ActiveEntityService.DeleteMessageAsync(TopicName, SubscriptionName, _selectedMessage, default);
         }
         if (_source == MessageSource.DeadLetterMessage)
         {
-            await EntityService.DeleteDeadletterMessageAsync(TopicName, SubscriptionName, _selectedMessage, default);
+            await DeadLetterEntityService.DeleteMessageAsync(TopicName, SubscriptionName, _selectedMessage, default);
         }
 
         _selectedMessage = null;
@@ -157,6 +157,7 @@ public partial class SubscriptionDetailPage
         }
     }
 
+    //todo background: resubmit selected in background (subscription)
     private async Task ResubmitSelectedMessageAsync(SendMessageModel model)
     {
         if (_selectedMessage == null)
@@ -165,7 +166,7 @@ public partial class SubscriptionDetailPage
         }
 
         async Task action(CancellationToken cancellationToken) =>
-            await EntityService.ResubmitDeadletterMessageAsync(TopicName, SubscriptionName,
+            await DeadLetterEntityService.ResubmitMessageAsync(TopicName, SubscriptionName,
                 _selectedMessage,
                 model.ToSendMessage(),
                 new ResubmitOptions(model.GenenerateMessageId, model.DeleteMessageAfterResubmit),
@@ -182,10 +183,11 @@ public partial class SubscriptionDetailPage
         }
     }
 
+    //todo background: send selected in background (subscription)
     private async Task SendMessageAsync(SendMessageModel model)
     {
         async Task action(CancellationToken cancellationToken) =>
-        await EntityService.SendMessageAsync(TopicName, [model.ToSendMessage()], cancellationToken);
+        await ActiveEntityService.SendMessageAsync(TopicName, [model.ToSendMessage()], cancellationToken);
 
         var workItem = new WorkItem($"{TopicName}/{SubscriptionName}", "Send messages", action);
         WorkerService.Register(workItem);
@@ -198,26 +200,28 @@ public partial class SubscriptionDetailPage
         }
     }
 
+    //todo background: resubmit all in background (subscription)
     private void ResubmitAllMessages(bool generateMessageIds, bool deleteMesssages)
     {
         var resubmitOptions = new ResubmitOptions(generateMessageIds, deleteMesssages);
         async Task action(CancellationToken cancellationToken)
-            => await EntityService.ResubmitAllDeadletterMessagesAsync(TopicName, SubscriptionName, resubmitOptions, cancellationToken);
+            => await DeadLetterEntityService.ResubmitAllMessagesAsync(TopicName, SubscriptionName, resubmitOptions, cancellationToken);
 
-        // todo: const for action name
+        // todo general: const for action name
         var workItem = new WorkItem($"{TopicName}/{SubscriptionName}", "Resubmit all dead-letter messages", action);
         WorkerService.Register(workItem);
 
         CloseOverlaysAndDialogs();
     }
 
+    //todo background: delete all in background (subscription)
     private void DeleteAllMessages()
     {
         Func<CancellationToken, Task> action = _source == MessageSource.ActiveMessage
-            ? async (cancellationToken) => await EntityService.DeleteAllActiveMessagesAsync(TopicName, SubscriptionName, cancellationToken)
-            : async (cancellationToken) => await EntityService.DeleteAllDeadLetterMessagesAsync(TopicName, SubscriptionName, cancellationToken);
+            ? async (cancellationToken) => await ActiveEntityService.DeleteAllMessagesAsync(TopicName, SubscriptionName, cancellationToken)
+            : async (cancellationToken) => await DeadLetterEntityService.DeleteAllMessagesAsync(TopicName, SubscriptionName, cancellationToken);
 
-        // todo: const for action name
+        // todo general: const for action name
         var workItem = new WorkItem($"{TopicName}/{SubscriptionName}", "Delete all messages", action);
         WorkerService.Register(workItem);
 

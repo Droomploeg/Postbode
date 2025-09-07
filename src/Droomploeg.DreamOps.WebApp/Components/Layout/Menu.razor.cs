@@ -7,7 +7,7 @@ namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 public partial class Menu
 {
     [CascadingParameter]
-    public IServiceBusClientContext ServiceBusContext { get; set; } = null!;
+    public IServiceBusInfoContext ServiceBusContext { get; set; } = null!;
 
-    private bool HasClientSelected => !string.IsNullOrWhiteSpace(ServiceBusContext.CurrentClient);
+    private bool HasClientSelected => ServiceBusContext.Current != ServiceBusInfo.None;
 }

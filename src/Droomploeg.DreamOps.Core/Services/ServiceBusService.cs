@@ -20,10 +20,9 @@ public class ServiceBusService(IServiceBusRepository repository)
         where T : IEntity
     {
         var entities = await _repository.GetAllEntitiesAsync();
-        return entities
+        return [.. entities
             .Where(e => e is T)
-            .Cast<T>()
-            .ToArray();
+            .Cast<T>()];
     }
 
     /// <summary>

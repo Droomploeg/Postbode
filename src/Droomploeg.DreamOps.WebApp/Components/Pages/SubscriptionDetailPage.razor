@@ -1,7 +1,8 @@
 ﻿@attribute [Route(PageConstants.SubscriptionDetailPageWithParameters)]
 
 @inject ServiceBusService ServiceBusService;
-@inject TopicService<ServiceBusMessage, ServiceBusReceivedMessage> EntityService;
+@inject ActiveTopicService<ServiceBusMessage, ServiceBusReceivedMessage> ActiveEntityService;
+@inject DeadLetterTopicService<ServiceBusMessage, ServiceBusReceivedMessage> DeadLetterEntityService;
 @inject IWorkerService WorkerService;
 
 <AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataReceiver]">

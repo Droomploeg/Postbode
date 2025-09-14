@@ -11,7 +11,7 @@ namespace Droomploeg.DreamOps.IntegrationsTests;
 
 internal static class Application
 {
-    internal static void Setup(TestContext context, out ServiceBusInfo serviceBusInfo)
+    internal static async Task<ServiceBusConnection> SetupAsync(TestContext context)
     {
         var configuration = TestConfiguration.Configuration();
 
@@ -23,8 +23,10 @@ internal static class Application
 
 
         var connectionList = configuration.GetSection(AzureServiceBusConnection.SectionName).Get<List<AzureServiceBusConnection>>() ?? [];
-        serviceBusInfo = new ServiceBusInfo(connectionList[0].Name, false);
+        var connection = new ServiceBusConnection(connectionList[0].Name, connectionList[0].FullyQualifiedNamespace, false);
 
-        context.Services.GetRequiredService<IServiceBusInfoContext>().Current = serviceBusInfo;
+        await context.Services.GetRequiredService<IServiceBusConnectionAccessor>().SetCurrentAsync(connection);
+
+        return connection;
     }
 }

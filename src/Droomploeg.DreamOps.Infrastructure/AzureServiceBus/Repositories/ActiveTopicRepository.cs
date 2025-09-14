@@ -9,13 +9,14 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories;
 
 public class ActiveTopicRepository(
     TimeProvider timeProvider,
-    IServiceBusInfoContext context,
+    IServiceBusConnectionAccessor connectionAccessor,
     IAzureClientFactory<ServiceBusAdministrationClient> adminClientFactory,
     IAzureClientFactory<ServiceBusClient> clientFactory) : IActiveTopicRepository<ServiceBusMessage, ServiceBusReceivedMessage>
 {
     public async Task SendAsync(string topic, ICollection<ServiceBusMessage> messages, CancellationToken cancellationToken = default)
     {
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var client = clientFactory.CreateClient(connection.Name);
         var sender = client
             .CreateSender(topic);
 
@@ -27,7 +28,8 @@ public class ActiveTopicRepository(
         int numberOfMessages = RepositoryConstants.DefaultNumberOfMessage,
         CancellationToken cancellationToken = default)
     {
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
         var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
         if (fromSequenceNumber > azureSubscriptionRuntimeProperties.ActiveMessageCount)
@@ -35,7 +37,7 @@ public class ActiveTopicRepository(
             return [];
         }
 
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         var receiver = client.CreateReceiver(topic, subscription, ServiceBusConstants.PeekLockOptions);
         var messages = await receiver.PeekMessagesAsync(numberOfMessages, fromSequenceNumber, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
@@ -45,9 +47,10 @@ public class ActiveTopicRepository(
 
     public async Task DeleteAllMessagesAsync(string topic, string subscription, CancellationToken cancellationToken)
     {
+        var connection = await connectionAccessor.GetCurrentAsync();
         var timestamp = timeProvider.GetUtcNow();
 
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureSubscriptionResponse = await adminClient.GetSubscriptionAsync(topic, subscription, cancellationToken);
         var azureSubscription = azureSubscriptionResponse.Value;
 
@@ -58,7 +61,7 @@ public class ActiveTopicRepository(
             return;
         }
 
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         if (azureSubscription.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);
@@ -75,7 +78,8 @@ public class ActiveTopicRepository(
 
     public async Task<bool> DeleteMessageAsync(string topic, string subscription, ServiceBusReceivedMessage message, CancellationToken cancellationToken)
     {
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureSubscriptionResponse = await adminClient.GetSubscriptionAsync(topic, subscription, cancellationToken);
         var azureSubscription = azureSubscriptionResponse.Value;
 
@@ -87,7 +91,7 @@ public class ActiveTopicRepository(
         }
 
         var result = false;
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         if (azureSubscription.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);
@@ -116,7 +120,8 @@ public class ActiveTopicRepository(
     public async Task<bool> DeadLetterMessagesAsync(string topic, string subscription, ServiceBusReceivedMessage message, string source, string reason, string description,
         CancellationToken cancellationToken)
     {
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureSubscriptionResponse = await adminClient.GetSubscriptionAsync(topic, subscription, cancellationToken);
         var azureSubscription = azureSubscriptionResponse.Value;
 
@@ -130,7 +135,7 @@ public class ActiveTopicRepository(
         var result = false;
         var dlqProperties = ServiceBusHelper.GetDeadLetterProperties(source, reason, description);
 
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         if (azureSubscription.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);

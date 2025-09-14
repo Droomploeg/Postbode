@@ -20,7 +20,7 @@ public class QueueDetailPageRefreshNoSession : TestContext
     [Fact(DisplayName = "Overview Detail Page without message should have 0 on active and dead-letter tabs header")]
     public async Task QueueDetailPageOnLoadShouldHaveZeroMessageCountInQueueAndDeadletterQueue()
     {
-        Application.Setup(this, out var clientName);
+        var connection = await Application.SetupAsync(this);
 
         var queueTestContext = Services.GetRequiredService<QueueTestContext>();
         await queueTestContext.ClearAll(ServicebusEntityNames.QueueDetailRefreshNoSession);
@@ -37,7 +37,7 @@ public class QueueDetailPageRefreshNoSession : TestContext
     [Fact(DisplayName = "Overview Detail Page should on refesh update the counter on active tab")]
     public async Task QueueDetailPageOnLoadShouldHaveOneMessageCountInActiveQueueCount()
     {
-        Application.Setup(this, out var clientName);
+        var connection = await Application.SetupAsync(this);
 
         var queueTestContext = Services.GetRequiredService<QueueTestContext>();
         await queueTestContext.ClearAll(ServicebusEntityNames.QueueDetailRefreshNoSession);
@@ -58,7 +58,7 @@ public class QueueDetailPageRefreshNoSession : TestContext
     [Fact(DisplayName = "Overview Detail Page should on refesh update the counter on dead-letter tab")]
     public async Task QueueDetailPageOnLoadShouldHaveOneMessageCountInDeadLetterQueueCount()
     {
-        Application.Setup(this, out var clientName);
+        var connection = await Application.SetupAsync(this);
 
         var queueTestContext = Services.GetRequiredService<QueueTestContext>();
         await queueTestContext.ClearAll(ServicebusEntityNames.QueueDetailRefreshNoSession);

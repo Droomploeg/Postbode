@@ -13,35 +13,39 @@ public static class AzureServiceBusExtentions
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
-        var connectionList = configuration.GetSection(AzureServiceBusConnection.SectionName).Get<List<AzureServiceBusConnection>>() ?? [];
-        var clientManager = new ServiceBusManager(connectionList.Select(c => new ServiceBusInfo(c.Name, c.EnableBackgroundService)));
+        var managedIdentityClientId = configuration["ManagedIdentityClientId"];
+        var configConnectionList = configuration.GetSection(AzureServiceBusConnection.SectionName).Get<List<AzureServiceBusConnection>>() ?? [];
+        var defaultCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+        {
+            ManagedIdentityClientId = managedIdentityClientId
+        });
+
+        var connectionList = configConnectionList
+            .Select(c => new ServiceBusConnection
+            (
+                c.Name,
+                c.FullyQualifiedNamespace,
+                c.EnableBackgroundService && !string.IsNullOrWhiteSpace(managedIdentityClientId)
+            ));
+
         foreach (var connection in connectionList)
         {
             services.RegisterAzureServiceBusUserConnections(connection);
-        }
-
-        var managedIdentityClientId = configuration["ManagedIdentityClientId"];
-        if (!string.IsNullOrEmpty(managedIdentityClientId))
-        {
-            var defaultCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
-            {
-                ManagedIdentityClientId = managedIdentityClientId
-            });
-
-            foreach (var connection in connectionList.Where(c => c.EnableBackgroundService))
+            if (connection.BackgroundServiceEnabled)
             {
                 services.RegisterAzureServiceBusBackgroundConnections(connection, defaultCredential);
             }
         }
 
+        var serviceBusConnectionManager = new ServiceBusConnectionManager(connectionList);
+        services.AddSingleton(serviceBusConnectionManager);
         services.AddTransient<ApplicationInsightsLink>();
-        services.AddSingleton(clientManager);
-        services.AddScoped<IServiceBusInfoContext, DefaultServiceBusInfoContext>();
+        services.AddScoped<IServiceBusConnectionAccessor, ServiceBusConnectionAccessor>();
 
         return services;
     }
 
-    public static IServiceCollection RegisterAzureServiceBusUserConnections(this IServiceCollection services, AzureServiceBusConnection connection)
+    public static IServiceCollection RegisterAzureServiceBusUserConnections(this IServiceCollection services, ServiceBusConnection connection)
     {
 
         services.AddAzureClients(builder =>
@@ -57,7 +61,7 @@ public static class AzureServiceBusExtentions
         return services;
     }
 
-    public static IServiceCollection RegisterAzureServiceBusBackgroundConnections(this IServiceCollection services, AzureServiceBusConnection connection, DefaultAzureCredential credential)
+    public static IServiceCollection RegisterAzureServiceBusBackgroundConnections(this IServiceCollection services, ServiceBusConnection connection, DefaultAzureCredential credential)
     {
         services.AddAzureClients(builder =>
         {

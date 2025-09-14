@@ -1,4 +1,5 @@
 ﻿using Droomploeg.DreamOps.Infrastructure.Audit;
+using Droomploeg.DreamOps.WebApp.Common;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
@@ -7,8 +8,8 @@ public static class AuditLoggingExtensions
     public static IServiceCollection AddAuditLogging(this IServiceCollection services)
     {
         return services
-            .AddSingleton<IAuditContextAccessor, AuditContextAccessor>()
-            .AddSingleton<IAuditLogger, AuditLogger>();
+            .AddScoped<IAuditLogger, AuditLogger>()
+            .AddScoped<IAuditContextAccessor, AuditContextAccessor>();
     }
 
     public static IApplicationBuilder UseAuditEnrichment(this IApplicationBuilder app)

@@ -10,9 +10,10 @@ internal class Helper
 {
     private static async Task PrepareAsync(TestContext context)
     {
-        var clientContext = context.Services.GetRequiredService<IServiceBusInfoContext>();
+        var clientContext = context.Services.GetRequiredService<IServiceBusConnectionAccessor>();
+        var connection = await clientContext.GetCurrentAsync();
         var adminFactoryClient = context.Services.GetRequiredService<IAzureClientFactory<ServiceBusAdministrationClient>>();
-        var adminClient = adminFactoryClient.CreateClient(clientContext.Current.Name);
+        var adminClient = adminFactoryClient.CreateClient(connection.Name);
         var response = adminClient.GetQueuesAsync().GetAsyncEnumerator();
 
         // delete all queues

@@ -1,11 +1,10 @@
-﻿using Droomploeg.DreamOps.WebApp;
+﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Graph.Models;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
-public partial class NavigationPath : ComponentBase, IDisposable
+public partial class NavigationPath : ComponentBase
 {
     private const string OverviewIcon = "path-icon-overview";
     private const string QueuesIcon = "path-icon-queues";
@@ -17,45 +16,30 @@ public partial class NavigationPath : ComponentBase, IDisposable
     private string? _icon = OverviewIcon;
 
 
-    protected override void OnInitialized()
+    internal void UpdatePath(string url, ServiceBusConnection connection)
     {
-        _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        NavigationManager.LocationChanged += OnLocationChanged;
+        _currentUrl = url;
 
-        UpdatePath();
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        _currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
-
-        UpdatePath();
-        StateHasChanged();
-    }
-
-    private void UpdatePath()
-    {
-        var relativeUrl = $"/{_currentUrl}";
         _crumblePath.Clear();
 
-        if (relativeUrl.StartsWith(PageConstants.QueueOverviewPage) || relativeUrl.StartsWith(PageConstants.QueueDetailPage))
+        if (_currentUrl.StartsWith(PageConstants.QueueOverviewPage) || _currentUrl.StartsWith(PageConstants.QueueDetailPage))
         {
             _crumblePath.Add(new() { Key = "Home", Value = PageConstants.HomePage });
-            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.Current.Name, Value = PageConstants.OverviewPage });
+            _crumblePath.Add(new() { Key = connection.Name, Value = PageConstants.OverviewPage });
             _crumblePath.Add(new() { Key = "Queues", Value = PageConstants.QueueOverviewPage });
             _icon = QueuesIcon;
         }
-        else if (relativeUrl.StartsWith(PageConstants.SubscriptionOverviewPage) || relativeUrl.StartsWith(PageConstants.SubscriptionDetailPage))
+        else if (_currentUrl.StartsWith(PageConstants.SubscriptionOverviewPage) || _currentUrl.StartsWith(PageConstants.SubscriptionDetailPage))
         {
             _crumblePath.Add(new() { Key = "Home", Value = PageConstants.HomePage });
-            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.Current.Name, Value = PageConstants.OverviewPage });
+            _crumblePath.Add(new() { Key = connection.Name, Value = PageConstants.OverviewPage });
             _crumblePath.Add(new() { Key = "Subscriptions", Value = PageConstants.SubscriptionOverviewPage });
             _icon = TopicsIcon;
         }
-        else if (relativeUrl.StartsWith(PageConstants.OverviewPage))
+        else if (_currentUrl.StartsWith(PageConstants.OverviewPage))
         {
             _crumblePath.Add(new() { Key = "Home", Value = PageConstants.HomePage });
-            _crumblePath.Add(new() { Key = ServiceBusConnectionContext.Current.Name, Value = PageConstants.OverviewPage });
+            _crumblePath.Add(new() { Key = connection.Name, Value = PageConstants.OverviewPage });
             _icon = OverviewIcon;
         }
         else
@@ -63,11 +47,9 @@ public partial class NavigationPath : ComponentBase, IDisposable
             _crumblePath.Add(new() { Key = "Home", Value = PageConstants.HomePage });
             _icon = HomeIcon;
         }
+
+        StateHasChanged();
     }
 
-    public void Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-    }
 
 }

@@ -10,7 +10,7 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories;
 
 public class DeadLetterQueueRepository(
     TimeProvider timeProvider,
-    IServiceBusInfoContext context,
+    IServiceBusConnectionAccessor connectionAccessor,
     IAzureClientFactory<ServiceBusAdministrationClient> adminClientFactory,
     IAzureClientFactory<ServiceBusClient> clientFactory) : IDeadLetterQueueRepository<ServiceBusMessage, ServiceBusReceivedMessage>
 {
@@ -20,7 +20,8 @@ public class DeadLetterQueueRepository(
         int numberOfMessages = RepositoryConstants.DefaultNumberOfMessage,
         CancellationToken cancellationToken = default)
     {
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureQueueRuntimePropertiesResponse = await adminClient.GetQueueRuntimePropertiesAsync(queue, cancellationToken);
         var azureQueueRuntimeProperties = azureQueueRuntimePropertiesResponse.Value;
         if (fromSequenceNumber > azureQueueRuntimeProperties.DeadLetterMessageCount)
@@ -30,7 +31,7 @@ public class DeadLetterQueueRepository(
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         var messages = await receiver.PeekMessagesAsync(numberOfMessages, fromSequenceNumber, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
@@ -42,7 +43,8 @@ public class DeadLetterQueueRepository(
     {
         var timestamp = timeProvider.GetUtcNow();
 
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureQueueRuntimePropertiesResponse = await adminClient.GetQueueRuntimePropertiesAsync(queue, cancellationToken);
         var azureQueueRuntimeProperties = azureQueueRuntimePropertiesResponse.Value;
         var numberOfMessages = azureQueueRuntimeProperties.DeadLetterMessageCount;
@@ -53,7 +55,7 @@ public class DeadLetterQueueRepository(
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         var sender = client.CreateSender(queue);
         if (options.DeleteMessage)
@@ -73,7 +75,8 @@ public class DeadLetterQueueRepository(
     {
         var timestamp = timeProvider.GetUtcNow();
 
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureQueueRuntimePropertiesResponse = await adminClient.GetQueueRuntimePropertiesAsync(queue, cancellationToken);
         var azureQueueRuntimeProperties = azureQueueRuntimePropertiesResponse.Value;
         var numberOfMessages = azureQueueRuntimeProperties.DeadLetterMessageCount;
@@ -84,7 +87,7 @@ public class DeadLetterQueueRepository(
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         await receiver.CompleteMessagesAsync(timestamp, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
@@ -92,7 +95,8 @@ public class DeadLetterQueueRepository(
 
     public async Task<bool> ResubmitMessageAsync(string queue, ServiceBusReceivedMessage receivedMessage, ServiceBusMessage sendMessage, ResubmitOptions options, CancellationToken cancellationToken)
     {
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureQueueRuntimePropertiesResponse = await adminClient.GetQueueRuntimePropertiesAsync(queue, cancellationToken);
         var azureQueueRuntimeProperties = azureQueueRuntimePropertiesResponse.Value;
         var numberOfMessages = azureQueueRuntimeProperties.DeadLetterMessageCount;
@@ -103,7 +107,7 @@ public class DeadLetterQueueRepository(
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         var sender = client.CreateSender(queue);
 
@@ -119,7 +123,8 @@ public class DeadLetterQueueRepository(
         ServiceBusReceivedMessage message,
         CancellationToken cancellationToken)
     {
-        var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+        var connection = await connectionAccessor.GetCurrentAsync();
+        var adminClient = adminClientFactory.CreateClient(connection.Name);
         var azureQueueRuntimePropertiesResponse = await adminClient.GetQueueRuntimePropertiesAsync(queue, cancellationToken);
         var azureQueueRuntimeProperties = azureQueueRuntimePropertiesResponse.Value;
         var numberOfMessages = azureQueueRuntimeProperties.DeadLetterMessageCount;
@@ -131,7 +136,7 @@ public class DeadLetterQueueRepository(
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = clientFactory.CreateClient(context.Current.Name);
+        var client = clientFactory.CreateClient(connection.Name);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         var result = await receiver.SearchAndCompleteAsync(message, numberOfMessagesToReceive, cancellationToken);
 

@@ -2,7 +2,7 @@
 
     <div class="menu-scrollable" onclick="document.querySelector('.menu-toggler').click()">
         <div class="menu-item-list">
-        @if (HasClientSelected)
+        @if (HasServiceBusSelected)
         {
             <div class="menu-item overview-item">
                 <NavLink href="@PageConstants.OverviewPage">Overview</NavLink>
@@ -17,6 +17,13 @@
             <div class="menu-item topic-item">
                 <NavLink href="@PageConstants.SubscriptionOverviewPage">Subscriptions</NavLink>
             </div>
+
+            @if (HasBackgroundServiceEnabled)
+            {
+                <div class="menu-item background-item">
+                    <NavLink href="@PageConstants.JobServicePage">Background jobs</NavLink>
+                </div>
+            }
         }
     </div>
 </div>

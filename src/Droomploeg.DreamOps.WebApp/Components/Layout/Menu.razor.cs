@@ -1,13 +1,19 @@
-﻿
-using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
-using Microsoft.AspNetCore.Components;
+﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
 public partial class Menu
 {
-    [CascadingParameter]
-    public IServiceBusInfoContext ServiceBusContext { get; set; } = null!;
+    private ServiceBusConnection _connection = ServiceBusConnection.None;
 
-    private bool HasClientSelected => ServiceBusContext.Current != ServiceBusInfo.None;
+    internal void ServiceBusSelected(ServiceBusConnection connection)
+    {
+        _connection = connection;
+        StateHasChanged();
+    }
+
+    private bool HasServiceBusSelected => _connection != ServiceBusConnection.None;
+
+    private bool HasBackgroundServiceEnabled => _connection.BackgroundServiceEnabled;
+
 }

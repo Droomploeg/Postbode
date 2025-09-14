@@ -9,17 +9,18 @@ using Microsoft.Extensions.Azure;
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 {
     public class DeadLetterTopicRepository(
-    TimeProvider timeProvider,
-    IServiceBusInfoContext context,
-    IAzureClientFactory<ServiceBusAdministrationClient> adminClientFactory,
-    IAzureClientFactory<ServiceBusClient> clientFactory) : IDeadLetterTopicRepository<ServiceBusMessage, ServiceBusReceivedMessage>
+        TimeProvider timeProvider,
+        IServiceBusConnectionAccessor connectionAccessor,
+        IAzureClientFactory<ServiceBusAdministrationClient> adminClientFactory,
+        IAzureClientFactory<ServiceBusClient> clientFactory) : IDeadLetterTopicRepository<ServiceBusMessage, ServiceBusReceivedMessage>
     {
         public async Task<IEnumerable<ServiceBusReceivedMessage>> PeekMessagesAsync(string topic, string subscription,
             long fromSequenceNumber = RepositoryConstants.DefaultStartIndex,
             int numberOfMessages = RepositoryConstants.DefaultNumberOfMessage,
             CancellationToken cancellationToken = default)
         {
-            var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+            var connection = await connectionAccessor.GetCurrentAsync();
+            var adminClient = adminClientFactory.CreateClient(connection.Name);
             var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
             var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
             if (fromSequenceNumber > azureSubscriptionRuntimeProperties.DeadLetterMessageCount)
@@ -29,7 +30,7 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 
             var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
-            var client = clientFactory.CreateClient(context.Current.Name);
+            var client = clientFactory.CreateClient(connection.Name);
             var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
             var messages = await receiver.PeekMessagesAsync(numberOfMessages, fromSequenceNumber, cancellationToken);
             await receiver.CloseAsync(cancellationToken);
@@ -38,9 +39,11 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 
         public async Task ResubmitAllMessagesAsync(string topic, string subscription, ResubmitOptions options, CancellationToken cancellationToken)
         {
+            var connection = await connectionAccessor.GetCurrentAsync();
             var timestamp = timeProvider.GetUtcNow();
 
-            var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+
+            var adminClient = adminClientFactory.CreateClient(connection.Name);
             var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
             var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
             var numberOfMessages = azureSubscriptionRuntimeProperties.DeadLetterMessageCount;
@@ -51,7 +54,7 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 
             var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
-            var client = clientFactory.CreateClient(context.Current.Name);
+            var client = clientFactory.CreateClient(connection.Name);
             var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
             var sender = client.CreateSender(topic);
             if (options.DeleteMessage)
@@ -69,9 +72,10 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 
         public async Task DeleteAllMessagesAsync(string topic, string subscription, CancellationToken cancellationToken)
         {
+            var connection = await connectionAccessor.GetCurrentAsync();
             var timestamp = timeProvider.GetUtcNow();
 
-            var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+            var adminClient = adminClientFactory.CreateClient(connection.Name);
             var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
             var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
             var numberOfMessages = azureSubscriptionRuntimeProperties.DeadLetterMessageCount;
@@ -82,7 +86,7 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 
             var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
-            var client = clientFactory.CreateClient(context.Current.Name);
+            var client = clientFactory.CreateClient(connection.Name);
             var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
             await receiver.CompleteMessagesAsync(timestamp, cancellationToken);
             await receiver.CloseAsync(cancellationToken);
@@ -90,7 +94,8 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 
         public async Task<bool> ResubmitMessageAsync(string topic, string subscription, ServiceBusReceivedMessage receivedMessage, ServiceBusMessage sendMessage, ResubmitOptions options, CancellationToken cancellationToken)
         {
-            var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+            var connection = await connectionAccessor.GetCurrentAsync();
+            var adminClient = adminClientFactory.CreateClient(connection.Name);
             var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
             var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
             var numberOfMessages = azureSubscriptionRuntimeProperties.DeadLetterMessageCount;
@@ -101,7 +106,7 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 
             var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
-            var client = clientFactory.CreateClient(context.Current.Name);
+            var client = clientFactory.CreateClient(connection.Name);
             var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
             var sender = client.CreateSender(topic);
 
@@ -113,7 +118,8 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
 
         public async Task<bool> DeleteMessageAsync(string topic, string subscription, ServiceBusReceivedMessage message, CancellationToken cancellationToken)
         {
-            var adminClient = adminClientFactory.CreateClient(context.Current.Name);
+            var connection = await connectionAccessor.GetCurrentAsync();
+            var adminClient = adminClientFactory.CreateClient(connection.Name);
             var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
             var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
             var numberOfMessages = azureSubscriptionRuntimeProperties.DeadLetterMessageCount;
@@ -124,7 +130,7 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories
             }
 
             var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
-            var client = clientFactory.CreateClient(context.Current.Name);
+            var client = clientFactory.CreateClient(connection.Name);
             var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
             var result = await receiver.SearchAndCompleteAsync(message, numberOfMessagesToReceive, cancellationToken);
             await receiver.CloseAsync(cancellationToken);

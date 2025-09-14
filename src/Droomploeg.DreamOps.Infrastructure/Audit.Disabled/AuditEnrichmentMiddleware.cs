@@ -34,7 +34,7 @@ public sealed class AuditEnrichmentMiddleware
             TenantId = user.GetTenantId()
         };
 
-        auditAccessor.Current = auditContext;
+        await auditAccessor.SetCurrentAsync(auditContext);
 
         using (_logger.BeginScope(new Dictionary<string, object?>
         {

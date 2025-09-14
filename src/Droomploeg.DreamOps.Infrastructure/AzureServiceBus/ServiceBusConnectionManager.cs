@@ -1,19 +1,19 @@
 ﻿namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
 
 /// <summary>
-/// Service bus manager
+/// Service bus connection manager
 /// </summary>
 /// <param name="serviceBusInformationList"></param>
-public class ServiceBusManager(IEnumerable<ServiceBusInfo> serviceBusInformationList)
+public class ServiceBusConnectionManager(IEnumerable<ServiceBusConnection> serviceBusInformationList)
 {
 
     /// <summary>
     /// Service bus information list.
     /// </summary>
-    public ServiceBusInfo[] ServiceBusInformationList { get; } = serviceBusInformationList.ToArray() ?? [];
+    public ServiceBusConnection[] ServiceBusInformationList { get; } = serviceBusInformationList.ToArray() ?? [];
 
     /// <summary>
     /// Current service bus information.
     /// </summary>
-    public ServiceBusInfo? Current { get; set; }
+    public ServiceBusConnection? Current { get; set; }
 }

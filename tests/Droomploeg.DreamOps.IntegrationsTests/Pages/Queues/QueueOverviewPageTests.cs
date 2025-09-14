@@ -19,7 +19,7 @@ public class QueueOverviewPageTests : TestContext
     [Fact(DisplayName = "Overview Page without messages should have zero message count")]
     public async Task OverviewPagWithoutMessagesShouldHaveZerosOnMessageCount()
     {
-        Application.Setup(this, out var clientName);
+        var connection = await Application.SetupAsync(this);
 
         var queueTestContext = Services.GetRequiredService<QueueTestContext>();
         await queueTestContext.ClearAll(ServicebusEntityNames.QueueOverviewRefresh);
@@ -37,7 +37,7 @@ public class QueueOverviewPageTests : TestContext
     [Fact(DisplayName = "Overview Page with 1 active messages should have 1 active message")]
     public async Task OverviewPageWithOneActiveMessageShouldShowOneActiveMessage()
     {
-        Application.Setup(this, out var clientName);
+        var connection = await Application.SetupAsync(this);
 
         var queueTestContext = this.Services.GetRequiredService<QueueTestContext>();
         var serviceBusMessage = new ServiceBusMessage("test message")
@@ -61,7 +61,7 @@ public class QueueOverviewPageTests : TestContext
     [Fact(DisplayName = "Overview Page with 1 dead-letter messages should have 1 dead-letter message")]
     public async Task OverviewPageWithOneDeadletterMessageShouldShowOneDeadLetterMessage()
     {
-        Application.Setup(this, out var clientName);
+        var connection = await Application.SetupAsync(this);
 
         var queueTestContext = Services.GetRequiredService<QueueTestContext>();
         var serviceBusMessage = new ServiceBusMessage("test message")
@@ -86,7 +86,7 @@ public class QueueOverviewPageTests : TestContext
     [Fact(DisplayName = "Overview Page after refresh should update queues and counters")]
     public async Task OverviewPageOnActionRefreshShouldRefreshPageAndCounters()
     {
-        Application.Setup(this, out var clientName);
+        var connection = await Application.SetupAsync(this);
 
         var queueTestContext = Services.GetRequiredService<QueueTestContext>();
         await queueTestContext.ClearAll(ServicebusEntityNames.QueueOverviewRefresh);

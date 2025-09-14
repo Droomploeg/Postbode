@@ -19,10 +19,17 @@ public sealed class AuditLogger : IAuditLogger
     private static readonly EventId DataChangeId = new(7000, "Audit.DataChange");
     private static readonly EventId DomainActionId = new(7001, "Audit.DomainAction");
 
-    public void DataChange(string action, string serviceBus, string entity, string? entityId, object? changes = null)
+    public async Task DataChange(string action, string serviceBus, string entity, string? entityId, object? changes = null)
     {
         var json = changes is null ? null : JsonSerializer.Serialize(changes);
-        var current = _context.Current;
+        var current = await _context.GetCurrentAsync();
+
+        if (current is null)
+        {
+            _logger.LogWarning("Audit DataChange without context {Action} {ServiceBus}.{Entity} {EntityId} {ChangesJson}",
+                action, serviceBus, entity, entityId, json);
+            return;
+        }
 
         _logger.LogInformation(DataChangeId,
             "Audit DataChange {Action} {ServiceBus}.{Entity} {EntityId} {ChangesJson} " +
@@ -31,10 +38,17 @@ public sealed class AuditLogger : IAuditLogger
             current.CorrelationId, current.UserId, current.UserName);
     }
 
-    public void DomainAction(string action, string serviceBus, string? entity = null, string? entityId = null, object? data = null)
+    public async Task DomainAction(string action, string serviceBus, string? entity = null, string? entityId = null, object? data = null)
     {
         var json = data is null ? null : JsonSerializer.Serialize(data);
-        var current = _context.Current;
+        var current = await _context.GetCurrentAsync();
+
+        if (current == null)
+        {
+            _logger.LogWarning("Audit DomainAction without context {Action} {ServiceBus} {Entity} {EntityId} {DataJson}",
+                action, serviceBus, entity, entityId, json);
+            return;
+        }
 
         _logger.LogInformation(DomainActionId,
             "Audit DomainAction {Action} {ServiceBus} {Entity} {EntityId} {DataJson} " +

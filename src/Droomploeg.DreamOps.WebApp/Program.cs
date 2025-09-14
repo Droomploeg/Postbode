@@ -59,7 +59,7 @@ builder.Services.AddAzureServiceBus(builder.Configuration);
 builder.Services.AddApplicationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddApplicationInsightsTelemetry();
-builder.Services.AddAuditLogging();
+//builder.Services.AddAuditLogging();
 
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
@@ -78,7 +78,7 @@ app.MapRazorComponents<App>()
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseAuditEnrichment();
+//app.UseAuditEnrichment();
 
 app.MapLoginAndLogout();
 

@@ -5,16 +5,20 @@ namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
 public partial class Home
 {
-    [CascadingParameter]
-    public IServiceBusInfoContext ServiceBusContext { get; set; } = null!;
+    [Inject]
+    public IServiceBusConnectionAccessor ServiceBusContext { get; set; } = null!;
+    
+    private ServiceBusConnection _connection = ServiceBusConnection.None;
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             if (ServiceBusClientManager.ServiceBusInformationList.Length == 1)
             {
-                ServiceBusContext.Current = ServiceBusClientManager.ServiceBusInformationList[0];
+                _connection = ServiceBusClientManager.ServiceBusInformationList[0];
+
+                await ServiceBusContext.SetCurrentAsync(ServiceBusClientManager.ServiceBusInformationList[0]);
                 NavigationManager.NavigateTo(PageConstants.OverviewPage);
             }
 
@@ -23,14 +27,14 @@ public partial class Home
         base.OnAfterRender(firstRender);
     }
 
-    private bool IsSelected(ServiceBusInfo client)
+    private bool IsSelected(ServiceBusConnection client)
     {
-        return ServiceBusContext.Current == client;
+        return _connection == client;
     }
 
-    private void SetClient(ServiceBusInfo selected)
+    private async Task SetClient(ServiceBusConnection selected)
     {
-        ServiceBusContext.Current = selected;
+        await ServiceBusContext.SetCurrentAsync(selected);
         NavigationManager.NavigateTo(PageConstants.OverviewPage);
     }
 

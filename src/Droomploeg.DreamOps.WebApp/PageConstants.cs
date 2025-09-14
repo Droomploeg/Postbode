@@ -19,4 +19,6 @@ internal class PageConstants
     internal const string SubscriptionOverviewPage = "/subscription-overview";
     internal const string SubscriptionDetailPage = "/subscription";
     internal const string SubscriptionDetailPageWithParameters = "/subscription/{topicName}/{subscriptionName}";
+
+    internal const string JobServicePage = "/background-service";
 }

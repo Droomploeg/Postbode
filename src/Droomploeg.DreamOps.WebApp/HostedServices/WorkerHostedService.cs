@@ -1,13 +1,19 @@
-﻿using Droomploeg.DreamOps.WebApp.Configurations.Options;
+﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
+using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
+using Droomploeg.DreamOps.WebApp.Configurations.Options;
 
-namespace Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
+namespace Droomploeg.DreamOps.WebApp.HostedServices;
 
 /// <summary>
 /// Work items background service.
 /// </summary>
 /// <param name="workerService"><see cref="IWorkerService"/></param>
 /// <param name="logger"><see cref="ILogger"/></param>
-public class WorkerHostedService(IWorkerService workerService, IConfiguration configuration, ILogger<WorkerHostedService> logger)
+public class WorkerHostedService(
+    IWorkerService workerService, 
+    IConfiguration configuration,
+    //IServiceBusConnectionAccessor connectionAccessor,
+    ILogger<WorkerHostedService> logger)
     : BackgroundService
 {
     private readonly ILogger<WorkerHostedService> _logger = logger;
@@ -28,6 +34,9 @@ public class WorkerHostedService(IWorkerService workerService, IConfiguration co
             {
                 await workerService.ExecuteNextAsync(stoppingToken);
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+
+                //var connection = await connectionAccessor.GetCurrentAsync();
+                //Console.WriteLine(connection.Name);
             }
             catch (Exception ex)
             {

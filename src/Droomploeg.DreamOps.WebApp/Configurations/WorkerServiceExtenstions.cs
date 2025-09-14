@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.ResponseCompression;
 using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
+using Droomploeg.DreamOps.WebApp.HostedServices;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 

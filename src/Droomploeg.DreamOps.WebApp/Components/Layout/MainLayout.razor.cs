@@ -1,5 +1,7 @@
-﻿using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
+﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
+using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Forms.Models;
+using Microsoft.AspNetCore.Components.Routing;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
@@ -7,6 +9,10 @@ public partial class MainLayout : IDisposable
 {
     private readonly Dictionary<DateTimeOffset, IEnumerable<NotificationModel>> _notificationItems = [];
     private bool _notificationPanelVisible = false;
+
+    private NavigationPath? _navigationPath = default;
+    private Menu? _menu = default;
+    private IDisposable? _locationChangeHandler;
     private Timer? _timer;
 
     protected override void OnInitialized()
@@ -16,8 +22,30 @@ public partial class MainLayout : IDisposable
         base.OnInitialized();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _locationChangeHandler = NavigationManager.RegisterLocationChangingHandler(LocationChangingHandler);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async ValueTask LocationChangingHandler(LocationChangingContext arg)
+    {
+        var currentConnection = await ServiceBusConnectionAccessor.GetCurrentAsync();
+        var relativeUrl = GetRelativeUri(arg.TargetLocation);
+
+        _menu?.ServiceBusSelected(relativeUrl == "/"
+                ? ServiceBusConnection.None
+                : currentConnection);
+        _navigationPath?.UpdatePath(relativeUrl, currentConnection);
+    }
+
     public void Dispose()
     {
+        _locationChangeHandler?.Dispose();
         _timer?.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -95,5 +123,10 @@ public partial class MainLayout : IDisposable
         StateHasChanged();
     }
 
-    private readonly TimeSpan timeSpan = TimeSpan.FromMinutes(1);
+    private string GetRelativeUri(string url)
+    {
+        return url.StartsWith(NavigationManager.BaseUri, StringComparison.CurrentCultureIgnoreCase)
+            ? $"/{NavigationManager.ToBaseRelativePath(url)}"
+            : url;
+    }
 }

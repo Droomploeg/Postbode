@@ -2,6 +2,7 @@
 using Droomploeg.DreamOps.Core.Repositories;
 using Droomploeg.DreamOps.Core.Services;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Repositories;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
@@ -10,6 +11,7 @@ public static class CoreApplicationExtensions
     public static IServiceCollection AddApplicationCore(this IServiceCollection services)
     {
         return services.AddSingleton(TimeProvider.System)
+            .AddScoped<ProtectedSessionStorage>()
             .AddRepostories()
             .AddServices();
     }

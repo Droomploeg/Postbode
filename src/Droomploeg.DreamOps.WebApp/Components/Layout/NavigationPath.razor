@@ -1,5 +1,4 @@
 ﻿@inject NavigationManager NavigationManager
-@inject IServiceBusInfoContext ServiceBusConnectionContext
 
 <div class="path">
 @foreach (var keyValue in _crumblePath)
@@ -8,5 +7,5 @@
     <span class="end">&gt;</span>
 }
 </div>
-<div class="item @_icon">@_currentUrl</div>
+<div class="item @_icon">@_currentUrl?[1..]</div>
 

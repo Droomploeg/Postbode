@@ -1,6 +1,6 @@
 ﻿using AngleSharp.Dom;
 using Bunit;
-using Droomploeg.DreamOps.Core.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus;
 using Droomploeg.DreamOps.IntegrationsTests.Common;
 using Droomploeg.DreamOps.IntegrationsTests.Pages.Queues.GridColumns;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Forms;

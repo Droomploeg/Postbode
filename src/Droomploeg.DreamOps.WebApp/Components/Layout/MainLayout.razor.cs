@@ -1,24 +1,25 @@
-﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
-using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
+using Droomploeg.DreamOps.Domain.Workers.Models;
+using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Forms.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
 public partial class MainLayout : IDisposable
 {
-    private readonly Dictionary<DateTimeOffset, IEnumerable<NotificationModel>> _notificationItems = [];
+    private List<NotificationModel> _notifications = [];
     private bool _notificationPanelVisible = false;
-
-    private NavigationPath? _navigationPath = default;
-    private Menu? _menu = default;
     private IDisposable? _locationChangeHandler;
     private Timer? _timer;
 
+    private Menu? _menu = default;
+    private NavigationPath? _navigationPath = default;
+
     protected override void OnInitialized()
     {
-        _timer = new Timer(UpdateNotification, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
-
+        _timer = new Timer(TimerElapsed, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
         base.OnInitialized();
     }
 
@@ -26,7 +27,10 @@ public partial class MainLayout : IDisposable
     {
         if (firstRender)
         {
-            _locationChangeHandler = NavigationManager.RegisterLocationChangingHandler(LocationChangingHandler);
+            _locationChangeHandler = _navigationManager.RegisterLocationChangingHandler(LocationChangingHandler);
+            var relativeUrl = GetRelativeUri(_navigationManager.Uri.ToString());
+            await (_menu?.UpdateAsync(relativeUrl) ?? Task.CompletedTask);
+            await (_navigationPath?.UpdatePathAsync(relativeUrl) ?? Task.CompletedTask);
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -34,13 +38,9 @@ public partial class MainLayout : IDisposable
 
     private async ValueTask LocationChangingHandler(LocationChangingContext arg)
     {
-        var currentConnection = await ServiceBusConnectionAccessor.GetCurrentAsync();
         var relativeUrl = GetRelativeUri(arg.TargetLocation);
-
-        _menu?.ServiceBusSelected(relativeUrl == "/"
-                ? ServiceBusConnection.None
-                : currentConnection);
-        _navigationPath?.UpdatePath(relativeUrl, currentConnection);
+        await (_menu?.UpdateAsync(relativeUrl) ?? Task.CompletedTask);
+        await (_navigationPath?.UpdatePathAsync(relativeUrl) ?? Task.CompletedTask);
     }
 
     public void Dispose()
@@ -50,38 +50,23 @@ public partial class MainLayout : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public void HandleException(Exception exception)
+    public void ReturnToHome()
     {
-
+        _navigationManager.NavigateTo(PageConstants.HomePage, true);
     }
 
-    public void UpdateNotification(object? state)
+    public void TimerElapsed(object? state)
     {
-        bool stateHasChanged = false;
-        var items = Monitor.GetUpdatedWorkItems(DateTimeOffset.UtcNow.AddSeconds(-1));
-        if (items.Any())
+        var nowUtc = DateTimeOffset.UtcNow;
+
+        var stateHasChanged =
+            _notificationService.Cleanup(nowUtc.AddMinutes(-3)) ||
+            _notificationService.Update(nowUtc.AddSeconds(-1));
+
+        if (stateHasChanged)
         {
-            var ids = _notificationItems
-                .SelectMany(x => x.Value)
-                .Select(x => x.Id)
-                .ToList();
-
-            stateHasChanged = true;
-            var values = items
-                .Where(item => !ids.Contains(item.Id))
-                .Select(CastToNotificationModel);
-
-            _notificationItems.Add(DateTimeOffset.UtcNow, values);
-        }
-
-        var removeItems = _notificationItems.Where(x => x.Key < DateTimeOffset.UtcNow.AddSeconds(-3)).Select(x => x.Key).ToList();
-        if (removeItems.Count > 0)
-        {
-            stateHasChanged = true;
-            foreach (var key in removeItems)
-            {
-                _notificationItems.Remove(key);
-            }
+            _notifications = [.._notificationService.GetAll()
+                .Select(CastToNotificationModel)];
         }
 
         if (stateHasChanged)
@@ -90,21 +75,13 @@ public partial class MainLayout : IDisposable
         }
     }
 
-    private static NotificationModel CastToNotificationModel(WorkItem workItem)
-        => new(workItem.Id, $"{workItem.Entity} - {workItem.Description}", GetNotificationType(workItem.State));
-
-    private static NotificationType GetNotificationType(WorkItemState state)
-    {
-        return state switch
-        {
-            WorkItemState.Created => NotificationType.Information,
-            WorkItemState.Processing => NotificationType.Information,
-            WorkItemState.Completed => NotificationType.Completed,
-            WorkItemState.Failed => NotificationType.Failure,
-            WorkItemState.Cancelled => NotificationType.Information,
-            _ => NotificationType.Information
-        };
-    }
+    private static NotificationModel CastToNotificationModel(Notification notification)
+        => new(
+            notification.Id,
+            notification.Entity,
+            notification.Message,
+            notification.Type,
+            notification.Timestamp);
 
     private void ToggleNotification()
     {
@@ -119,14 +96,15 @@ public partial class MainLayout : IDisposable
 
     private void RemoveNotificationItem(Guid id)
     {
-        Monitor.Unregister(id);
+        // todo: notification remove
+        //Monitor.Unregister(id);
         StateHasChanged();
     }
 
     private string GetRelativeUri(string url)
     {
-        return url.StartsWith(NavigationManager.BaseUri, StringComparison.CurrentCultureIgnoreCase)
-            ? $"/{NavigationManager.ToBaseRelativePath(url)}"
+        return url.StartsWith(_navigationManager.BaseUri, StringComparison.CurrentCultureIgnoreCase)
+            ? $"/{_navigationManager.ToBaseRelativePath(url)}"
             : url;
     }
 }

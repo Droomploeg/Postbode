@@ -1,41 +1,48 @@
-﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
-using Microsoft.AspNetCore.Components;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
 public partial class Home
 {
-    [Inject]
-    public IServiceBusConnectionAccessor ServiceBusContext { get; set; } = null!;
-    
-    private ServiceBusConnection _connection = ServiceBusConnection.None;
+    private ServiceBusConnectionInfo _currentConnectionInfo = ServiceBusConnectionInfo.Undefined;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            if (ServiceBusClientManager.ServiceBusInformationList.Length == 1)
+            if (_connectionService.Connections.Length == 1)
             {
-                _connection = ServiceBusClientManager.ServiceBusInformationList[0];
+                _currentConnectionInfo = _connectionService.Connections[0];
 
-                await ServiceBusContext.SetCurrentAsync(ServiceBusClientManager.ServiceBusInformationList[0]);
-                NavigationManager.NavigateTo(PageConstants.OverviewPage);
+                await SetConnection(_currentConnectionInfo);
+                return;
             }
 
             StateHasChanged();
         }
-        base.OnAfterRender(firstRender);
+        await base.OnAfterRenderAsync(firstRender);
     }
 
-    private bool IsSelected(ServiceBusConnection client)
+    private bool IsSelected(ServiceBusConnectionInfo connectionInfo)
     {
-        return _connection == client;
+        return (_currentConnectionInfo == connectionInfo);
     }
 
-    private async Task SetClient(ServiceBusConnection selected)
+    private async Task SetClient(ServiceBusConnectionInfo? connectionInfo)
     {
-        await ServiceBusContext.SetCurrentAsync(selected);
-        NavigationManager.NavigateTo(PageConstants.OverviewPage);
+        _currentConnectionInfo = connectionInfo ?? ServiceBusConnectionInfo.Undefined;
+
+        await SetConnection(_currentConnectionInfo);
     }
 
+    private async Task SetConnection(ServiceBusConnectionInfo connectionInfo)
+    {
+        if (_currentConnectionInfo.Connection.IsNotDefined)
+        {
+            await _storage.DeleteAsync(nameof(ServiceBusConnectionInfo));
+        }
+
+        await _storage.SetAsync(nameof(ServiceBusConnectionInfo), connectionInfo);
+        _navigationManager.NavigateTo(PageConstants.OverviewPage);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Droomploeg.DreamOps.Core.Models;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.WebApp.Common;
 
@@ -61,9 +62,12 @@ public static class DefaultEntityFactory
         { 
             return new(
                 HasMessages: false,
+                TransferMessagesCount: 0,
                 ActiveMessageCount: 0,
                 DeadLetterMessageCount: 0,
+                TransferDeadLetterMessageCount: 0,
                 ScheduleMessageCount: 0,
+                TotalMessageCount: 0,
                 UpdatedAt: DateTimeOffset.MinValue);
         } 
     }

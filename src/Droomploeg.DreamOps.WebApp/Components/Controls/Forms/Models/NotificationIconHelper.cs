@@ -1,4 +1,6 @@
-﻿namespace Droomploeg.DreamOps.WebApp.Components.Controls.Forms.Models;
+﻿using Droomploeg.DreamOps.Domain.Workers.Types;
+
+namespace Droomploeg.DreamOps.WebApp.Components.Controls.Forms.Models;
 
 public static class NotificationIconHelper
 {

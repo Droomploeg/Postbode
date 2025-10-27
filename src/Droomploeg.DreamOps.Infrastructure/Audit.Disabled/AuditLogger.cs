@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
-namespace Droomploeg.DreamOps.Infrastructure.Audit;
+namespace Droomploeg.DreamOps.Infrastructure.Audit.Disabled;
 
 public sealed class AuditLogger : IAuditLogger
 {

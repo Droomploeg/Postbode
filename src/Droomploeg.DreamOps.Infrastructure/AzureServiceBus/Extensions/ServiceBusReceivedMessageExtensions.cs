@@ -30,9 +30,14 @@ internal static class ServiceBusReceivedMessageExtensions
         return sendMessage;
     }
 
-    internal static bool Compare(this ServiceBusReceivedMessage? message, ServiceBusReceivedMessage messageToCompare)
+    internal static bool Compare(this ServiceBusReceivedMessage? message, ServiceBusReceivedMessage? messageToCompare)
     { 
-        if (message == null)
+        if (message == null && messageToCompare == null)
+        {
+            return true;
+        }
+
+        if (message == null || messageToCompare == null)
         {
             return false;
         }

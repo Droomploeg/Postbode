@@ -1,4 +1,6 @@
-﻿<form method="Post" @onsubmit="async () => await PeekAsync()" @formname="@PageConstants.QueueDetailPageWithParameters">
+﻿@using Droomploeg.DreamOps.Domain.ServiceBus
+@using Droomploeg.DreamOps.Domain.ServiceBus.Types
+<form method="Post" @onsubmit="async () => await PeekAsync()" @formname="@PageConstants.QueueDetailPageWithParameters">
     <AntiforgeryToken />
 
     <TabControl TabChanged="ChangeMessageSourceAsync">

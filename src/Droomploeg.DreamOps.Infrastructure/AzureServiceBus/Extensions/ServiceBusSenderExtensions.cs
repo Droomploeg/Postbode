@@ -4,7 +4,7 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
 
 internal static class ServiceBusSenderExtensions
 {
-    internal static async Task SendBulkMessageAsync(this ServiceBusSender sender, IEnumerable<ServiceBusMessage> messages,
+    internal static async Task SendBulkMessageAsync(this ServiceBusSender sender, ICollection<ServiceBusMessage> messages,
         CancellationToken cancellationToken = default)
     {
         var messsageArray = messages.ToArray();

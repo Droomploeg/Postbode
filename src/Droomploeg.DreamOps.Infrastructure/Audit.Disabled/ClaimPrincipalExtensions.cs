@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Droomploeg.DreamOps.Infrastructure.Audit;
+namespace Droomploeg.DreamOps.Infrastructure.Audit.Disabled;
 
 public static class ClaimPrincipalExtensions
 {

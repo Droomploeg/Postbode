@@ -1,4 +1,4 @@
-﻿namespace Droomploeg.DreamOps.Core;
+﻿namespace Droomploeg.DreamOps.Domain;
 
 /// <summary>
 /// Repository constants.

@@ -1,6 +1,4 @@
-﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
-using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
-using Droomploeg.DreamOps.WebApp.Configurations.Options;
+﻿using Droomploeg.DreamOps.Application.Workers.Services;
 
 namespace Droomploeg.DreamOps.WebApp.HostedServices;
 
@@ -9,47 +7,35 @@ namespace Droomploeg.DreamOps.WebApp.HostedServices;
 /// </summary>
 /// <param name="workerService"><see cref="IWorkerService"/></param>
 /// <param name="logger"><see cref="ILogger"/></param>
-public class WorkerHostedService(
-    IWorkerService workerService, 
-    IConfiguration configuration,
-    //IServiceBusConnectionAccessor connectionAccessor,
-    ILogger<WorkerHostedService> logger)
+public class WorkerHostedService(IWorkerService workerService, ILogger<WorkerHostedService> logger)
     : BackgroundService
 {
+    private readonly IWorkerService _workerService = workerService;
     private readonly ILogger<WorkerHostedService> _logger = logger;
 
     /// <inheritdoc cref="BackgroundService" />
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        var connectionList = configuration.GetSection(AzureServiceBusConnection.SectionName).Get<List<AzureServiceBusConnection>>() ?? [];
-        if (!connectionList.Any())
-        {
-            _logger.LogInformation("WorkerHostedService not started, no servicebus connections found with background service enabled");
-            return;
-        }
-
-        while (!stoppingToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                await workerService.ExecuteNextAsync(stoppingToken);
-                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
-
-                //var connection = await connectionAccessor.GetCurrentAsync();
-                //Console.WriteLine(connection.Name);
+                await _workerService.ExecuteNextAsync(cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
             catch (Exception ex)
             {
+                // monitor service update to failed
                 _logger.LogError(ex, "Error occurred executing work item.");
             }
         }
     }
 
     /// <inheritdoc cref="BackgroundService" />
-    public override async Task StopAsync(CancellationToken stoppingToken)
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Queued Hosted Service is stopping.");
 
-        await base.StopAsync(stoppingToken);
+        await base.StopAsync(cancellationToken);
     }
 }

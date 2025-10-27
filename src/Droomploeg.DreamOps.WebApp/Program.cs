@@ -1,9 +1,9 @@
-﻿using Droomploeg.DreamOps.WebApp.Components;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+using Droomploeg.DreamOps.WebApp.Components;
 using Droomploeg.DreamOps.WebApp.Configurations;
 using Droomploeg.DreamOps.WebApp.Security;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server;
-using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -50,16 +50,21 @@ var clientSecret = configuration["AzureEntra:ClientSecret"];
 //    throw;
 //}
 
-builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration, "AzureEntra")
-    .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddInMemoryTokenCaches();
-builder.Services.AddWorkerHostedServices();
-builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
-builder.Services.AddAzureServiceBus(builder.Configuration);
-builder.Services.AddApplicationCore();
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddApplicationInsightsTelemetry();
-//builder.Services.AddAuditLogging();
+builder.Services
+    .AddDistributedMemoryCache()
+    .AddSession()
+    .AddSecurityServices(builder.Configuration)
+    .AddAzureServiceBus(builder.Configuration)
+    .AddWorkerHostedServices()
+    .AddApplicationCore()
+    .AddCommandCore()
+    .AddApplicationInsightsTelemetry();
+
+builder.Host.UseDefaultServiceProvider(o =>
+{
+    o.ValidateOnBuild = true;
+    o.ValidateScopes = true;
+});
 
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
@@ -71,7 +76,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
-
+app.UseSession();
+app.MapPost("/connection", (HttpContext ctx, [FromBody] string clientName) =>
+{
+    ctx.Session.SetString(nameof(ServiceBusConnectionInfo), clientName);
+    return Results.Ok();
+});
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

@@ -1,19 +1,29 @@
-﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
 public partial class Menu
 {
-    private ServiceBusConnection _connection = ServiceBusConnection.None;
+    private string _path = string.Empty;
+    private bool _connectionSelected = false;
+    private bool _backgroundServiceEnabled = false;
 
-    internal void ServiceBusSelected(ServiceBusConnection connection)
+    internal async Task UpdateAsync(string path)
     {
-        _connection = connection;
+        _path = path;
+
+        var result = await _storage.GetAsync<ServiceBusConnectionInfo>(nameof(ServiceBusConnectionInfo));
+        if (!result.Success || result.Value is null || result.Value.Connection == ServiceBusConnection.Undefined)
+        {
+            _connectionSelected = false;
+            _backgroundServiceEnabled = false;
+            StateHasChanged();
+            return;
+        }
+
+        _connectionSelected = !"/".Equals(_path);
+        _backgroundServiceEnabled = result.Value!.HasServiceAccount;
         StateHasChanged();
     }
-
-    private bool HasServiceBusSelected => _connection != ServiceBusConnection.None;
-
-    private bool HasBackgroundServiceEnabled => _connection.BackgroundServiceEnabled;
-
 }

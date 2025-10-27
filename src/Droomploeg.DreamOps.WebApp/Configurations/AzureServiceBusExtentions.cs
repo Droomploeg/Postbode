@@ -1,5 +1,8 @@
 ﻿using Azure.Identity;
-using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
+using Droomploeg.DreamOps.Application.ServiceBus.Services;
+using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
+using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Services;
 using Droomploeg.DreamOps.WebApp.Common;
 using Droomploeg.DreamOps.WebApp.Configurations.Options;
 using Droomploeg.DreamOps.WebApp.Security;
@@ -7,9 +10,9 @@ using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
-public static class AzureServiceBusExtentions
+internal static class AzureServiceBusExtentions
 {
-    public static IServiceCollection AddAzureServiceBus(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddAzureServiceBus(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
@@ -20,59 +23,67 @@ public static class AzureServiceBusExtentions
             ManagedIdentityClientId = managedIdentityClientId
         });
 
-        var connectionList = configConnectionList
-            .Select(c => new ServiceBusConnection
-            (
-                c.Name,
-                c.FullyQualifiedNamespace,
-                c.EnableBackgroundService && !string.IsNullOrWhiteSpace(managedIdentityClientId)
-            ));
-
-        foreach (var connection in connectionList)
+        foreach (var connection in configConnectionList)
         {
-            services.RegisterAzureServiceBusUserConnections(connection);
-            if (connection.BackgroundServiceEnabled)
+            services.RegisterAzureUserAccountConnections(connection);
+            if (IsServiceAccountEnabled(managedIdentityClientId, connection.EnableBackgroundService))
             {
-                services.RegisterAzureServiceBusBackgroundConnections(connection, defaultCredential);
+                services.RegisterAzureServiceAccountConnections(connection, defaultCredential);
             }
         }
 
-        var serviceBusConnectionManager = new ServiceBusConnectionManager(connectionList);
-        services.AddSingleton(serviceBusConnectionManager);
-        services.AddTransient<ApplicationInsightsLink>();
-        services.AddScoped<IServiceBusConnectionAccessor, ServiceBusConnectionAccessor>();
+        var connectionList = configConnectionList
+            .Select(c => new ServiceBusConnectionInfo
+            (
+                new ServiceBusConnection(c.Name),
+                IsServiceAccountEnabled(managedIdentityClientId, c.EnableBackgroundService)
+                    ? [ServiceBusConnectionType.UserAccount, ServiceBusConnectionType.ServiceAccount]
+                    : [ServiceBusConnectionType.UserAccount])
+            );
+
+        var connectionService = new ConnectionService(connectionList);
+        services
+            .AddSingleton<IConnectionService>(connectionService)
+            .AddTransient<ApplicationInsightsLink>();
 
         return services;
     }
 
-    public static IServiceCollection RegisterAzureServiceBusUserConnections(this IServiceCollection services, ServiceBusConnection connection)
+    private static IServiceCollection RegisterAzureUserAccountConnections(this IServiceCollection services, AzureServiceBusConnection connection)
     {
-
         services.AddAzureClients(builder =>
         {
+            var name = ServiceBusConnection.ClientName(connection.Name, ServiceBusConnectionType.UserAccount);
+
             builder.AddServiceBusClientWithNamespace(connection.FullyQualifiedNamespace)
-                .WithName(connection.Name)
+                .WithName(name)
                 .WithCredential(sp => new OnBehalfOfTokenCredential(sp, [OnBehalfOfTokenCredential.ServiceBusScope]));
             builder.AddServiceBusAdministrationClientWithNamespace(connection.FullyQualifiedNamespace)
-                .WithName(connection.Name)
+                .WithName(name)
                 .WithCredential(sp => new OnBehalfOfTokenCredential(sp, [OnBehalfOfTokenCredential.ServiceBusScope]));
         });
 
         return services;
     }
 
-    public static IServiceCollection RegisterAzureServiceBusBackgroundConnections(this IServiceCollection services, ServiceBusConnection connection, DefaultAzureCredential credential)
+    private static IServiceCollection RegisterAzureServiceAccountConnections(this IServiceCollection services, AzureServiceBusConnection connection, DefaultAzureCredential credential)
     {
         services.AddAzureClients(builder =>
         {
+            var name = ServiceBusConnection.ClientName(connection.Name, ServiceBusConnectionType.ServiceAccount);
+
             builder.AddServiceBusClientWithNamespace(connection.FullyQualifiedNamespace)
-                .WithName($"{connection.Name}-background")
+                .WithName(name)
                 .WithCredential(credential);
             builder.AddServiceBusAdministrationClientWithNamespace(connection.FullyQualifiedNamespace)
-                .WithName($"{connection.Name}-background")
+                .WithName(name)
                 .WithCredential(credential);
         });
 
         return services;
     }
+
+    private static bool IsServiceAccountEnabled(string? managedIdentityClientId, bool enableBackgroundService)
+        => !string.IsNullOrWhiteSpace(managedIdentityClientId) && enableBackgroundService;
+
 }

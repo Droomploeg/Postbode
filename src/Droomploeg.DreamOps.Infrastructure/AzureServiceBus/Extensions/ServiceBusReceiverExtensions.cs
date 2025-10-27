@@ -1,5 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Droomploeg.DreamOps.Core.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
 
@@ -235,7 +235,7 @@ internal static class ServiceBusReceiverExtensions
     //}
 
     internal static Task UnlockMessagesAsync(this ServiceBusReceiver receiver,
-        IEnumerable<ServiceBusReceivedMessage> messages, CancellationToken cancellationToken = default)
+        ICollection<ServiceBusReceivedMessage> messages, CancellationToken cancellationToken = default)
     {
         var tasks = messages.Select(m => receiver.AbandonMessageAsync(m, cancellationToken: cancellationToken)).ToList();
         return Task.WhenAll(tasks);

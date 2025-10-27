@@ -1,4 +1,4 @@
-﻿using Droomploeg.DreamOps.Core.Models;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Security;
 using Microsoft.Identity.Web;
 
@@ -30,8 +30,8 @@ public partial class QueueOverviewPage
     {
         try
         {
-            var entities = await ServiceBusService.GetAllQueuesAsync();
-            _queues = new List<Queue>(entities);
+            var entities = await _runtimeInfoService.GetAllQueuesAsync();
+            _queues = [.. entities];
             _authorizationState = AuthorizationState.Authorized;
         }
         catch (UnauthorizedAccessException)

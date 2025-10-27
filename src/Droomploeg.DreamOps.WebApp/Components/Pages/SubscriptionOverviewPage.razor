@@ -1,6 +1,9 @@
-﻿@attribute [Route(PageConstants.SubscriptionOverviewPage)]
+﻿@using Droomploeg.DreamOps.Application.ServiceBus.Services
+@using Droomploeg.DreamOps.Domain.ServiceBus
+@using Droomploeg.DreamOps.Domain.ServiceBus.Models
+@attribute [Route(PageConstants.SubscriptionOverviewPage)]
 
-@inject ServiceBusService ServiceBusService;
+@inject IRuntimeInfoService _runtimeInfoService;
 
 <AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
     <div class="grid-container">

@@ -1,4 +1,4 @@
-﻿using Droomploeg.DreamOps.Core.Models;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Security;
 using Microsoft.Identity.Web;
 
@@ -25,7 +25,7 @@ public partial class OverviewPage
 
             try
             {
-                var entities = await ServiceBusService.GetAllAsync<IEntity>();
+                var entities = await _runtimeInfoService.GetAllAsync<IEntity>();
 
                 _queues.AddRange(entities.OfType<Queue>());
                 _topics.AddRange(entities.OfType<Topic>());

@@ -1,3 +1,5 @@
-﻿namespace Droomploeg.DreamOps.WebApp.Components.Controls.Forms.Models;
+﻿using Droomploeg.DreamOps.Domain.Workers.Types;
 
-public record NotificationModel(Guid Id, string Message, NotificationType Type);
+namespace Droomploeg.DreamOps.WebApp.Components.Controls.Forms.Models;
+
+public record NotificationModel(Guid Id, string Entity, string Message, NotificationType Type, DateTimeOffset Timestamp);

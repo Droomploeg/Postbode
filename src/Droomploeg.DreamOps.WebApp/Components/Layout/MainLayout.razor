@@ -1,11 +1,9 @@
-﻿@using Microsoft.Identity.Client
-@using Microsoft.Identity.Web
-@inherits LayoutComponentBase
-@inject NavigationManager NavigationManager
-@inject IWorkerMonitor Monitor
-@inject IServiceBusConnectionAccessor ServiceBusConnectionAccessor
+﻿@inherits LayoutComponentBase
 
-<NotificationContainerControl Items="@_notificationItems" />
+@inject NavigationManager _navigationManager
+@inject INotificationService _notificationService
+
+<NotificationContainerControl Items="@_notifications" />
 
 <page>
     <top>
@@ -18,58 +16,75 @@
         <login><LoginControl /></login>
     </top>
 
-    <middle>
-        <AuthorizeView>
-            <path>
-                <NavigationPath @ref="_navigationPath" />
-                <div>
-                    <div class="menu-container">
-                        <Menu @ref="_menu"/>
-                    </div>
-                    <div class="content-container">
-                        @Body
-                    </div>
-                </div>
-            </path>
-
-            <OffCanvasControl Visible="@_notificationPanelVisible" Title="Notifications" OnClose="(value) => CloseNotificationPanel(value)">
-                <div class="notification-container">
-                    @if (Monitor.GetWorkItems().Any())
-                    {
-                        @foreach (var item in Monitor.GetWorkItems())
-                        {
-                            <div class="notification-item">
-                                <div class="icon @NotificationIconHelper.GetIcon(GetNotificationType(item.State))" />
-                                <div>
-                                    <div class="title">@item.Entity</div>
-                                    <div class="message">@item.Description</div>
-                                    <div class="datetime">@item.Timestamp.GetTimeAgo()</div>
-                                </div>
-                                @if (IWorkerMonitor.FinishedStates.Contains(item.State))
-                                {
-                                    <close-button @onclick="() => RemoveNotificationItem(item.Id)">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" role="img" width="25" height="25">
-                                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                        </svg>
-                                    </close-button>
-                                }
+    <ErrorBoundary>
+        <ChildContent>
+            <middle>
+                <AuthorizeView>
+                    <path>
+                        <NavigationPath @ref="_navigationPath" />
+                        <div>
+                            <div class="menu-container">
+                                <Menu @ref="_menu" />
                             </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="notification-item">
-                            <div class="icon info" />
-                            <div>
-                                <div class="title">No notifications</div>
-                                <div class="message">There are no notifications</div>
+                            <div class="content-container">
+                                @Body
                             </div>
                         </div>
-                    }
+                    </path>
+
+                    <OffCanvasControl Visible="@_notificationPanelVisible" Title="Notifications" OnClose="(value) => CloseNotificationPanel(value)">
+                        <div class="notification-container">
+                            @if (_notifications.Count > 0)
+                            {
+                                @foreach (var notification in _notifications)
+                                {
+                                    <div class="notification-item">
+                                        <div class="icon @NotificationIconHelper.GetIcon(notification.Type)" />
+                                        <div>
+                                            <div class="title">@notification.Entity</div>
+                                            <div class="message">@notification.Message</div>
+                                            <div class="datetime">@notification.Timestamp.GetTimeAgo()</div>
+                                        </div>
+                                        @if (true)
+                                        {
+                                            <close-button @onclick="() => RemoveNotificationItem(notification.Id)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" role="img" width="25" height="25">
+                                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                </svg>
+                                            </close-button>
+                                        }
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="notification-item">
+                                    <div class="icon info" />
+                                    <div>
+                                        <div class="title">No notifications</div>
+                                        <div class="message">There are no notifications</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </OffCanvasControl>
+                </AuthorizeView>
+            </middle>
+        </ChildContent>
+        <ErrorContent>
+            <middle>
+                <div class="content-container">
+                    <content>
+                        <h1>Sorry, there was an error.</h1>
+                        <p>We are unable to display the requested page.</p>
+                        <p>
+                            <error-button onclick="@ReturnToHome">Continue</error-button>
+                        </p>
+                    </content>
                 </div>
-            </OffCanvasControl>
-        </AuthorizeView>
-    </middle>
+            </middle>
+        </ErrorContent>
+    </ErrorBoundary>
 </page>
 
 <div id="blazor-error-ui">

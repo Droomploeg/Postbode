@@ -1,6 +1,6 @@
 ﻿@attribute [Route(PageConstants.QueueOverviewPage)]
 
-@inject ServiceBusService ServiceBusService;
+@inject IRuntimeInfoService _runtimeInfoService;
 
 <AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
     <div class="grid-container">
@@ -11,8 +11,8 @@
         <GridControl Items="@_queues" TItem="Queue">
             <GridHeaderItemControl TItem="Queue" CssClass="state">State</GridHeaderItemControl>
             <GridHeaderItemControl TItem="Queue" CssClass="name">Name</GridHeaderItemControl>
-            <GridHeaderItemControl TItem="Queue" CssClass="activeMessages">Active messages</GridHeaderItemControl>
             <GridHeaderItemControl TItem="Queue" CssClass="scheduledMessages">Scheduled messages</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="Queue" CssClass="activeMessages">active messages</GridHeaderItemControl>
             <GridHeaderItemControl TItem="Queue" CssClass="deadLetterMessages">Dead-letter messages</GridHeaderItemControl>
 
             <GridValueItemControl TItem="Queue">
@@ -23,8 +23,8 @@
             <GridValueItemControl TItem="Queue">
                 <NavLink href="@GetLink(context)">@context.Name</NavLink>
             </GridValueItemControl>
-            <GridValueItemControl TItem="Queue">@context.RuntimeInfo.ActiveMessageCount</GridValueItemControl>
             <GridValueItemControl TItem="Queue">@context.RuntimeInfo.ScheduleMessageCount</GridValueItemControl>
+            <GridValueItemControl TItem="Queue">@context.RuntimeInfo.ActiveMessageCount</GridValueItemControl>
             <GridValueItemControl TItem="Queue">@context.RuntimeInfo.DeadLetterMessageCount</GridValueItemControl>
         </GridControl>
     </div>

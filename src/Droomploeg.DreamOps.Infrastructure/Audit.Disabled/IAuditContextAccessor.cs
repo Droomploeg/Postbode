@@ -1,4 +1,4 @@
-﻿namespace Droomploeg.DreamOps.Infrastructure.Audit;
+﻿namespace Droomploeg.DreamOps.Infrastructure.Audit.Disabled;
 
 /// <summary>
 /// Interface of accessor for <see cref="IAuditContext"/>.

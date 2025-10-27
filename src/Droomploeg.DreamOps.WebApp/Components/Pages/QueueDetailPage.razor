@@ -1,11 +1,9 @@
 ﻿@attribute [Route(PageConstants.QueueDetailPageWithParameters)]
 
-@inject ServiceBusService ServiceBusService;
-@inject ActiveQueueService<ServiceBusMessage, ServiceBusReceivedMessage> ActiveEntityService;
-@inject DeadLetterQueueService<ServiceBusMessage, ServiceBusReceivedMessage> DeadLetterEntityService;
-@inject IWorkerService WorkerService;
+@inject IRuntimeInfoService _runtimeInfoService;
+@inject IQueueService<ServiceBusMessage, ServiceBusReceivedMessage> _userEntityService;
 
-<AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataReceiver]">
+<AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
     <entity-details>
         <buttonbar>
             <button class="send-button" @onclick="() => ShowOverlayOrDialog(SendMessageOverlay)">New Message</button>

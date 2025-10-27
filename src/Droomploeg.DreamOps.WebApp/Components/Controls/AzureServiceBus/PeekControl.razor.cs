@@ -1,5 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Droomploeg.DreamOps.Core.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.WebApp.Components.Controls.AzureServiceBus.Models;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Forms;
 using Microsoft.AspNetCore.Components;
@@ -12,7 +12,7 @@ public partial class PeekControl : ComponentBase
 
     [Parameter] public bool SessionEnabled { get; set; } = false;
 
-    [Parameter] public IEnumerable<ServiceBusReceivedMessage>? Messages { get; set; }
+    [Parameter] public ICollection<ServiceBusReceivedMessage>? Messages { get; set; }
 
     [Parameter] public long ActiveMessageCount { get; set; }
 

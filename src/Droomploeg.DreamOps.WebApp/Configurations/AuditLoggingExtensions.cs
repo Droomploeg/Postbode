@@ -1,17 +1,17 @@
-﻿using Droomploeg.DreamOps.Infrastructure.Audit;
+﻿using Droomploeg.DreamOps.Infrastructure.Audit.Disabled;
 using Droomploeg.DreamOps.WebApp.Common;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
-public static class AuditLoggingExtensions
+internal static class AuditLoggingExtensions
 {
-    public static IServiceCollection AddAuditLogging(this IServiceCollection services)
+    internal static IServiceCollection AddAuditLogging(this IServiceCollection services)
     {
         return services
             .AddScoped<IAuditLogger, AuditLogger>()
             .AddScoped<IAuditContextAccessor, AuditContextAccessor>();
     }
 
-    public static IApplicationBuilder UseAuditEnrichment(this IApplicationBuilder app)
+    internal static IApplicationBuilder UseAuditEnrichment(this IApplicationBuilder app)
         => app.UseMiddleware<AuditEnrichmentMiddleware>();
 }

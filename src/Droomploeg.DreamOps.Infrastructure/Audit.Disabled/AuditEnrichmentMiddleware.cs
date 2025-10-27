@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 
-namespace Droomploeg.DreamOps.Infrastructure.Audit;
+namespace Droomploeg.DreamOps.Infrastructure.Audit.Disabled;
 
 public sealed class AuditEnrichmentMiddleware
 {

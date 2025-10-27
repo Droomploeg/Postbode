@@ -1,4 +1,4 @@
-﻿using Droomploeg.DreamOps.Core.Models;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Security;
 using Microsoft.Identity.Web;
 
@@ -30,8 +30,8 @@ public partial class SubscriptionOverviewPage
     {
         try
         {
-            var entities = await ServiceBusService.GetAllTopicsAsync();
-            _subscriptions = new List<Subscription>(entities.SelectMany(t => t.Subscriptions));
+            var entities = await _runtimeInfoService.GetAllTopicsAsync();
+            _subscriptions = [.. entities.SelectMany(t => t.Subscriptions)];
             _authorizationState = AuthorizationState.Authorized;
         }
         catch (UnauthorizedAccessException)

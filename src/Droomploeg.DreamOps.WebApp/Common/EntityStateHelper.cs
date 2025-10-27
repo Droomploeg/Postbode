@@ -1,4 +1,4 @@
-﻿using Droomploeg.DreamOps.Core.Models;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.WebApp.Common;
 

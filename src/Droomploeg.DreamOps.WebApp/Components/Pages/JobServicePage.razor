@@ -1,9 +1,19 @@
-﻿@attribute [Route(PageConstants.JobServicePage)]
-Backgroud service page
+﻿@using Droomploeg.DreamOps.Domain.Workers.Models
+@attribute [Route(PageConstants.JobServicePage)]
 
-@code{
-    // TODO: Implement background job service page
-    // TODO: Queue/Subscription background service action disable when not enabled
-    // TODO: Background service running with managed identity
-    // TODO: Audit log for all actions incl. background job actions
-}
+@inject IWorkerService _workerService;
+
+
+<GridControl Items="@_items" TItem="WorkerItem">
+    <GridHeaderItemControl TItem="WorkerItem">Id</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="WorkerItem">Entity</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="WorkerItem">Desciption</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="WorkerItem">State</GridHeaderItemControl>
+    <GridHeaderItemControl TItem="WorkerItem">Updated timestamp</GridHeaderItemControl>
+
+    <GridValueItemControl TItem="WorkerItem">@context.Id</GridValueItemControl>
+    <GridValueItemControl TItem="WorkerItem">@context.Entity</GridValueItemControl>
+    <GridValueItemControl TItem="WorkerItem">@context.Description</GridValueItemControl>
+    <GridValueItemControl TItem="WorkerItem">@context.State</GridValueItemControl>
+    <GridValueItemControl TItem="WorkerItem">@context.UpdatedTimestamp</GridValueItemControl>
+</GridControl>

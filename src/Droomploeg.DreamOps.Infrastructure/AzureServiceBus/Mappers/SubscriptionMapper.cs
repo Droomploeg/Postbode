@@ -1,21 +1,21 @@
-﻿using ServiceBus = Azure.Messaging.ServiceBus.Administration;
-using Model = Droomploeg.DreamOps.Core.Models;
-using Droomploeg.DreamOps.Core.Models;
+﻿using Azure.Messaging.ServiceBus.Administration;
+using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+using Model = Droomploeg.DreamOps.Domain.ServiceBus;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Mappers;
 
 internal static class SubscriptionMapper
 {
-    internal static Model.Subscription Map(
-        ServiceBus.SubscriptionProperties subscriptionProperties,
-        ServiceBus.SubscriptionRuntimeProperties subscriptionRuntimeProperties,
-        ServiceBus.TopicRuntimeProperties topicRuntimeProperties)
+    internal static Subscription Map(
+        SubscriptionProperties subscriptionProperties,
+        SubscriptionRuntimeProperties subscriptionRuntimeProperties,
+        TopicRuntimeProperties topicRuntimeProperties)
     {
         return new(
                 Name: subscriptionProperties.SubscriptionName,
                 TopicName: subscriptionProperties.TopicName,
                 RuntimeState: EntityRuntimeStateMapper.Map(subscriptionProperties.Status),
-                HealthState: EntityHealthStateMapper.Map(0, subscriptionRuntimeProperties.ActiveMessageCount, subscriptionRuntimeProperties.DeadLetterMessageCount),
+                HealthState: EntityHealthStateMapper.Map(subscriptionRuntimeProperties.ActiveMessageCount, 0, subscriptionRuntimeProperties.TransferMessageCount, subscriptionRuntimeProperties.DeadLetterMessageCount),
                 EnableBatchedOperations: subscriptionProperties.EnableBatchedOperations,
                 EnableDeadLetteringOnFilterEvaluationExceptions: subscriptionProperties.EnableDeadLetteringOnFilterEvaluationExceptions,
                 RequiresSession: subscriptionProperties.RequiresSession,

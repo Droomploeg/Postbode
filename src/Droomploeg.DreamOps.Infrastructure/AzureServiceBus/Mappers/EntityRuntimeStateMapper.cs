@@ -1,27 +1,27 @@
-﻿using ServiceBus = Azure.Messaging.ServiceBus.Administration;
-using Model = Droomploeg.DreamOps.Core.Models;
+﻿using Azure.Messaging.ServiceBus.Administration;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Mappers;
 
 internal static class EntityRuntimeStateMapper
 {
-    internal static Model.EntityRuntimeState Map(ServiceBus.EntityStatus sbStatus)
+    internal static EntityRuntimeState Map(EntityStatus sbStatus)
     {
-        if (sbStatus == ServiceBus.EntityStatus.Active)
+        if (sbStatus == EntityStatus.Active)
         {
-            return Model.EntityRuntimeState.Active;
+            return EntityRuntimeState.Active;
         }
-        if (sbStatus == ServiceBus.EntityStatus.Disabled)
+        if (sbStatus == EntityStatus.Disabled)
         {
-            return Model.EntityRuntimeState.Disabled;
+            return EntityRuntimeState.Disabled;
         }
-        if (sbStatus == ServiceBus.EntityStatus.SendDisabled)
+        if (sbStatus == EntityStatus.SendDisabled)
         {
-            return Model.EntityRuntimeState.SendDisabled;
+            return EntityRuntimeState.SendDisabled;
         }
-        if (sbStatus == ServiceBus.EntityStatus.ReceiveDisabled)
+        if (sbStatus == EntityStatus.ReceiveDisabled)
         {
-            return Model.EntityRuntimeState.ReceiveDisabled;
+            return EntityRuntimeState.ReceiveDisabled;
         }
         throw new ArgumentOutOfRangeException(nameof(sbStatus), sbStatus, null);
     }

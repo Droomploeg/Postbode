@@ -1,0 +1,47 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/bicep/">
+    <File Path="bicep/main.bicep" />
+  </Folder>
+  <Folder Name="/Solution Items/bicep/applicationInsights/">
+    <File Path="bicep/applicationInsights/applicationInsight.bicep" />
+  </Folder>
+  <Folder Name="/Solution Items/bicep/appServices/">
+    <File Path="bicep/appServices/appServicePlan.bicep" />
+    <File Path="bicep/appServices/appSettings.bicep" />
+    <File Path="bicep/appServices/webApp.bicep" />
+  </Folder>
+  <Folder Name="/Solution Items/bicep/keyvault/">
+    <File Path="bicep/keyvault/accessPolicies.bicep" />
+    <File Path="bicep/keyvault/assignRole.bicep" />
+    <File Path="bicep/keyvault/keyvault.bicep" />
+  </Folder>
+  <Folder Name="/Solution Items/bicep/managedIdentities/">
+    <File Path="bicep/managedIdentities/userAssignedIdentities.bicep" />
+  </Folder>
+  <Folder Name="/Solution Items/bicep/servicebus/">
+    <File Path="bicep/servicebus/assignRole.bicep" />
+    <File Path="bicep/servicebus/serviceBus.bicep" />
+  </Folder>
+  <Folder Name="/Solution Items/docs/" />
+  <Folder Name="/Solution Items/pipelines/">
+    <File Path="pipelines/azure-pipelines.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/pipelines/azure/">
+    <File Path="pipelines/azure/azure-keyvault-ip-restricties.sh" />
+    <File Path="pipelines/azure/azure-keyvault-secret.sh" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Droomploeg.DreamOps.Application/Droomploeg.DreamOps.Application.csproj" />
+    <Project Path="src/Droomploeg.DreamOps.Core/Droomploeg.DreamOps.Domain.csproj" />
+    <Project Path="src/Droomploeg.DreamOps.Infrastructure/Droomploeg.DreamOps.Infrastructure.csproj" />
+    <Project Path="src/Droomploeg.DreamOps.WebApp/Droomploeg.DreamOps.WebApp.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Droomploeg.DreamOps.IntegrationsTests/Droomploeg.DreamOps.IntegrationsTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,13 +1,12 @@
 ﻿using System.Collections.Concurrent;
+using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using Droomploeg.DreamOps.Application;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 using Droomploeg.DreamOps.Domain.ServiceBus.Models;
-using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Mappers;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
-using Microsoft.Extensions.Azure;
+using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Mappers;
 using Droomploeg.DreamOps.Infrastructure.Contexts;
-using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Adapters;
 

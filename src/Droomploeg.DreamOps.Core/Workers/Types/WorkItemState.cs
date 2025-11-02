@@ -1,5 +1,8 @@
 ﻿namespace Droomploeg.DreamOps.Domain.Workers.Types;
 
+/// <summary>
+/// Work item state.
+/// </summary>
 public enum WorkItemState
 {
     /// <summary>

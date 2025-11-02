@@ -64,16 +64,16 @@ public class WorkerItem
     /// <summary>
     /// Cancel the work item.
     /// </summary>
-    public void Cancel()
+    public async Task CancelAsync(string userName)
     {
-        _actions.Add(new WorkerAction("anonymous", WorkItemAction.Cancel));
-        _cancellationTokenSource.Cancel();
+        _actions.Add(new WorkerAction(userName, WorkItemAction.Cancel));
+        await _cancellationTokenSource.CancelAsync();
     }
 
     /// <summary>
     /// Execute the work item.
     /// </summary>
-    /// <returns></returns>
+    /// <returns><see cref="Task"/></returns>
     public async Task ExecuteAsync()
     {
         try

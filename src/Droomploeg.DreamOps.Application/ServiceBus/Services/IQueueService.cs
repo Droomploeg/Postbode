@@ -40,4 +40,7 @@ public interface IQueueService<TSendMessage, TReceiveMessage>
     Task<bool> ResubmitAllMessagesAsync(string queue, ResubmitOptions options, CancellationToken cancellationToken = default);
     Task<bool> ResubmitMessageAsync(string queue, TReceiveMessage receivedMessage, TSendMessage repairedMessage, ResubmitOptions options, CancellationToken cancellationToken = default);
     Task<bool> SendMessageAsync(string queue, TSendMessage message, CancellationToken cancellationToken = default);
+
+    // todo remove: dummy method to force generic type parameters to be used
+    Task<bool> LongRunningTaskAsync(string queue, CancellationToken cancellationToken = default);
 }

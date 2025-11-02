@@ -8,7 +8,7 @@ public class NotificationService(IWorkerService workerService) : INotificationSe
     private readonly List<Notification> _notifications = [];
     private readonly IWorkerService _workerService = workerService;
 
-    public bool Cleanup(DateTimeOffset dateTimeOffset)
+    public bool CleanUp(DateTimeOffset dateTimeOffset)
     {
         var removeNotifications = _notifications
             .Where(n => n.Timestamp < dateTimeOffset)

@@ -10,8 +10,4 @@
     <ProjectReference Include="..\Droomploeg.DreamOps.Core\Droomploeg.DreamOps.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ServiceBus\Commands\Topics\" />
-  </ItemGroup>
-
 </Project>

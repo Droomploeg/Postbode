@@ -57,7 +57,6 @@ builder.Services
     .AddAzureServiceBus(builder.Configuration)
     .AddWorkerHostedServices()
     .AddApplicationCore()
-    .AddCommandCore()
     .AddApplicationInsightsTelemetry();
 
 builder.Host.UseDefaultServiceProvider(o =>

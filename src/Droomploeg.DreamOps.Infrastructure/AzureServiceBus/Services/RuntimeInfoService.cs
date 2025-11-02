@@ -11,10 +11,10 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Services;
 public class RuntimeInfoService : IRuntimeInfoService
 {
     private readonly IRuntimeInfoAdapter _adapter;
-    private readonly WebContextSetter _contextSetter;
+    private readonly IContextSetter _contextSetter;
 
     /// <param name="adapter"><see cref="IRuntimeInfoAdapter"/></param>
-    public RuntimeInfoService(IRuntimeInfoAdapter adapter, WebContextSetter contextSetter)
+    public RuntimeInfoService(IRuntimeInfoAdapter adapter, IContextSetter contextSetter)
     {
         _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
         _contextSetter = contextSetter ?? throw new ArgumentNullException(nameof(contextSetter));

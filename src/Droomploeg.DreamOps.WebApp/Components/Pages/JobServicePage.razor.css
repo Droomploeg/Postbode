@@ -1,0 +1,58 @@
+﻿content {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+entity-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: auto;
+    padding: 0 20px 20px 0;
+}
+
+gridcontrol button {
+    background-position-x: center;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    width: 40px;
+    height: 25px;
+}
+
+.worker-actions {
+    display: flex;
+    flex-direction: row;
+}
+
+buttonbar {
+    align-items: center;
+}
+
+details-panel {
+    display: flex;
+    flex-grow: 0;
+    grid-area: details;
+    overflow: auto;
+    padding-top: 7px;
+    border-top: 1px solid rgb(200, 200, 200);
+}
+
+gridTable {
+    display: table;
+    width: 100%;
+}
+
+gridRow {
+    display: table-row;
+}
+
+gridCell {
+    display: table-cell;
+}
+
+.title {
+    font-weight: bold;
+}

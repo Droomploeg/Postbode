@@ -11,32 +11,68 @@ public partial class JobServicePage
     // TODO: Audit log for all actions incl. background job actions
 
     private readonly List<WorkerItem> _items = [];
+    
+    private WorkerItem? _selectedWorker2;
+
+    private WorkerItem? _selectedWorker
+    {
+        get { return _selectedWorker2; }  
+        set { _selectedWorker2 = value;  }
+    }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _items.Clear();
-
-            //try
-            //{
-            var items = _workerService.GetAll();
-
-            _items.AddRange(items);
-            //    _authorizationState = AuthorizationState.Authorized;
-            //}
-            //catch (UnauthorizedAccessException)
-            //{
-            //    _authorizationState = AuthorizationState.Unauthorized;
-            //}
-            //catch (MicrosoftIdentityWebChallengeUserException)
-            //{
-            //    _authorizationState = AuthorizationState.TokenExpired;
-            //}
-
-            StateHasChanged();
+            UpdateWorkers();
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void Refresh()
+    {
+        UpdateWorkers();
+    }
+
+    private void OnSelected(WorkerItem item)
+    {
+        _selectedWorker = item;
+
+        StateHasChanged();
+    }
+
+    private void UpdateWorkers()
+    {
+        _items.Clear();
+
+        var items = _workerService.GetAll();
+        _items.AddRange(items);
+        _selectedWorker = null;
+
+        StateHasChanged();
+    }
+
+    private async Task StopWorkerAsync(WorkerItem item)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        await item.CancelAsync("me");
+        _selectedWorker = null;
+
+        UpdateWorkers();
+    }
+
+    private async Task DeleteWorkerAsync(WorkerItem item)
+    {
+        _workerService.Remove(item.Id);
+
+        StateHasChanged();
+
+        await Task.CompletedTask;
     }
 }

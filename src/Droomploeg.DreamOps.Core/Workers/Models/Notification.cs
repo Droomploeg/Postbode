@@ -2,6 +2,14 @@
 
 namespace Droomploeg.DreamOps.Domain.Workers.Models;
 
+/// <summary>
+/// Notification record.
+/// </summary>
+/// <param name="Id">Id of the notification</param>
+/// <param name="Timestamp"><see cref="DateTimeOffset">of last update of the notification</param>
+/// <param name="Entity">Entity</param>
+/// <param name="Message">Message</param>
+/// <param name="State"><see cref="WorkItemState"/></param>
 public record Notification(
     Guid Id,
     DateTimeOffset Timestamp,
@@ -9,6 +17,9 @@ public record Notification(
     string Message,
     WorkItemState State)
 {
+    /// <summary>
+    /// Type of the notification.
+    /// </summary>
     public NotificationType Type => State switch
         {
             WorkItemState.Created => NotificationType.Information,

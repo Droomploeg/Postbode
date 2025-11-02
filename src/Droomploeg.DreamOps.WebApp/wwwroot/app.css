@@ -127,6 +127,10 @@ buttonbar {
 .add-button {
     background-image: url('/images/add.svg');
 }
+.stop-button {
+    background-image: url('/images/stop.svg');
+}
+
 
 entity-details gridcontrol {
     max-height: 250px;

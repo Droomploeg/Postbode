@@ -2,9 +2,23 @@
 
 namespace Droomploeg.DreamOps.Infrastructure.Contexts;
 
+/// <summary>
+/// Application context.
+/// </summary>
 public class ApplicationContext
 {
-    public Guid CorrelationId { get; set; } = Guid.NewGuid();   
+    /// <summary>
+    /// Correlation identifier.
+    /// </summary>
+    public Guid CorrelationId { get; set; } = Guid.NewGuid();
+
+    /// <summary>
+    /// Current Service Bus connection.
+    /// </summary>
     public ServiceBusConnection CurrentConnection { get; set; } = ServiceBusConnection.Undefined;
+
+    /// <summary>
+    /// Current Service Bus connection type.
+    /// </summary>
     public ServiceBusConnectionType CurrentConnectionType { get; set; } = ServiceBusConnectionType.UserAccount;
 }

@@ -25,9 +25,4 @@
     <ProjectReference Include="..\Droomploeg.DreamOps.Core\Droomploeg.DreamOps.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AzureServiceBus\Handlers\ManagedIdentities\Topics\" />
-    <Folder Include="AzureServiceBus\Handlers\OnBehalfOf\Topics\" />
-  </ItemGroup>
-
 </Project>

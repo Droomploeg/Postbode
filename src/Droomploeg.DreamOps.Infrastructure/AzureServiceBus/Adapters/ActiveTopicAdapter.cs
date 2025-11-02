@@ -1,6 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using Droomploeg.DreamOps.Application;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
 using Droomploeg.DreamOps.Infrastructure.Contexts;
@@ -27,13 +26,14 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task SendAsync(string topic, ICollection<ServiceBusMessage> messages, CancellationToken cancellationToken = default)
+    public async Task<bool> SendAsync(string topic, ICollection<ServiceBusMessage> messages, CancellationToken cancellationToken = default)
     {
         var client = _clientFactory.CreateClient(_context);
         var sender = client
             .CreateSender(topic);
 
         await sender.SendBulkMessageAsync(messages, cancellationToken);
+        return true;
     }
 
     public async Task<ICollection<ServiceBusReceivedMessage>> PeekMessagesAsync(string topic, string subscription,

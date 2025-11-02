@@ -68,7 +68,7 @@ public interface IDeadLetterTopicAdapter<TSendMessage, TReceiveMessage>
     /// <param name="subscription">Name of the subscription</param>
     /// <param name="message"><see cref="TReceiveMessage"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns>Ttrue if deleted</returns>
+    /// <returns><see langword="true"/> if deleted</returns>
     Task<bool> DeleteMessageAsync(string topic, string subscription,
         TReceiveMessage message,
         CancellationToken cancellationToken = default);

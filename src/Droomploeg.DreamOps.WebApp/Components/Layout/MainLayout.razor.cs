@@ -1,7 +1,7 @@
 ﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.Domain.Workers.Models;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
-using Droomploeg.DreamOps.WebApp.Components.Controls.Forms.Models;
+using Droomploeg.DreamOps.WebApp.Components.Controls.Workers.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 
@@ -60,7 +60,7 @@ public partial class MainLayout : IDisposable
         var nowUtc = DateTimeOffset.UtcNow;
 
         var stateHasChanged =
-            _notificationService.Cleanup(nowUtc.AddMinutes(-3)) ||
+            _notificationService.CleanUp(nowUtc.AddMinutes(-3)) ||
             _notificationService.Update(nowUtc.AddSeconds(-1));
 
         if (stateHasChanged)

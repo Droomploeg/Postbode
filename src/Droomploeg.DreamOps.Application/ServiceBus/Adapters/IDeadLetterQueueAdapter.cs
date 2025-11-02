@@ -64,7 +64,7 @@ public interface IDeadLetterQueueAdapter<TSendMessage, TReceiveMessage>
     /// <param name="queue">Name of the queue</param>
     /// <param name="message"><see cref="TReceiveMessage"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns>Ttrue if deleted</returns>
+    /// <returns><see langword="true"/> if deleted</returns>
     Task<bool> DeleteMessageAsync(string queue,
         TReceiveMessage message,
         CancellationToken cancellationToken = default);

@@ -1,6 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using Droomploeg.DreamOps.Application;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;

@@ -75,7 +75,6 @@ public partial class QueueDetailPage
 
         StateHasChanged();
     }
-
     private void SourceChanged(MessageSource source)
     {
         _source = source;
@@ -240,5 +239,10 @@ public partial class QueueDetailPage
         }
 
         StateHasChanged();
+    }
+
+    private void Dummy()
+    { 
+        _userEntityService.LongRunningTaskAsync(QueueName);
     }
 }

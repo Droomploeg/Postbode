@@ -8,6 +8,7 @@
         <buttonbar>
             <button class="send-button" @onclick="() => ShowOverlayOrDialog(SendMessageOverlay)">New Message</button>
             <button class="refresh-button" @onclick="Refresh">Refresh</button>
+            <button class="delete-button" @onclick="Dummy">Dummy</button>
         </buttonbar>
         <PeekControl Messages="_receivedMessages"
                      SessionEnabled="SessionEnabled"

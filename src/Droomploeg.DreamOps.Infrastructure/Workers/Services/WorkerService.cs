@@ -49,21 +49,6 @@ public class WorkerService() : IWorkerService
         return true;
     }
 
-    public bool Cancel(Guid id)
-    {
-        //_logger.LogInformation("Cancelling work item {WorkItemId}", id);
-
-        var workItem = _workItemList.FirstOrDefault(item => item.Id == id && item.CanBeCancelled());
-        if (workItem == null)
-        {
-            //_logger.LogWarning("Work item {WorkItemId} not found or not in a cancellable state", id);
-            return false;
-        }
-
-        workItem.Cancel();
-        return true;
-    }
-
     public bool Remove(Guid id)
     {
         //_logger.LogInformation("Removing work item {WorkItemId}", id);

@@ -29,7 +29,7 @@ public class WorkerItem
         Entity = entity;
         Description = description;
 
-        var createAction = new WorkerAction(userName, WorkItemAction.Scheduled);
+        var createAction = new WorkerAction(userName, WorkItemAction.Schedule);
         _actions.Add(createAction);
         var createdEvent = new WorkerEvent(WorkItemState.Scheduled);
         _events.Add(createdEvent);
@@ -70,8 +70,14 @@ public class WorkerItem
     /// </summary>
     /// <returns></returns>
     public bool CanBeCancelled()
-        => (_events.Last().State == WorkItemState.Scheduled ||
-            _events.Last().State == WorkItemState.Started) && !_cancellationTokenSource.IsCancellationRequested;
+        => !_cancellationTokenSource.IsCancellationRequested &&
+           (
+            _events.Last().State == WorkItemState.Scheduled ||
+            _events.Last().State == WorkItemState.Started 
+           );
+
+    public bool IsCancelled
+        => _cancellationTokenSource.IsCancellationRequested;
     
     /// <summary>
     /// Cancel the work item.

@@ -67,7 +67,7 @@ public partial class JobServicePage
     {
         _workerService.Remove(item.Id);
 
-        StateHasChanged();
+        UpdateWorkers();
 
         await Task.CompletedTask;
     }

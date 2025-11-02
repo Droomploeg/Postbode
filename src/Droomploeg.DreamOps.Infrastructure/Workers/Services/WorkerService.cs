@@ -42,7 +42,12 @@ public class WorkerService : IWorkerService
     {
         //_logger.LogInformation("Removing work item {WorkItemId}", id);
         var item = _workItemList.FirstOrDefault(i => i.Id == id);
-        if (item == null || !item.CanBeCancelled())
+        if (item is null)
+        {
+            return false;
+        }
+
+        if (item.State == WorkItemState.Started)
         {
             //_logger.LogWarning("Cannot remove work item {WorkItemId} because it is in state {WorkItemState}", id, item?.State ?? WorkItemState.Invalid);
             return false;

@@ -26,7 +26,7 @@
                     {
                         <button @onclick="async () => await StopWorkerAsync(context)" class="stop-button" alt="stop"></button>
                     }
-                    else
+                    else if (!context.IsCancelled || context.State != WorkItemState.Started)
                     {
                         <button @onclick="async () => await DeleteWorkerAsync(context)" class="delete-button" alt="delete"></button>
                     }

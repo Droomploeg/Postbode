@@ -1,6 +1,8 @@
 ﻿@attribute [Route(PageConstants.JobServicePage)]
 
 @inject IWorkerService _workerService;
+@inject AuthenticationStateProvider _authenticationStateProvider
+
 <content>
     <entity-details>
         <buttonbar>

@@ -1,6 +1,7 @@
 ﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Exceptions;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Droomploeg.DreamOps.Infrastructure.Contexts;
@@ -10,17 +11,20 @@ namespace Droomploeg.DreamOps.Infrastructure.Contexts;
 /// </summary>
 public class WebContextSetter : IContextSetter
 {
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly ProtectedSessionStorage _protectedSessionStorage;
     private readonly ApplicationContext _context;
 
     /// <summary>
     /// Constructor.
     /// </summary>
+    /// <param name="authenticationStateProvider"><see cref="AuthenticationStateProvider"/></param>
     /// <param name="protectedSessionStorage"><see cref="ProtectedSessionStorage"/></param>
     /// <param name="context"><see cref="ApplicationContext"/></param>
     /// <exception cref="ArgumentNullException">Occurs when protectedSessionStorage or context is null</exception>
-    public WebContextSetter(ProtectedSessionStorage protectedSessionStorage, ApplicationContext context)
+    public WebContextSetter(AuthenticationStateProvider authenticationStateProvider, ProtectedSessionStorage protectedSessionStorage, ApplicationContext context)
     {
+        _authenticationStateProvider = authenticationStateProvider ?? throw new ArgumentNullException(nameof(authenticationStateProvider));
         _protectedSessionStorage = protectedSessionStorage ?? throw new ArgumentNullException(nameof(protectedSessionStorage));
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
@@ -35,8 +39,12 @@ public class WebContextSetter : IContextSetter
             throw new InvalidServiceBusConnectionException();
         }
 
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
         _context.CurrentConnection = result.Value.Connection;
         _context.CurrentConnectionType = ServiceBusConnectionType.UserAccount;
+        _context.UserName = authState.User.Identity?.Name ?? "Anonymous";
 
         return _context;
     }

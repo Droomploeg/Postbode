@@ -207,11 +207,11 @@ public partial class QueueDetailPage
         var result = false;
         if (_source == MessageSource.ActiveMessage)
         {
-            result = await _userEntityService.DeleteAllActiveMessagesAsync(_queue.Name);
+            result = await _userEntityService.DeleteAllActiveMessagesAsync(QueueName);
         }
         else if (_source == MessageSource.DeadLetterMessage)
         {
-            result = await _userEntityService.DeleteAllDeadLetterMessagesAsync(_queue.Name);
+            result = await _userEntityService.DeleteAllDeadLetterMessagesAsync(QueueName);
         }
 
         CloseOverlaysAndDialogs();

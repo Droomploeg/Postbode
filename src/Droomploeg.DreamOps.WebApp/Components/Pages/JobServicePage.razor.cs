@@ -1,4 +1,5 @@
 ﻿using Droomploeg.DreamOps.Domain.Workers.Models;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
@@ -11,15 +12,7 @@ public partial class JobServicePage
     // TODO: Audit log for all actions incl. background job actions
 
     private readonly List<WorkerItem> _items = [];
-    
-    private WorkerItem? _selectedWorker2;
-
-    private WorkerItem? _selectedWorker
-    {
-        get { return _selectedWorker2; }  
-        set { _selectedWorker2 = value;  }
-    }
-
+    private WorkerItem? _selectedWorker;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -61,7 +54,10 @@ public partial class JobServicePage
             return;
         }
 
-        await item.CancelAsync("me");
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        await item.CancelAsync(user.Identity?.Name ?? "Anonymous");
         _selectedWorker = null;
 
         UpdateWorkers();

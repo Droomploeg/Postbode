@@ -13,6 +13,11 @@ public class ApplicationContext
     public Guid CorrelationId { get; set; } = Guid.NewGuid();
 
     /// <summary>
+    /// User name.
+    /// </summary>
+    public string UserName { get; set; } = "Anonymous";
+
+    /// <summary>
     /// Current Service Bus connection.
     /// </summary>
     public ServiceBusConnection CurrentConnection { get; set; } = ServiceBusConnection.Undefined;

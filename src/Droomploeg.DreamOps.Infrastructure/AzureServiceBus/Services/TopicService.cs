@@ -40,6 +40,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
     }
 
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.SendMessageAsync(string, ICollection{TSendMessage}, CancellationToken)"/>
     public async Task<bool> SendMessageAsync(string topic, ICollection<TSendMessage> message, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
@@ -47,7 +48,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         return await adapter.SendAsync(topic, message, cancellationToken);
     }
 
-
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.PeekActiveMessagesAsync(string, string, long, int, CancellationToken)"/>
     public async Task<ICollection<TReceiveMessage>> PeekActiveMessagesAsync(
         string topic,
         string subscription,
@@ -59,7 +60,8 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         var adapter = _activeTopicAdapterFactory.Create(AdapterMode.OnBehalfOf);
         return await adapter.PeekMessagesAsync(topic, subscription, fromSequenceNumber, numberOfMessages, cancellationToken);
     }
-
+    
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.DeleteAllActiveMessagesAsync(string, string, CancellationToken)"/>
     public async Task<bool> DeleteAllActiveMessagesAsync(string topic, string subscription, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
@@ -67,13 +69,14 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
 
         var workItem = new WorkerItem(
             $"{topic}\\{subscription}",
-            $"Delete all message from topic '{topic}' and '{subscription}'",
+            $"Delete all message from topic",
             (token) => adapter.DeleteAllMessagesAsync(topic, subscription, cancellationToken));
 
         _dispatcher.Dispatch(workItem);
         return true;
     }
-
+    
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.DeleteActiveMessageAsync(string, string, TReceiveMessage, CancellationToken)"/>
     public async Task<bool> DeleteActiveMessageAsync(string topic, string subscription, TReceiveMessage activeMessage, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
@@ -81,6 +84,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         return await adapter.DeleteMessageAsync(topic, subscription, activeMessage, cancellationToken);
     }
 
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.DeadLetterMessageAsync(string, string, TReceiveMessage, string, string, string, CancellationToken)"/>
     public async Task<bool> DeadLetterMessageAsync(string topic, string subscription, TReceiveMessage deadletterMessage, string source, string reason, string description, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
@@ -88,6 +92,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         return await adapter.DeadLetterMessagesAsync(topic, subscription, deadletterMessage, source, reason, description, cancellationToken);
     }
 
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.PeekDeadLetterMessagesAsync(string, string, long, int, CancellationToken)" />
     public async Task<ICollection<TReceiveMessage>> PeekDeadLetterMessagesAsync(
         string topic,
         string subscription,
@@ -100,6 +105,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         return await adapter.PeekMessagesAsync(topic, subscription, fromSequenceNumber, numberOfMessages, cancellationToken);
     }
 
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.ResubmitMessageAsync(string, string, TReceiveMessage, TSendMessage, ResubmitOptions, CancellationToken)"/>
     public async Task<bool> ResubmitMessageAsync(string topic, string subscription,
         TReceiveMessage receivedMessage, TSendMessage repairedMessage,
         ResubmitOptions options, CancellationToken cancellationToken = default)
@@ -110,6 +116,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
             topic, subscription, receivedMessage, repairedMessage, options, cancellationToken);
     }
 
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.ResubmitAllMessagesAsync(string, string, ResubmitOptions, CancellationToken)"/>
     public async Task<bool> ResubmitAllMessagesAsync(string topic, string subscription, ResubmitOptions options, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
@@ -117,13 +124,14 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
 
         var workItem = new WorkerItem(
             $"{topic}\\{subscription}",
-            $"Resubmit all message from topic '{topic}' and '{subscription}'",
+            $"Resubmit all message from topic",
             (token) => adapter.ResubmitAllMessagesAsync(topic, subscription, options, cancellationToken));
 
         _dispatcher.Dispatch(workItem);
         return true;
     }
 
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.DeleteDeadLetterMessageAsync(string, string, TReceiveMessage, CancellationToken)"/>
     public async Task<bool> DeleteDeadLetterMessageAsync(string topic, string subscription, TReceiveMessage message, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
@@ -132,6 +140,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
             topic, subscription, message, cancellationToken);
     }
 
+    /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.DeleteAllDeadLetterMessagesAsync(string, string, CancellationToken)"/>
     public async Task<bool> DeleteAllDeadLetterMessagesAsync(string topic, string subscription, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
@@ -139,7 +148,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
 
         var workItem = new WorkerItem(
             $"{topic}\\{subscription}",
-            $"Delete all message from topic '{topic}' and '{subscription}'",
+            $"Delete all message from subscription",
             (token) => adapter.DeleteAllMessagesAsync(topic, subscription, cancellationToken));
 
         _dispatcher.Dispatch(workItem);

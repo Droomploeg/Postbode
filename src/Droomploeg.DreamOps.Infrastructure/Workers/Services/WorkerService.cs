@@ -8,14 +8,23 @@ namespace Droomploeg.DreamOps.Infrastructure.Workers.Services;
 /// <summary>
 /// Worker service to manage background work items.
 /// </summary>
-//public class WorkerService(ILogger<WorkerService> logger) : IWorkerService
-public class WorkerService() : IWorkerService
+public class WorkerService : IWorkerService
 {
-    //private readonly ILogger<WorkerService> _logger = logger;
+    //private readonly ILogger<WorkerService> _logger;
     private readonly List<WorkerItem> _workItemList = [];
-
     private readonly Lock _sync = new();
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="logger"><see cref="ILogger{TCategoryName}"/></param>
+    /// <exception cref="ArgumentNullException"><see cref="ArgumentNullException"/></exception>
+    public WorkerService()
+    {
+        //_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    /// <inheritdoc cref="IWorkerService.Add(WorkerItem)"/>>
     public bool Add(WorkerItem item)
     {
         //_logger.LogInformation("Added work item {WorkItemId} of type {WorkItemType}", item.Id, item.GetType().Name);
@@ -28,6 +37,30 @@ public class WorkerService() : IWorkerService
         return true;
     }
 
+    /// <inheritdoc cref="IWorkerService.Remove(Guid)"/>
+    public bool Remove(Guid id)
+    {
+        //_logger.LogInformation("Removing work item {WorkItemId}", id);
+        var item = _workItemList.FirstOrDefault(i => i.Id == id);
+        if (item == null || !item.CanBeCancelled())
+        {
+            //_logger.LogWarning("Cannot remove work item {WorkItemId} because it is in state {WorkItemState}", id, item?.State ?? WorkItemState.Invalid);
+            return false;
+        }
+
+        lock (_sync)
+        {
+            _workItemList.Remove(item);
+        }
+        return true;
+    }
+
+    /// <inheritdoc cref="IWorkerService.GetAll"/>
+    public IReadOnlyList<WorkerItem> GetAll()
+        => _workItemList.AsReadOnly();
+
+
+    /// <inheritdoc cref="IWorkerService.ExecuteNextAsync(CancellationToken)"/>>
     public async Task<bool> ExecuteNextAsync(CancellationToken cancellationToken)
     {
         //_logger.LogInformation("Starting next work item");
@@ -48,24 +81,4 @@ public class WorkerService() : IWorkerService
 
         return true;
     }
-
-    public bool Remove(Guid id)
-    {
-        //_logger.LogInformation("Removing work item {WorkItemId}", id);
-        var item = _workItemList.FirstOrDefault(i => i.Id == id);
-        if (item == null || !item.CanBeCancelled())
-        {
-            //_logger.LogWarning("Cannot remove work item {WorkItemId} because it is in state {WorkItemState}", id, item?.Info.State ?? WorkItemState.Invalid);
-            return false;
-        }
-
-        lock (_sync)
-        {
-            _workItemList.Remove(item);
-        }
-        return true;
-    }
-
-    public IReadOnlyList<WorkerItem> GetAll()
-        => _workItemList.AsReadOnly();
 }

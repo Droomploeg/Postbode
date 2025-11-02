@@ -11,9 +11,9 @@ public enum WorkItemState
     Invalid,
 
     /// <summary>
-    /// Created state.
+    /// Scheduled state.
     /// </summary>
-    Created,
+    Scheduled,
 
     /// <summary>
     /// Started state.

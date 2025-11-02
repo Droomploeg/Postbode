@@ -64,10 +64,11 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
     /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.DeleteAllActiveMessagesAsync(string, string, CancellationToken)"/>
     public async Task<bool> DeleteAllActiveMessagesAsync(string topic, string subscription, CancellationToken cancellationToken = default)
     {
-        _ = await _contextSetter.GetAndUpdateAsync();
+        var context = await _contextSetter.GetAndUpdateAsync();
         var adapter = _activeTopicAdapterFactory.Create(AdapterMode.ManagedIdentity);
 
         var workItem = new WorkerItem(
+            context.UserName,
             $"{topic}\\{subscription}",
             $"Delete all message from topic",
             (token) => adapter.DeleteAllMessagesAsync(topic, subscription, cancellationToken));
@@ -119,10 +120,11 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
     /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.ResubmitAllMessagesAsync(string, string, ResubmitOptions, CancellationToken)"/>
     public async Task<bool> ResubmitAllMessagesAsync(string topic, string subscription, ResubmitOptions options, CancellationToken cancellationToken = default)
     {
-        _ = await _contextSetter.GetAndUpdateAsync();
+        var context = await _contextSetter.GetAndUpdateAsync();
         var adapter = _deadLetterAdapterFactory.Create(AdapterMode.ManagedIdentity);
 
         var workItem = new WorkerItem(
+            context.UserName,
             $"{topic}\\{subscription}",
             $"Resubmit all message from topic",
             (token) => adapter.ResubmitAllMessagesAsync(topic, subscription, options, cancellationToken));
@@ -143,10 +145,11 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
     /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.DeleteAllDeadLetterMessagesAsync(string, string, CancellationToken)"/>
     public async Task<bool> DeleteAllDeadLetterMessagesAsync(string topic, string subscription, CancellationToken cancellationToken = default)
     {
-        _ = await _contextSetter.GetAndUpdateAsync();
+        var context = await _contextSetter.GetAndUpdateAsync();
         var adapter = _deadLetterAdapterFactory.Create(AdapterMode.ManagedIdentity);
 
         var workItem = new WorkerItem(
+            context.UserName,
             $"{topic}\\{subscription}",
             $"Delete all message from subscription",
             (token) => adapter.DeleteAllMessagesAsync(topic, subscription, cancellationToken));

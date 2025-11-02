@@ -22,7 +22,7 @@ public record Notification(
     /// </summary>
     public NotificationType Type => State switch
         {
-            WorkItemState.Created => NotificationType.Information,
+            WorkItemState.Scheduled => NotificationType.Information,
             WorkItemState.Started => NotificationType.Information,
             WorkItemState.Completed => NotificationType.Completed,
             WorkItemState.Failed => NotificationType.Failure,

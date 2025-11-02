@@ -16,18 +16,22 @@ public class WorkerItem
     /// <summary>
     /// Constructor.
     /// </summary>
+    /// <param name="userName">Name of the user creating the work item</param>
     /// <param name="entity">Name of the entity</param>
     /// <param name="description">Description</param>
     /// <param name="workerAction"><see cref="Action{T1, T2}"> with <see cref="Task"/> action</param>
-    public WorkerItem(string entity, string description, Func<CancellationToken, Task> workerAction)
+    public WorkerItem(string userName, string entity, string description, Func<CancellationToken, Task> workerAction)
     {
         _action = workerAction;
+        UserName = string.IsNullOrWhiteSpace(userName)
+            ? "Anonymous"
+            : userName;
         Entity = entity;
         Description = description;
 
-        var createAction = new WorkerAction("anonymous", WorkItemAction.Create);
+        var createAction = new WorkerAction(userName, WorkItemAction.Scheduled);
         _actions.Add(createAction);
-        var createdEvent = new WorkerEvent(WorkItemState.Created);
+        var createdEvent = new WorkerEvent(WorkItemState.Scheduled);
         _events.Add(createdEvent);
     }
 
@@ -35,6 +39,11 @@ public class WorkerItem
     /// Identifier of the work item.
     /// </summary>
     public Guid Id { get; } = Guid.NewGuid();
+
+    /// <summary>
+    /// User name who created the work item.
+    /// </summary>
+    public string UserName { get; } = "Anonymous";
 
     /// <summary>
     /// Entity.
@@ -51,6 +60,9 @@ public class WorkerItem
     /// </summary>
     public WorkItemState State => _events.Last().State;
 
+    /// <summary>
+    /// <see cref="DateTimeOffset"/> of the last update of the work item."/>
+    /// </summary>
     public DateTimeOffset UpdatedTimestamp => _events.Last().Timestamp;
 
     /// <summary>
@@ -58,7 +70,7 @@ public class WorkerItem
     /// </summary>
     /// <returns></returns>
     public bool CanBeCancelled()
-        => (_events.Last().State == WorkItemState.Created ||
+        => (_events.Last().State == WorkItemState.Scheduled ||
             _events.Last().State == WorkItemState.Started) && !_cancellationTokenSource.IsCancellationRequested;
     
     /// <summary>
@@ -78,7 +90,7 @@ public class WorkerItem
     {
         try
         {
-            var startAction = new WorkerAction("anonymous", WorkItemAction.Start);
+            var startAction = new WorkerAction(UserName, WorkItemAction.Start);
             _actions.Add(startAction);
             var startEvent = new WorkerEvent(WorkItemState.Started);
             _events.Add(startEvent);

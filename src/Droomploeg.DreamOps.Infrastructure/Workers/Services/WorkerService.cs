@@ -65,7 +65,7 @@ public class WorkerService : IWorkerService
     {
         //_logger.LogInformation("Starting next work item");
         var nextWorkItem = _workItemList
-                .Where(i => i.State == WorkItemState.Created)
+                .Where(i => i.State == WorkItemState.Scheduled)
                 .OrderBy(i => i.UpdatedTimestamp)
                 .FirstOrDefault();
 

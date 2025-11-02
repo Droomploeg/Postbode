@@ -72,9 +72,10 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     /// <inheritdoc cref="IQueueService{TSendMessage, TReceiveMessage}.DeleteAllActiveMessagesAsync(string, CancellationToken)"/>
     public async Task<bool> DeleteAllActiveMessagesAsync(string queue, CancellationToken cancellationToken = default)
     {
-        _ = await _contextSetter.GetAndUpdateAsync();
+        var context = await _contextSetter.GetAndUpdateAsync();
         var adapter = _activeQueueAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
+            context.UserName,
             queue,
             $"Delete all message from queue",
             (token) => adapter.DeleteAllMessagesAsync(
@@ -117,9 +118,10 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     /// <inheritdoc cref="IQueueService{TSendMessage, TReceiveMessage}.ResubmitAllMessagesAsync(string, ResubmitOptions, CancellationToken)"/>
     public async Task<bool> ResubmitAllMessagesAsync(string queue, ResubmitOptions options, CancellationToken cancellationToken = default)
     {
-        _ = await _contextSetter.GetAndUpdateAsync();
+        var context = await _contextSetter.GetAndUpdateAsync();
         var adpater = _deadletterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
+            context.UserName,
             queue,
             $"Resubmit all deadletter messages from queue",
             (token) => adpater.ResubmitAllMessagesAsync(
@@ -140,9 +142,10 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     /// <inheritdoc cref="IQueueService{TSendMessage, TReceiveMessage}.DeleteAllDeadLetterMessagesAsync(string, CancellationToken)"/>
     public async Task<bool> DeleteAllDeadLetterMessagesAsync(string queue, CancellationToken cancellationToken = default)
     {
-        _ = await _contextSetter.GetAndUpdateAsync();
+        var context = await _contextSetter.GetAndUpdateAsync();
         var adapter = _deadletterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
+            context.UserName,
             queue,
             $"Delete all deadletter message from queue",
             (token) => adapter.DeleteAllMessagesAsync(
@@ -155,9 +158,10 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     // todo remove: dummy method to force generic type parameters to be used
     public async Task<bool> LongRunningTaskAsync(string queue, CancellationToken cancellationToken = default)
     {
-        _ = await _contextSetter.GetAndUpdateAsync();
+        var context = await _contextSetter.GetAndUpdateAsync();
         var adapter = _deadletterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
+            context.UserName,
             queue,
             $"Dummy task for queue",
             (token) => DoNothing(token)

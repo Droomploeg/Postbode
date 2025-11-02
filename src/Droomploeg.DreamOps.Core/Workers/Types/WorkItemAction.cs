@@ -8,17 +8,12 @@ public enum WorkItemAction
     /// <summary>
     /// Create.
     /// </summary>
-    Create,
+    Schedule,
 
     /// <summary>
     /// Start.
     /// </summary>
     Start,
-
-    /// <summary>
-    /// Finished.
-    /// </summary>
-    Finished,
 
     /// <summary>
     /// Cancel.

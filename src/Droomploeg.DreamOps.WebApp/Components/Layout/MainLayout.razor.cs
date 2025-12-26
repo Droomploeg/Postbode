@@ -1,14 +1,12 @@
-﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
-using Droomploeg.DreamOps.Domain.Workers.Models;
-using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
+﻿using Droomploeg.DreamOps.Domain.Workers.Models;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Workers.Models;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
 public partial class MainLayout : IDisposable
 {
+    private List<Notification> _popupNotifications = [];
     private List<NotificationModel> _notifications = [];
     private bool _notificationPanelVisible = false;
     private IDisposable? _locationChangeHandler;
@@ -19,7 +17,7 @@ public partial class MainLayout : IDisposable
 
     protected override void OnInitialized()
     {
-        _timer = new Timer(TimerElapsed, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+        _timer = new Timer(TimerElapsed, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
         base.OnInitialized();
     }
 
@@ -36,6 +34,11 @@ public partial class MainLayout : IDisposable
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    private ICollection<NotificationModel> PopupNotificationsToDisplay
+        => [.. _popupNotifications
+            .OrderByDescending(n => n.Timestamp)
+            .Select(CastToNotificationModel)];
+    
     private async ValueTask LocationChangingHandler(LocationChangingContext arg)
     {
         var relativeUrl = GetRelativeUri(arg.TargetLocation);
@@ -59,17 +62,24 @@ public partial class MainLayout : IDisposable
     {
         var nowUtc = DateTimeOffset.UtcNow;
 
-        var stateHasChanged =
-            _notificationService.CleanUp(nowUtc.AddMinutes(-3)) ||
-            _notificationService.Update(nowUtc.AddSeconds(-1));
+        var hasPopupUpdate = _notificationService.TryUpdatePopupNotifications(
+            _popupNotifications,
+            nowUtc, TimeSpan.FromSeconds(-3),
+            out var updatedPopupNotifications);
 
-        if (stateHasChanged)
+        if (hasPopupUpdate)
         {
-            _notifications = [.._notificationService.GetAll()
-                .Select(CastToNotificationModel)];
+            _popupNotifications = [.. updatedPopupNotifications];
         }
 
-        if (stateHasChanged)
+        //var stateHasChanged = _notificationService.CleanUp(nowUtc.AddMinutes(-3)) ||
+        //if (stateHasChanged)
+        //{
+        //    _notifications = [.._notificationService.GetAll()
+        //        .Select(CastToNotificationModel)];
+        //}
+
+        if (true)
         {
             InvokeAsync(() => StateHasChanged());
         }

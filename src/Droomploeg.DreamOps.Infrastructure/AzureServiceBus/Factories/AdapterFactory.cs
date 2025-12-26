@@ -40,7 +40,6 @@ public class AdapterFactory<T> : IAdapterFactory<T> where T : notnull
         var scopedContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
         scopedContext.CorrelationId = _context.CorrelationId;
         scopedContext.CurrentConnection = _context.CurrentConnection;
-        scopedContext.CurrentConnectionType = ServiceBusConnectionType.ServiceAccount;
         scopedContext.UserName = _context.UserName;
 
         return scope.ServiceProvider.GetRequiredService<T>();

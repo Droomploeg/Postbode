@@ -6,7 +6,7 @@ namespace Droomploeg.DreamOps.Domain.Workers.Models;
 /// Notification record.
 /// </summary>
 /// <param name="Id">Id of the notification</param>
-/// <param name="Timestamp"><see cref="DateTimeOffset">of last update of the notification</param>
+/// <param name="Timestamp"><see cref="DateTimeOffset"> of last update of the notification</param>
 /// <param name="Entity">Entity</param>
 /// <param name="Message">Message</param>
 /// <param name="State"><see cref="WorkItemState"/></param>

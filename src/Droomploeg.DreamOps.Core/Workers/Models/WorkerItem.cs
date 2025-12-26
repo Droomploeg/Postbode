@@ -3,23 +3,23 @@
 namespace Droomploeg.DreamOps.Domain.Workers.Models;
 
 /// <summary>
-/// Worker item.
-/// </summary>public class WorkItem
+/// Represents a single unit of work that can be executed, cancelled and tracked.
+/// </summary>
 public class WorkerItem
 {
     private readonly Func<CancellationToken, Task> _action;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
-    private readonly List<WorkerAction> _actions = [];
-    private readonly List<WorkerEvent> _events = [];
+    private readonly List<WorkerAction> _actions = new();
+    private readonly List<WorkerEvent> _events = new();
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="WorkerItem"/>.
     /// </summary>
-    /// <param name="userName">Name of the user creating the work item</param>
-    /// <param name="entity">Name of the entity</param>
-    /// <param name="description">Description</param>
-    /// <param name="workerAction"><see cref="Action{T1, T2}"> with <see cref="Task"/> action</param>
+    /// <param name="userName">Name of the user creating the work item. If null or whitespace, "Anonymous" will be used.</param>
+    /// <param name="entity">Name of the entity the work item relates to.</param>
+    /// <param name="description">Human readable description of the work item.</param>
+    /// <param name="workerAction">The asynchronous action that will be executed for this work item. Receives a <see cref="CancellationToken"/>.</param>
     public WorkerItem(string userName, string entity, string description, Func<CancellationToken, Task> workerAction)
     {
         _action = workerAction;
@@ -36,62 +36,72 @@ public class WorkerItem
     }
 
     /// <summary>
-    /// Identifier of the work item.
+    /// Gets the identifier of the work item.
     /// </summary>
     public Guid Id { get; } = Guid.NewGuid();
 
     /// <summary>
-    /// User name who created the work item.
+    /// Gets the user name who created the work item.
     /// </summary>
     public string UserName { get; } = "Anonymous";
 
     /// <summary>
-    /// Entity.
+    /// Gets the entity associated with this work item.
     /// </summary>
     public string Entity { get; }
 
     /// <summary>
-    /// Description of the work item.
+    /// Gets the description of the work item.
     /// </summary>
     public string Description { get; }
 
     /// <summary>
-    /// State of the work item.
+    /// Gets the current state of the work item (determined from the latest event).
     /// </summary>
     public WorkItemState State => _events.Last().State;
 
     /// <summary>
-    /// <see cref="DateTimeOffset"/> of the last update of the work item."/>
+    /// Gets the <see cref="DateTimeOffset"/> of the last update to the work item.
     /// </summary>
     public DateTimeOffset UpdatedTimestamp => _events.Last().Timestamp;
 
     /// <summary>
-    /// Indication if the work item can be cancelled.
+    /// Determines whether the work item can be cancelled at this time.
+    /// Returns true when the cancellation has not been requested and the current state
+    /// is either <see cref="WorkItemState.Scheduled"/> or <see cref="WorkItemState.Started"/>.
     /// </summary>
-    /// <returns></returns>
     public bool CanBeCancelled()
         => !_cancellationTokenSource.IsCancellationRequested &&
            (
             _events.Last().State == WorkItemState.Scheduled ||
-            _events.Last().State == WorkItemState.Started 
+            _events.Last().State == WorkItemState.Started
            );
 
+    /// <summary>
+    /// Indicates whether cancellation has been requested for this work item.
+    /// </summary>
     public bool IsCancelled
         => _cancellationTokenSource.IsCancellationRequested;
-    
+
     /// <summary>
-    /// Cancel the work item.
+    /// Requests cancellation of the work item and records the cancel action.
+    /// This method is asynchronous only for API symmetry; cancellation is requested synchronously.
     /// </summary>
-    public async Task CancelAsync(string userName)
+    /// <param name="userName">Name of the user requesting cancellation.</param>
+    /// <returns>A completed <see cref="Task"/> once the cancellation request has been recorded.</returns>
+    public Task CancelAsync(string userName)
     {
         _actions.Add(new WorkerAction(userName, WorkItemAction.Cancel));
-        await _cancellationTokenSource.CancelAsync();
+        _cancellationTokenSource.Cancel();
+        return Task.CompletedTask;
     }
 
     /// <summary>
-    /// Execute the work item.
+    /// Executes the work item's action. Records start, completion, cancellation and failure events.
+    /// Exceptions thrown by the action are recorded as a failed event and then rethrown.
     /// </summary>
-    /// <returns><see cref="Task"/></returns>
+    /// <returns>A task that represents the asynchronous execute operation.</returns>
+    /// <exception cref="Exception">If the underlying action throws, the exception will be rethrown after recording a failed event.</exception>
     public async Task ExecuteAsync()
     {
         try
@@ -120,12 +130,22 @@ public class WorkerItem
     }
 
     /// <summary>
-    /// List of <see cref="WorkerAction"/> performed on the work item.
+    /// Get <see cref="DateTimeOffset"> of <see cref="WorkItemState"/>.
+    /// </summary>
+    /// <param name="state"><see cref="WorkItemState"/></param>
+    /// <returns><see cref="DateTimeOffset"/></returns>
+    public DateTimeOffset GetEventDateTime(WorkItemState state)
+        => _events.Where(e => e.State == state)
+            .Select(e => e.Timestamp)
+            .FirstOrDefault();
+
+    /// <summary>
+    /// Gets a read-only collection of actions performed on the work item.
     /// </summary>
     public IReadOnlyCollection<WorkerAction> Actions => _actions.AsReadOnly();
 
     /// <summary>
-    /// List of <see cref="WorkerEvent"/> occurred on the work item.
+    /// Gets a read-only collection of events that have occurred on the work item.
     /// </summary>
     public IReadOnlyCollection<WorkerEvent> Events => _events.AsReadOnly();
 }

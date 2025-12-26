@@ -1,4 +1,5 @@
-﻿using Droomploeg.DreamOps.Domain.Workers.Models;
+﻿using System.Collections;
+using Droomploeg.DreamOps.Domain.Workers.Models;
 
 namespace Droomploeg.DreamOps.Application.Workers.Services;
 
@@ -8,12 +9,16 @@ namespace Droomploeg.DreamOps.Application.Workers.Services;
 public interface INotificationService
 {
     /// <summary>
-    /// Update
+    /// Try get Pop-Up Notification.
     /// </summary>
+    /// <param name="currentNotifications">Current <see cref="IList{T}"/> of <see cref="Notification"/></param>
     /// <param name="dateTimeOffset"><see cref="DateTimeOffset"/></param>
-    /// <returns><see langword="true"/> after updated</returns>
-    bool Update(DateTimeOffset dateTimeOffset);
-
+    /// <param name="durration"><see cref="TimeSpan"/></param>
+    /// <param name="newNotifications">New <see cref="IList{T}"/> of <see cref="Notification"/></param>
+    /// <returns><see langword="true"/> if there are notifications</returns>
+    bool TryUpdatePopupNotifications(IList<Notification> currentNotifications, 
+        DateTimeOffset dateTimeOffset, TimeSpan durration, 
+        out IList<Notification> newNotifications);
 
     /// <summary>
     /// Cleanup.

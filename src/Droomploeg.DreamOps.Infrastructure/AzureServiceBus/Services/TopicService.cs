@@ -41,7 +41,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
     }
 
     /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.SendMessageAsync(string, ICollection{TSendMessage}, CancellationToken)"/>
-    public async Task<bool> SendMessageAsync(string topic, ICollection<TSendMessage> message, CancellationToken cancellationToken = default)
+    public async Task<bool> SendMessageAsync(string topic, TSendMessage message, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
         var adapter = _activeTopicAdapterFactory.Create(AdapterMode.OnBehalfOf);
@@ -90,7 +90,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
     {
         _ = await _contextSetter.GetAndUpdateAsync();
         var adapter = _activeTopicAdapterFactory.Create(AdapterMode.OnBehalfOf);
-        return await adapter.DeadLetterMessagesAsync(topic, subscription, deadletterMessage, source, reason, description, cancellationToken);
+        return await adapter.DeadLetterMessageAsync(topic, subscription, deadletterMessage, source, reason, description, cancellationToken);
     }
 
     /// <inheritdoc cref="ITopicService{TSendMessage, TReceiveMessage}.PeekDeadLetterMessagesAsync(string, string, long, int, CancellationToken)" />

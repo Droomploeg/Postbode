@@ -12,10 +12,10 @@ public interface IActiveQueueAdapter<TSendMessage, TReceiveMessage>
     /// Send message.
     /// </summary>
     /// <param name="queue">Name of the queue</param>
-    /// <param name="message"><see cref="ICollection{T}"/> of <see cref="TSendMessage"/></param>
+    /// <param name="message"><see cref="TSendMessage"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns><see langword="true"/> if send</returns>
-    Task<bool> SendAsync(string queue, ICollection<TSendMessage> message, CancellationToken cancellationToken = default);
+    Task<bool> SendAsync(string queue, TSendMessage message, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Peek messages from the queue.
@@ -60,7 +60,7 @@ public interface IActiveQueueAdapter<TSendMessage, TReceiveMessage>
     /// <param name="description">Description of deadlettering</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns><see langword="true"/> if dead-lettered</returns>
-    Task<bool> DeadLetterMessagesAsync(string queue,
+    Task<bool> DeadLetterMessageAsync(string queue,
         TReceiveMessage message,
         string source,
         string reason,

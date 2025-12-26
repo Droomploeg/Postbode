@@ -5,10 +5,10 @@
 
 <AuthorizeView Context="authContext">
     <content>
-        <GridControl Items="@_connectionService.Connections" TItem="ServiceBusConnectionInfo">
-            <GridHeaderItemControl TItem="ServiceBusConnectionInfo">Name</GridHeaderItemControl>
-            <GridValueItemControl TItem="ServiceBusConnectionInfo">
-                <span @onclick="() => SetClient(context)">@context.Connection.Name</span>
+        <GridControl Items="@_connectionService.Connections" TItem="ServiceBusConnection">
+            <GridHeaderItemControl TItem="ServiceBusConnection">Name</GridHeaderItemControl>
+            <GridValueItemControl TItem="ServiceBusConnection">
+                <span @onclick="() => SetClient(context)">@context.Name</span>
                 @if (IsSelected(context))
                 {
                     <span class="current selected-servicebus">Current</span>

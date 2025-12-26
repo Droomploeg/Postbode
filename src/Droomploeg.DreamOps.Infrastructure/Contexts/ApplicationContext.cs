@@ -21,9 +21,4 @@ public class ApplicationContext
     /// Current Service Bus connection.
     /// </summary>
     public ServiceBusConnection CurrentConnection { get; set; } = ServiceBusConnection.Undefined;
-
-    /// <summary>
-    /// Current Service Bus connection type.
-    /// </summary>
-    public ServiceBusConnectionType CurrentConnectionType { get; set; } = ServiceBusConnectionType.UserAccount;
 }

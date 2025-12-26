@@ -46,7 +46,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     {
         _ = await _contextSetter.GetAndUpdateAsync();
         var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
-        return await adapter.SendAsync(queue, [message], cancellationToken);
+        return await adapter.SendAsync(queue, message, cancellationToken);
     }
 
     /// <inheritdoc cref="IQueueService{TSendMessage, TReceiveMessage}.PeekActiveMessagesAsync(string, long, int, CancellationToken)"/>
@@ -90,7 +90,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     {
         _ = await _contextSetter.GetAndUpdateAsync();
         var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
-        return await adapter.DeadLetterMessagesAsync(queue, message, source, reason, description, cancellationToken);
+        return await adapter.DeadLetterMessageAsync(queue, message, source, reason, description, cancellationToken);
     }
 
     /// <inheritdoc cref="IQueueService{TSendMessage, TReceiveMessage}.PeekDeadLetterMessagesAsync(string, long, int, CancellationToken)"/>

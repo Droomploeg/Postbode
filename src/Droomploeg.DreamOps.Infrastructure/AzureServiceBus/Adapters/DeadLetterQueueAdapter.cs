@@ -2,6 +2,7 @@
 using Azure.Messaging.ServiceBus.Administration;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
 using Droomploeg.DreamOps.Infrastructure.Contexts;
 using Microsoft.Extensions.Azure;
@@ -43,7 +44,7 @@ public class DeadLetterQueueAdapter : IDeadLetterQueueAdapter<ServiceBusMessage,
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         var messages = await receiver.PeekMessagesAsync(numberOfMessages, fromSequenceNumber, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
@@ -66,7 +67,7 @@ public class DeadLetterQueueAdapter : IDeadLetterQueueAdapter<ServiceBusMessage,
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         var sender = client.CreateSender(queue);
         if (options.DeleteMessage)
@@ -97,7 +98,7 @@ public class DeadLetterQueueAdapter : IDeadLetterQueueAdapter<ServiceBusMessage,
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         await receiver.CompleteMessagesAsync(timestamp, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
@@ -116,7 +117,7 @@ public class DeadLetterQueueAdapter : IDeadLetterQueueAdapter<ServiceBusMessage,
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         var sender = client.CreateSender(queue);
 
@@ -144,7 +145,7 @@ public class DeadLetterQueueAdapter : IDeadLetterQueueAdapter<ServiceBusMessage,
 
         var deadLetterQueueName = ServiceBusHelper.FormatDeadLetterPath(queue);
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         var receiver = client.CreateReceiver(deadLetterQueueName, ServiceBusConstants.PeekLockOptions);
         var result = await receiver.SearchAndCompleteAsync(message, numberOfMessagesToReceive, cancellationToken);
 

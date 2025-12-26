@@ -1,10 +1,10 @@
-﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
 public partial class Home
 {
-    private ServiceBusConnectionInfo _currentConnectionInfo = ServiceBusConnectionInfo.Undefined;
+    private ServiceBusConnection _currentConnection = ServiceBusConnection.Undefined;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -12,9 +12,9 @@ public partial class Home
         {
             if (_connectionService.Connections.Length == 1)
             {
-                _currentConnectionInfo = _connectionService.Connections[0];
+                _currentConnection = _connectionService.Connections[0];
 
-                await SetConnection(_currentConnectionInfo);
+                await SetConnection(_currentConnection);
                 return;
             }
 
@@ -23,26 +23,26 @@ public partial class Home
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private bool IsSelected(ServiceBusConnectionInfo connectionInfo)
+    private bool IsSelected(ServiceBusConnection connection)
     {
-        return (_currentConnectionInfo == connectionInfo);
+        return _currentConnection == connection;
     }
 
-    private async Task SetClient(ServiceBusConnectionInfo? connectionInfo)
+    private async Task SetClient(ServiceBusConnection? connection)
     {
-        _currentConnectionInfo = connectionInfo ?? ServiceBusConnectionInfo.Undefined;
+        _currentConnection = connection ?? ServiceBusConnection.Undefined;
 
-        await SetConnection(_currentConnectionInfo);
+        await SetConnection(_currentConnection);
     }
 
-    private async Task SetConnection(ServiceBusConnectionInfo connectionInfo)
+    private async Task SetConnection(ServiceBusConnection connection)
     {
-        if (_currentConnectionInfo.Connection.IsNotDefined)
+        if (_currentConnection.IsNotDefined)
         {
-            await _storage.DeleteAsync(nameof(ServiceBusConnectionInfo));
+            await _storage.DeleteAsync(nameof(ServiceBusConnection));
         }
 
-        await _storage.SetAsync(nameof(ServiceBusConnectionInfo), connectionInfo);
+        await _storage.SetAsync(nameof(ServiceBusConnection), connection);
         _navigationManager.NavigateTo(PageConstants.OverviewPage);
     }
 }

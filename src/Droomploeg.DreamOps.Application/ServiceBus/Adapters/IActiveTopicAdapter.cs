@@ -13,11 +13,11 @@ public interface IActiveTopicAdapter<TSendMessage, TReceiveMessage>
     /// Send message.
     /// </summary>
     /// <param name="topic">Name of the topic</param>
-    /// <param name="message"><see cref="ICollection{T}"/> of <see cref="TSendMessage"/></param>
+    /// <param name="message"><see cref="TSendMessage"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns><see langword="true"/> if send</returns>
     Task<bool> SendAsync(string topic,
-        ICollection<TSendMessage> message,
+        TSendMessage message,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -68,7 +68,7 @@ public interface IActiveTopicAdapter<TSendMessage, TReceiveMessage>
     /// <param name="description">Description of deadlettering</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns><see langword="true"/> if dead-lettered</returns>
-    Task<bool> DeadLetterMessagesAsync(string topic, string subscription,
+    Task<bool> DeadLetterMessageAsync(string topic, string subscription,
         TReceiveMessage message,
         string source,
         string reason,

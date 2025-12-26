@@ -22,12 +22,9 @@
                 <NavLink href="@PageConstants.SubscriptionOverviewPage">Subscriptions</NavLink>
             </div>
 
-            @if (_backgroundServiceEnabled)
-            {
-                <div class="menu-item background-item">
-                    <NavLink href="@PageConstants.JobServicePage">Background jobs</NavLink>
-                </div>
-            }
+            <div class="menu-item background-item">
+                <NavLink href="@PageConstants.BackgroundJobsPage">Background jobs</NavLink>
+            </div>
         }
     </div>
 </div>

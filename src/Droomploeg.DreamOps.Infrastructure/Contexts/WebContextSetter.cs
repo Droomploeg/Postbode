@@ -33,8 +33,8 @@ public class WebContextSetter : IContextSetter
     /// <exception cref="InvalidServiceBusConnectionException"></exception>
     public async Task<ApplicationContext> GetAndUpdateAsync()
     {
-        var result = await _protectedSessionStorage.GetAsync<ServiceBusConnectionInfo>(nameof(ServiceBusConnectionInfo));
-        if (!result.Success || result.Value is null || result.Value.Connection.IsNotDefined)
+        var result = await _protectedSessionStorage.GetAsync<ServiceBusConnection?>(nameof(ServiceBusConnection));
+        if (!result.Success || result.Value is null || result.Value.Value.IsNotDefined)
         {
             throw new InvalidServiceBusConnectionException();
         }
@@ -42,8 +42,7 @@ public class WebContextSetter : IContextSetter
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        _context.CurrentConnection = result.Value.Connection;
-        _context.CurrentConnectionType = ServiceBusConnectionType.UserAccount;
+        _context.CurrentConnection = result.Value.Value;
         _context.UserName = authState.User.Identity?.Name ?? "Anonymous";
 
         return _context;

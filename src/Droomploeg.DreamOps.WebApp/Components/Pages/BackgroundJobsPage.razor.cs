@@ -1,14 +1,11 @@
 ﻿using Droomploeg.DreamOps.Domain.Workers.Models;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
-public partial class JobServicePage
+public partial class BackgroundJobsPage
 {
 
     // TODO: Implement background job service page
-    // TODO: Queue/Subscription background service action disable when not enabled
-    // TODO: Background service running with managed identity
     // TODO: Audit log for all actions incl. background job actions
 
     private readonly List<WorkerItem> _items = [];

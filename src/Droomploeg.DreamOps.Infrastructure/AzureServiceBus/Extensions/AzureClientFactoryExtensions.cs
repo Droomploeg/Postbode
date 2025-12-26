@@ -1,7 +1,5 @@
-﻿using System.Net.Sockets;
-using Azure.Messaging.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using Droomploeg.DreamOps.Application;
 using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.Infrastructure.Contexts;
 using Microsoft.Extensions.Azure;
@@ -15,18 +13,18 @@ public static class AzureClientFactoryExtensions
         ArgumentNullException.ThrowIfNull(factory, nameof(factory));
         ArgumentNullException.ThrowIfNull(context, nameof(context));
 
-        var clientName = context.CurrentConnection.ClientName(context.CurrentConnectionType); 
+        var clientName = context.CurrentConnection.ClientName(ServiceBusConnectionType.ServiceAccount);
 
         return factory.CreateClient(clientName);
 
     }
 
-    public static ServiceBusClient CreateClient(this IAzureClientFactory<ServiceBusClient> factory, ApplicationContext context)
+    public static ServiceBusClient CreateClient(this IAzureClientFactory<ServiceBusClient> factory, ApplicationContext context, ServiceBusConnectionType connectionType)
     {
         ArgumentNullException.ThrowIfNull(factory, nameof(factory));
         ArgumentNullException.ThrowIfNull(context, nameof(context));
 
-        var clientName = context.CurrentConnection.ClientName(context.CurrentConnectionType);
+        var clientName = context.CurrentConnection.ClientName(connectionType);
 
         return factory.CreateClient(clientName);
     }

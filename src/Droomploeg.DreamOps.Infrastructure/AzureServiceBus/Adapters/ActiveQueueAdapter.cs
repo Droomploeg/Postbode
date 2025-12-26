@@ -1,6 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
 using Droomploeg.DreamOps.Infrastructure.Contexts;
 using Microsoft.Extensions.Azure;
@@ -26,13 +27,13 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
         _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
     }
 
-    public async Task<bool> SendAsync(string queue, ICollection<ServiceBusMessage> messages, CancellationToken cancellationToken = default)
+    public async Task<bool> SendAsync(string queue, ServiceBusMessage message, CancellationToken cancellationToken = default)
     {
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         var sender = client
             .CreateSender(queue);
 
-        await sender.SendBulkMessageAsync(messages, cancellationToken);
+        await sender.SendBulkMessageAsync([message], cancellationToken);
         await sender.CloseAsync(cancellationToken);
 
         return true;
@@ -51,7 +52,7 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
             return [];
         }
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         var receiver = client.CreateReceiver(queue, ServiceBusConstants.PeekLockOptions);
         var messages = await receiver.PeekMessagesAsync(numberOfMessages, fromSequenceNumber, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
@@ -73,7 +74,7 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
             return;
         }
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
         if (azureQueue.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(queue, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);
@@ -101,7 +102,7 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
         }
 
         var result = false;
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         if (azureQueue.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(queue, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);
@@ -127,7 +128,7 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
         return result;
     }
 
-    public async Task<bool> DeadLetterMessagesAsync(string queue, ServiceBusReceivedMessage message, string source, string reason, string description,
+    public async Task<bool> DeadLetterMessageAsync(string queue, ServiceBusReceivedMessage message, string source, string reason, string description,
         CancellationToken cancellationToken)
     {
         var adminClient = _adminClientFactory.CreateClient(_context);
@@ -144,7 +145,7 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
         var result = false;
         var dlqProperties = ServiceBusHelper.GetDeadLetterProperties(source, reason, description);
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         if (azureQueue.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(queue, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);

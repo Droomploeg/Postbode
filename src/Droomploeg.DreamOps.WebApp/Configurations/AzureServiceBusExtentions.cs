@@ -17,29 +17,25 @@ internal static class AzureServiceBusExtentions
         ArgumentNullException.ThrowIfNull(configuration);
 
         var managedIdentityClientId = configuration["ManagedIdentityClientId"];
-        var configConnectionList = configuration.GetSection(AzureServiceBusConnection.SectionName).Get<List<AzureServiceBusConnection>>() ?? [];
+        var configConnectionList = configuration
+            .GetSection(AzureServiceBusConnection.SectionName)
+            .Get<List<AzureServiceBusConnection>>() ?? []; 
+        
         var defaultCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
         {
             ManagedIdentityClientId = managedIdentityClientId
         });
 
+
         foreach (var connection in configConnectionList)
         {
             services.RegisterAzureUserAccountConnections(connection);
-            if (IsServiceAccountEnabled(managedIdentityClientId, connection.EnableBackgroundService))
-            {
-                services.RegisterAzureServiceAccountConnections(connection, defaultCredential);
-            }
+            services.RegisterAzureServiceAccountConnections(connection, defaultCredential);
         }
 
+
         var connectionList = configConnectionList
-            .Select(c => new ServiceBusConnectionInfo
-            (
-                new ServiceBusConnection(c.Name),
-                IsServiceAccountEnabled(managedIdentityClientId, c.EnableBackgroundService)
-                    ? [ServiceBusConnectionType.UserAccount, ServiceBusConnectionType.ServiceAccount]
-                    : [ServiceBusConnectionType.UserAccount])
-            );
+            .Select(c => new ServiceBusConnection(c.Name)) ?? [];
 
         var connectionService = new ConnectionService(connectionList);
         services
@@ -82,8 +78,4 @@ internal static class AzureServiceBusExtentions
 
         return services;
     }
-
-    private static bool IsServiceAccountEnabled(string? managedIdentityClientId, bool enableBackgroundService)
-        => !string.IsNullOrWhiteSpace(managedIdentityClientId) && enableBackgroundService;
-
 }

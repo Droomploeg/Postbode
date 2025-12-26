@@ -28,7 +28,6 @@ public class WorkerService : IWorkerService
     public bool Add(WorkerItem item)
     {
         //_logger.LogInformation("Added work item {WorkItemId} of type {WorkItemType}", item.Id, item.GetType().Name);
-
         lock (_sync)
         {
             _workItemList.Add(item);

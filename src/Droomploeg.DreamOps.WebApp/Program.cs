@@ -1,4 +1,5 @@
 ﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.WebApp.Components;
 using Droomploeg.DreamOps.WebApp.Configurations;
 using Droomploeg.DreamOps.WebApp.Security;
@@ -76,11 +77,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.UseSession();
-app.MapPost("/connection", (HttpContext ctx, [FromBody] string clientName) =>
-{
-    ctx.Session.SetString(nameof(ServiceBusConnectionInfo), clientName);
-    return Results.Ok();
-});
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

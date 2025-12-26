@@ -1,6 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
 using Droomploeg.DreamOps.Infrastructure.Contexts;
 using Microsoft.Extensions.Azure;
@@ -26,13 +27,13 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<bool> SendAsync(string topic, ICollection<ServiceBusMessage> messages, CancellationToken cancellationToken = default)
+    public async Task<bool> SendAsync(string topic, ServiceBusMessage messages, CancellationToken cancellationToken = default)
     {
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         var sender = client
             .CreateSender(topic);
 
-        await sender.SendBulkMessageAsync(messages, cancellationToken);
+        await sender.SendBulkMessageAsync([messages], cancellationToken);
         return true;
     }
 
@@ -50,7 +51,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
             return [];
         }
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         var receiver = client.CreateReceiver(topic, subscription, ServiceBusConstants.PeekLockOptions);
         var messages = await receiver.PeekMessagesAsync(numberOfMessages, fromSequenceNumber, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
@@ -73,7 +74,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
             return;
         }
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
         if (azureSubscription.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);
@@ -102,7 +103,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         }
 
         var result = false;
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         if (azureSubscription.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);
@@ -128,7 +129,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         return result;
     }
 
-    public async Task<bool> DeadLetterMessagesAsync(string topic, string subscription, ServiceBusReceivedMessage message, string source, string reason, string description,
+    public async Task<bool> DeadLetterMessageAsync(string topic, string subscription, ServiceBusReceivedMessage message, string source, string reason, string description,
         CancellationToken cancellationToken)
     {
         var adminClient = _adminClientFactory.CreateClient(_context);
@@ -145,7 +146,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         var result = false;
         var dlqProperties = ServiceBusHelper.GetDeadLetterProperties(source, reason, description);
 
-        var client = _clientFactory.CreateClient(_context);
+        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         if (azureSubscription.RequiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);

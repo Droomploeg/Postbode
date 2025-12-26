@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\images\background.svg" />
     <Content Remove="wwwroot\images\notification.svg" />
   </ItemGroup>
 
@@ -41,5 +42,9 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Components\Controls\AzureServiceBus\SendMessageControl.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\images\background.svg" />
   </ItemGroup>
 </Project>

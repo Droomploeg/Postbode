@@ -9,14 +9,7 @@ namespace Droomploeg.DreamOps.Application.ServiceBus.Services;
 public interface IConnectionService
 {
     /// <summary>
-    /// Get <see cref="IList{T}"/> of <see cref="ServiceBusConnectionInfo"/>
+    /// Get <see cref="IList{T}"/> of <see cref="ServiceBusConnection"/>
     /// </summary>
-    ServiceBusConnectionInfo[] Connections { get; }
-
-    /// <summary>
-    /// Get <see cref="ServiceBusConnectionInfo"/> with <see cref="ServiceBusConnection"/>
-    /// </summary>
-    /// <param name="connection"><see cref="ServiceBusConnection"/></param>
-    /// <returns><see cref="ServiceBusConnectionInfo"/> if found else null</returns>
-    public ServiceBusConnectionInfo? GetConnection(ServiceBusConnection connection);
+    ServiceBusConnection[] Connections { get; }
 }

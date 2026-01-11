@@ -10,8 +10,8 @@ public class WorkerItem
     private readonly Func<CancellationToken, Task> _action;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
-    private readonly List<WorkerAction> _actions = new();
-    private readonly List<WorkerEvent> _events = new();
+    private readonly List<WorkerAction> _actions = [];
+    private readonly List<WorkerEvent> _events = [];
 
     /// <summary>
     /// Initializes a new instance of <see cref="WorkerItem"/>.
@@ -23,7 +23,7 @@ public class WorkerItem
     public WorkerItem(string userName, string entity, string description, Func<CancellationToken, Task> workerAction)
     {
         _action = workerAction;
-        UserName = string.IsNullOrWhiteSpace(userName)
+        Username = string.IsNullOrWhiteSpace(userName)
             ? "Anonymous"
             : userName;
         Entity = entity;
@@ -41,9 +41,9 @@ public class WorkerItem
     public Guid Id { get; } = Guid.NewGuid();
 
     /// <summary>
-    /// Gets the user name who created the work item.
+    /// Gets the username who created the work item.
     /// </summary>
-    public string UserName { get; } = "Anonymous";
+    public string Username { get; } = "Anonymous";
 
     /// <summary>
     /// Gets the entity associated with this work item.
@@ -60,6 +60,11 @@ public class WorkerItem
     /// </summary>
     public WorkItemState State => _events.Last().State;
 
+    /// <summary>
+    /// Gets the <see cref="DateTimeOffset"/> of the creation of the work item.
+    /// </summary>
+    public DateTimeOffset CreatedTimestamp => _events.First().Timestamp;    
+    
     /// <summary>
     /// Gets the <see cref="DateTimeOffset"/> of the last update to the work item.
     /// </summary>
@@ -87,17 +92,25 @@ public class WorkerItem
     /// Requests cancellation of the work item and records the cancel action.
     /// This method is asynchronous only for API symmetry; cancellation is requested synchronously.
     /// </summary>
-    /// <param name="userName">Name of the user requesting cancellation.</param>
+    /// <param name="username">Name of the user requesting cancellation.</param>
     /// <returns>A completed <see cref="Task"/> once the cancellation request has been recorded.</returns>
-    public Task CancelAsync(string userName)
+    public Task CancelAsync(string username)
     {
-        _actions.Add(new WorkerAction(userName, WorkItemAction.Cancel));
-        _cancellationTokenSource.Cancel();
+        _actions.Add(new WorkerAction(username, WorkItemAction.Cancel));
+        if (_events.Last().State == WorkItemState.Started)
+        {
+            _cancellationTokenSource.Cancel();
+        }
+        else
+        {
+            var cancelledEvent = new WorkerEvent(WorkItemState.Cancelled);
+            _events.Add(cancelledEvent);
+        }
         return Task.CompletedTask;
     }
 
     /// <summary>
-    /// Executes the work item's action. Records start, completion, cancellation and failure events.
+    /// Executes the work item's action. Records start, completion, cancellation, and failure events.
     /// Exceptions thrown by the action are recorded as a failed event and then rethrown.
     /// </summary>
     /// <returns>A task that represents the asynchronous execute operation.</returns>
@@ -106,7 +119,7 @@ public class WorkerItem
     {
         try
         {
-            var startAction = new WorkerAction(UserName, WorkItemAction.Start);
+            var startAction = new WorkerAction(Username, WorkItemAction.Start);
             _actions.Add(startAction);
             var startEvent = new WorkerEvent(WorkItemState.Started);
             _events.Add(startEvent);
@@ -130,7 +143,7 @@ public class WorkerItem
     }
 
     /// <summary>
-    /// Get <see cref="DateTimeOffset"> of <see cref="WorkItemState"/>.
+    /// Get <see cref="DateTimeOffset" /> of <see cref="WorkItemState"/>.
     /// </summary>
     /// <param name="state"><see cref="WorkItemState"/></param>
     /// <returns><see cref="DateTimeOffset"/></returns>
@@ -138,7 +151,7 @@ public class WorkerItem
         => _events.Where(e => e.State == state)
             .Select(e => e.Timestamp)
             .FirstOrDefault();
-
+    
     /// <summary>
     /// Gets a read-only collection of actions performed on the work item.
     /// </summary>

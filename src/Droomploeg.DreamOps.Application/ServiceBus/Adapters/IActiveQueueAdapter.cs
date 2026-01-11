@@ -5,7 +5,7 @@
 /// </summary>
 /// <typeparam name="TSendMessage">Outgoing servicebus message</typeparam>
 /// <typeparam name="TReceiveMessage">Incoming servicebus message</typeparam>
-public interface IActiveQueueAdapter<TSendMessage, TReceiveMessage>
+public interface IActiveQueueAdapter<in TSendMessage, TReceiveMessage>
     where TReceiveMessage : notnull
 {
     /// <summary>

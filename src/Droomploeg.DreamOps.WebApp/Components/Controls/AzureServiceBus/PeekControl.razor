@@ -9,8 +9,8 @@
     </TabControl>
 
     <buttonbar>
-        <div>Message start index <InputNumber @bind-Value="@Model.StartIndex" class="number" /> </div>
-        <div>Number of messages<InputNumber @bind-Value="@Model.NumberOfMessages" class="number" /></div>
+        <div>Message start index <InputNumber @bind-Value="@StartIndex" class="number" /> </div>
+        <div>Number of messages<InputNumber @bind-Value="@NumberOfMessages" class="number" /></div>
         <button class="peek-button">Peek</button>
         @if (_source == MessageSource.DeadLetterMessage)
         {
@@ -49,7 +49,7 @@
     <GridValueItemControl TItem="ServiceBusReceivedMessage">
         <div class="message-actions">
             @{
-                var index = Messages!.ToList()!.IndexOf(context) + Model.StartIndex;
+                var index = Messages!.ToList()!.IndexOf(context) + StartIndex;
             }
             @if (_source == MessageSource.ActiveMessage && index == 1)
             {

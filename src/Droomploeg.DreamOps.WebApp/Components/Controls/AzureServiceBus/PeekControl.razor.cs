@@ -8,7 +8,7 @@ namespace Droomploeg.DreamOps.WebApp.Components.Controls.AzureServiceBus;
 
 public partial class PeekControl : ComponentBase
 {
-    [SupplyParameterFromForm] private PeekModel Model { get; set; } = new PeekModel();
+    [SupplyParameterFromForm] private PeekModel? Model { get; set; } 
 
     [Parameter] public bool SessionEnabled { get; set; } = false;
 
@@ -34,10 +34,36 @@ public partial class PeekControl : ComponentBase
 
     [Parameter] public EventCallback<ServiceBusReceivedMessage> OnSelected { get; set; }
 
+    protected override void OnInitialized()
+    {
+        Model = new PeekModel();
+        base.OnInitialized();
+    }
+    
     private MessageSource _source = MessageSource.ActiveMessage;
     private string ActiveMessageTabTitle => $"Active ({ActiveMessageCount})";
     private string DeadLetterMessageTabTitle => $"Dead-letter ({DeadLetterMessageCount})";
 
+    private int StartIndex
+    {
+        get => Model?.StartIndex ?? 0;
+        set
+        {
+            Model ??= new PeekModel();
+            Model.StartIndex = value;
+        } 
+    }
+
+    private int NumberOfMessages
+    {
+        get => Model?.NumberOfMessages ?? 0;
+        set
+        {
+            Model ??= new PeekModel();
+            Model.NumberOfMessages = value;
+        }
+    }
+    
     private async Task PeekAsync()
     {
         if (OnPeek.HasDelegate)

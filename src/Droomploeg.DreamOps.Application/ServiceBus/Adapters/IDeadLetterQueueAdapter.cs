@@ -7,7 +7,7 @@ namespace Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 /// </summary>
 /// <typeparam name="TSendMessage">Outgoing servicebus message</typeparam>
 /// <typeparam name="TReceiveMessage">Incoming servicebus message</typeparam>
-public interface IDeadLetterQueueAdapter<TSendMessage, TReceiveMessage>
+public interface IDeadLetterQueueAdapter<in TSendMessage, TReceiveMessage>
     where TReceiveMessage : notnull
 {
     /// <summary>

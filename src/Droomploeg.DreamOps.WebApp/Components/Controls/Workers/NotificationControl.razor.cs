@@ -7,13 +7,17 @@ public partial class NotificationControl : ComponentBase
     [Parameter] public NotificationModel Model { get; set; } = null!;
     [Parameter] public EventCallback OnClose { get; set; }
 
-    public bool IsVisible { get; set; } = true;
+    private bool IsVisible { get; set; } = true;
 
-    public string Message => Model.Message;
+    private string Message => Model.Message;
+    
+    private string Entity => Model.Entity;
 
-    public string NotificationClass => NotificationIconHelper.GetIcon(Model.Type);
+    private string State => Model.State;
 
-    public void Close()
+    private string NotificationClass => NotificationIconHelper.GetIcon(Model.Type);
+
+    private void Close()
     {
         IsVisible = false;
         OnClose.InvokeAsync();

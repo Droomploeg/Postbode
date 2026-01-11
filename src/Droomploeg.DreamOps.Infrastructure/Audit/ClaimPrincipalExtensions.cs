@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Droomploeg.DreamOps.Infrastructure.Audit.Disabled;
+namespace Droomploeg.DreamOps.Infrastructure.Audit;
 
 public static class ClaimPrincipalExtensions
 {
@@ -51,7 +51,7 @@ public static class ClaimPrincipalExtensions
         return null;
     }
 
-    public static string? GetUserTenantId(this ClaimsPrincipal principal)
+    public static string? GetTenantId(this ClaimsPrincipal principal)
     {
         ArgumentNullException.ThrowIfNull(principal);
 

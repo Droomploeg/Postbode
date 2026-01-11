@@ -8,30 +8,30 @@ public enum WorkItemState
     /// <summary>
     /// Invalid state.
     /// </summary>
-    Invalid,
+    Invalid = -1,
 
     /// <summary>
     /// Scheduled state.
     /// </summary>
-    Scheduled,
+    Scheduled = 0,
 
     /// <summary>
     /// Started state.
     /// </summary>
-    Started,
+    Started = 1,
 
     /// <summary>
     /// Completed state.
     /// </summary>
-    Completed,
+    Completed = 2,
 
     /// <summary>
     /// Failed state.
     /// </summary>
-    Failed,
+    Failed = 3,
 
     /// <summary>
     /// Cancelled state.
     /// </summary>
-    Cancelled
+    Cancelled = 4
 }

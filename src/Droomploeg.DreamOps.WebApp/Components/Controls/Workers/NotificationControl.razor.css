@@ -1,32 +1,38 @@
-﻿notification {
-    padding: 15px;
-    border-radius: 5px;
+﻿.notification-item {
     display: flex;
-    min-width: 250px;
-    margin-top: 12px;
-    border: 1px solid rgb(200,200,200);
-    box-shadow: -5px 0px 15px rgba(0, 0, 0, 0.2);
-    background: rgb(255, 255, 255);
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;    
-
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.6rem;
+    border: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+    min-width: 0; 
+    background-color: rgb(255, 255, 255, 0.95);
+    margin-bottom: 1rem;
 }
 
-    notification div:first-child{
-        width: 15px;
-        height: 15px;
-    }
+.notification-item .icon {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    display: inline-block;
+    background-size: cover;
+    background-position: center;
+    color: rgb(0,0,0);
+}
 
-    notification:first-child {
-        max-width: 200px;
-        word-wrap: break-word;
-    }
+.notification-item .notification-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1 1 auto;
+    min-width: 0; 
+    overflow: hidden;
+}
 
-    notification close-button {
-        width: 25px;
-        height: 25px;
-        border-radius: 3px;
-    }
-
+.notification-item .notification-body .title {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+}

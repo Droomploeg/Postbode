@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Droomploeg.DreamOps.Domain.Workers.Models;
+﻿using Droomploeg.DreamOps.Domain.Workers.Models;
 
 namespace Droomploeg.DreamOps.Application.Workers.Services;
 
@@ -9,33 +8,24 @@ namespace Droomploeg.DreamOps.Application.Workers.Services;
 public interface INotificationService
 {
     /// <summary>
-    /// Try get Pop-Up Notification.
+    /// Try to update popup notifications.
+    /// </summary>
+    /// <param name="inputNotifications">Current <see cref="IList{T}"/> of <see cref="Notification"/></param>
+    /// <param name="currentTimestamp"><see cref="DateTimeOffset"/></param>
+    /// <param name="duration"><see cref="TimeSpan"/></param>
+    /// <param name="outputNotifications">New <see cref="IList{T}"/> of <see cref="Notification"/></param>
+    /// <returns><see langword="true"/> if there are popup notifications changed</returns>
+    bool TryUpdatePopupNotifications(IList<Notification> inputNotifications, 
+        DateTimeOffset currentTimestamp, TimeSpan duration, 
+        out IList<Notification> outputNotifications);
+    
+    /// <summary>
+    /// Update notifications.
     /// </summary>
     /// <param name="currentNotifications">Current <see cref="IList{T}"/> of <see cref="Notification"/></param>
-    /// <param name="dateTimeOffset"><see cref="DateTimeOffset"/></param>
-    /// <param name="durration"><see cref="TimeSpan"/></param>
-    /// <param name="newNotifications">New <see cref="IList{T}"/> of <see cref="Notification"/></param>
-    /// <returns><see langword="true"/> if there are notifications</returns>
-    bool TryUpdatePopupNotifications(IList<Notification> currentNotifications, 
-        DateTimeOffset dateTimeOffset, TimeSpan durration, 
-        out IList<Notification> newNotifications);
+    /// <param name="currentTimestamp"><see cref="DateTimeOffset"/></param>
+    /// <returns>New <see cref="IList{T}"/> of <see cref="Notification"/></returns>
+    IList<Notification> UpdateNotifications(IList<Notification> currentNotifications, 
+        DateTimeOffset currentTimestamp);
 
-    /// <summary>
-    /// Cleanup.
-    /// </summary>
-    /// <param name="dateTimeOffset"><see cref="DateTimeOffset"/></param>
-    /// <returns><see langword="true"/> after clean up</returns>
-    bool CleanUp(DateTimeOffset dateTimeOffset);
-
-    /// <summary>
-    /// Remove notification by Id.
-    /// </summary>
-    /// <param name="Id"><see cref="Guid"/></param>
-    void Remove(Guid Id);
-
-    /// <summary>
-    /// Get all notifications.
-    /// </summary>
-    /// <returns></returns>
-    ICollection<Notification> GetAll();
 }

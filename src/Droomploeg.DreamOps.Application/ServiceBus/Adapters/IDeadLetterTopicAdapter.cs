@@ -7,7 +7,7 @@ namespace Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 /// </summary>
 /// <typeparam name="TSendMessage">Outgoing servicebus message</typeparam>
 /// <typeparam name="TReceiveMessage">Incoming servicebus message</typeparam>
-public interface IDeadLetterTopicAdapter<TSendMessage, TReceiveMessage>
+public interface IDeadLetterTopicAdapter<in TSendMessage, TReceiveMessage>
 {
     /// <summary>
     /// Peek dead-letter messages from the topic.

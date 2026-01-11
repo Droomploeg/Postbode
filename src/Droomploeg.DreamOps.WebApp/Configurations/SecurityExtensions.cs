@@ -7,17 +7,20 @@ namespace Droomploeg.DreamOps.WebApp.Configurations;
 
 internal static class SecurityExtensions
 {
-    internal static IServiceCollection AddSecurityServices(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services
-            .AddMicrosoftIdentityWebAppAuthentication(configuration, "AzureEntra")
-            .EnableTokenAcquisitionToCallDownstreamApi()
-            .AddInMemoryTokenCaches();
-        services
-            .AddCascadingAuthenticationState();
-        services
-            .AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+        internal IServiceCollection AddSecurityServices(IConfiguration configuration)
+        {
+            services
+                .AddMicrosoftIdentityWebAppAuthentication(configuration, "AzureEntra")
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                .AddInMemoryTokenCaches();
+            services
+                .AddCascadingAuthenticationState();
+            services
+                .AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
-        return services;
+            return services;
+        }
     }
 }

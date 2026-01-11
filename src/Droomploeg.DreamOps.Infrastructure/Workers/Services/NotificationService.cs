@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Transactions;
-using Droomploeg.DreamOps.Application.Workers.Services;
+﻿using Droomploeg.DreamOps.Application.Workers.Services;
 using Droomploeg.DreamOps.Domain.Workers.Models;
 using Droomploeg.DreamOps.Domain.Workers.Types;
 
@@ -9,65 +6,70 @@ namespace Droomploeg.DreamOps.Infrastructure.Workers.Services;
 
 public class NotificationService(IWorkerService workerService) : INotificationService
 {
-    private readonly List<Notification> _popupNotifications = [];
-    private readonly IWorkerService _workerService = workerService;
-    private DateTimeOffset _lastPopupDateTimeOffset = DateTimeOffset.Now;
-
-    public bool CleanUp(DateTimeOffset dateTimeOffset)
+    private readonly IWorkerService _workerService = workerService ?? throw new ArgumentNullException(nameof(workerService));
+    
+    public bool TryUpdatePopupNotifications(IList<Notification> inputNotifications, 
+        DateTimeOffset currentTimestamp, TimeSpan duration, 
+        out IList<Notification> outputNotifications)
     {
-        //var removeNotifications = _notifications
-        //    .Where(n => n.Timestamp < dateTimeOffset)
-        //    .ToList();
+        var expiredTimestamp = currentTimestamp.Add(duration);
 
-        //removeNotifications.ForEach(n => _notifications.Remove(n));
-
-        //return removeNotifications.Count != 0;
-        return false;
-    }
-
-    public bool TryUpdatePopupNotifications(IList<Notification> currentPopupNotifications, 
-        DateTimeOffset dateTimeOffset, TimeSpan duration, 
-        out IList<Notification> updatePopupNotifications)
-    {
-        var deleteTimestamp = dateTimeOffset.Add(duration);
-        var activeNotifications = currentPopupNotifications.Where(n => n.Timestamp >= deleteTimestamp)
-            .Select(wi => wi.Id);
+        var activeNotifications = inputNotifications
+            .Where(n => n.TimestampStateChanged - expiredTimestamp > TimeSpan.FromSeconds(0))
+            .Select(wi => wi.Id)
+            .ToList();
 
         var newNotifications = _workerService.GetAll()
-                .Where(n => _lastPopupDateTimeOffset.Ticks < n.UpdatedTimestamp.Ticks);
+                .Where(n => currentTimestamp - n.UpdatedTimestamp < TimeSpan.FromSeconds(1))
+                .ToList();
 
-        var isUpdated = newNotifications.Any();
-        if (isUpdated)
-        { 
-            _lastPopupDateTimeOffset = newNotifications.Max(n => n.UpdatedTimestamp).Add(TimeSpan.FromSeconds(-1));
-        }
+        var isUpdated = newNotifications.Count != 0 || inputNotifications.Count != activeNotifications.Count;
         
-        var allPopupNotifications = activeNotifications.Union(newNotifications.Select(n => n.Id)).ToList();
+        var allPopupNotifications = activeNotifications
+            .Union(newNotifications.Select(n => n.Id))
+            .ToList();
 
-        Console.WriteLine(allPopupNotifications.Count());
-
-        updatePopupNotifications = [.. _workerService.GetAll()
+        outputNotifications = [.. _workerService.GetAll()
             .Where(wi => allPopupNotifications.Contains(wi.Id))
-            .OrderBy(wi => wi.GetEventDateTime(WorkItemState.Scheduled))
             .Select(wi => new Notification(
                 wi.Id,
-                wi.UpdatedTimestamp,
                 wi.Entity,
                 wi.Description,
+                wi.CreatedTimestamp,
+                wi.UpdatedTimestamp,
                 wi.State))];
 
         return isUpdated;
     }
 
-    public void Remove(Guid id)
+    
+    public IList<Notification> UpdateNotifications(IList<Notification> currentNotifications, 
+        DateTimeOffset currentTimestamp)
     {
-        var index = _popupNotifications.FindIndex(n => n.Id == id);
-        if (index > -1)
-        {
-            _popupNotifications.RemoveAt(index);
-        }
+        var newNotifications = _workerService.GetAll()
+            .Where(n => currentTimestamp - n.UpdatedTimestamp < TimeSpan.FromSeconds(1))
+            .ToList();
+
+        var allNotifications = currentNotifications
+            .Where(n => !IsCompletedAndExpired(n, currentTimestamp))
+            .Select(n => n.Id)
+            .Union(newNotifications.Select(n => n.Id))
+            .ToList();
+
+        return [.. _workerService.GetAll()
+            .Where(wi => allNotifications.Contains(wi.Id))
+            .Select(wi => new Notification(
+                wi.Id,
+                wi.Entity,
+                wi.Description,
+                wi.CreatedTimestamp,
+                wi.UpdatedTimestamp,
+                wi.State))];
     }
 
-    public ICollection<Notification> GetAll()
-        => [.. _popupNotifications.OrderByDescending(n => n.Timestamp)];
+    private bool IsCompletedAndExpired(Notification notification, DateTimeOffset currentTimestamp)
+    {
+        return (notification.State is WorkItemState.Completed or WorkItemState.Failed or WorkItemState.Cancelled)
+            && (currentTimestamp - notification.TimestampStateChanged) > TimeSpan.FromSeconds(5);
+    }
 }

@@ -166,7 +166,7 @@ public partial class QueueDetailPage
             QueueName,
             _selectedMessage,
             model.ToSendMessage(),
-            new ResubmitOptions(model.GenenerateMessageId, model.DeleteMessageAfterResubmit));
+            new ResubmitOptions(model.GenerateMessageId, model.DeleteMessageAfterResubmit));
 
         CloseOverlaysAndDialogs();
 

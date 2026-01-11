@@ -35,32 +35,30 @@
 
                     <OffCanvasControl Visible="@_notificationPanelVisible" Title="Notifications" OnClose="(value) => CloseNotificationPanel(value)">
                         <div class="notification-container">
-                            @if (_notifications.Count > 0)
+                            @if (_listNotifications.Count > 0)
                             {
-                                @foreach (var notification in _notifications)
+                                @foreach (var notification in ListNotificationsToDisplay)
                                 {
                                     <div class="notification-item">
-                                        <div class="icon @NotificationIconHelper.GetIcon(notification.Type)" />
-                                        <div>
-                                            <div class="title">@notification.Entity</div>
+                                        <div class="icon @NotificationIconHelper.GetIcon(notification.Type)"></div>
+                                        <div class="notification-body">
+                                            <div class="entity">@notification.Entity</div>
                                             <div class="message">@notification.Message</div>
-                                            <div class="datetime">@notification.Timestamp.GetTimeAgo()</div>
+                                            <div class="state">@notification.State</div>
+                                            <div class="datetime">@notification.TimestampCreated.GetTimeAgo()</div>
                                         </div>
-                                        @if (true)
-                                        {
-                                            <close-button @onclick="() => RemoveNotificationItem(notification.Id)">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" role="img" width="25" height="25">
-                                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                                </svg>
-                                            </close-button>
-                                        }
+                                        <div class="close-button" @onclick="() => RemoveNotificationItem(notification.Id)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" role="img" width="25" height="25">
+                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 }
                             }
                             else
                             {
                                 <div class="notification-item">
-                                    <div class="icon info" />
+                                    <div class="icon info" ></div>
                                     <div>
                                         <div class="title">No notifications</div>
                                         <div class="message">There are no notifications</div>

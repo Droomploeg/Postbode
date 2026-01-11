@@ -1,4 +1,4 @@
-﻿namespace Droomploeg.DreamOps.Infrastructure.Audit.Disabled;
+﻿namespace Droomploeg.DreamOps.Infrastructure.Audit;
 
 public interface IAuditContext
 {
@@ -9,4 +9,5 @@ public interface IAuditContext
     string? RemoteIp { get; }
     string? UserAgent { get; }
     string? TenantId { get; }
+    IDictionary<string, string>? Properties { get; }
 }

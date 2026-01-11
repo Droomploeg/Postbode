@@ -6,18 +6,18 @@ namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
 public partial class MainLayout : IDisposable
 {
-    private List<Notification> _popupNotifications = [];
-    private List<NotificationModel> _notifications = [];
-    private bool _notificationPanelVisible = false;
+    private readonly List<Notification> _popupNotifications = [];
+    private readonly List<Notification> _listNotifications = [];
+    private bool _notificationPanelVisible;
     private IDisposable? _locationChangeHandler;
     private Timer? _timer;
 
-    private Menu? _menu = default;
-    private NavigationPath? _navigationPath = default;
+    private Menu? _menu;
+    private NavigationPath? _navigationPath;
 
     protected override void OnInitialized()
     {
-        _timer = new Timer(TimerElapsed, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+        _timer = new Timer(TimerElapsed, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
         base.OnInitialized();
     }
 
@@ -26,7 +26,7 @@ public partial class MainLayout : IDisposable
         if (firstRender)
         {
             _locationChangeHandler = _navigationManager.RegisterLocationChangingHandler(LocationChangingHandler);
-            var relativeUrl = GetRelativeUri(_navigationManager.Uri.ToString());
+            var relativeUrl = GetRelativeUri(_navigationManager.Uri);
             await (_menu?.UpdateAsync(relativeUrl) ?? Task.CompletedTask);
             await (_navigationPath?.UpdatePathAsync(relativeUrl) ?? Task.CompletedTask);
         }
@@ -36,7 +36,12 @@ public partial class MainLayout : IDisposable
 
     private ICollection<NotificationModel> PopupNotificationsToDisplay
         => [.. _popupNotifications
-            .OrderByDescending(n => n.Timestamp)
+            .OrderByDescending(n => n.TimestampStateChanged)
+            .Select(CastToNotificationModel)];
+    
+    private ICollection<NotificationModel> ListNotificationsToDisplay
+        => [.. _listNotifications
+            .OrderBy(n => n.TimestampCreated)
             .Select(CastToNotificationModel)];
     
     private async ValueTask LocationChangingHandler(LocationChangingContext arg)
@@ -53,35 +58,36 @@ public partial class MainLayout : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public void ReturnToHome()
+    private void ReturnToHome()
     {
         _navigationManager.NavigateTo(PageConstants.HomePage, true);
     }
 
-    public void TimerElapsed(object? state)
+    private void TimerElapsed(object? state)
     {
         var nowUtc = DateTimeOffset.UtcNow;
 
         var hasPopupUpdate = _notificationService.TryUpdatePopupNotifications(
             _popupNotifications,
-            nowUtc, TimeSpan.FromSeconds(-3),
+            nowUtc, TimeSpan.FromSeconds(-5),
             out var updatedPopupNotifications);
 
         if (hasPopupUpdate)
         {
-            _popupNotifications = [.. updatedPopupNotifications];
+            _popupNotifications.Clear();
+            _popupNotifications.AddRange(updatedPopupNotifications);
         }
+        
+        var listNotification = _notificationService.UpdateNotifications(
+            _listNotifications,
+            nowUtc);
 
-        //var stateHasChanged = _notificationService.CleanUp(nowUtc.AddMinutes(-3)) ||
-        //if (stateHasChanged)
-        //{
-        //    _notifications = [.._notificationService.GetAll()
-        //        .Select(CastToNotificationModel)];
-        //}
-
-        if (true)
+        _listNotifications.Clear();
+        _listNotifications.AddRange(listNotification);
+       
+        if (hasPopupUpdate || _notificationPanelVisible)
         {
-            InvokeAsync(() => StateHasChanged());
+            InvokeAsync(StateHasChanged);
         }
     }
 
@@ -90,8 +96,10 @@ public partial class MainLayout : IDisposable
             notification.Id,
             notification.Entity,
             notification.Message,
+            notification.State.ToString(),
             notification.Type,
-            notification.Timestamp);
+            notification.TimestampCreated,
+            notification.TimestampStateChanged);
 
     private void ToggleNotification()
     {
@@ -106,8 +114,7 @@ public partial class MainLayout : IDisposable
 
     private void RemoveNotificationItem(Guid id)
     {
-        // todo: notification remove
-        //Monitor.Unregister(id);
+        _listNotifications.RemoveAll(n => n.Id == id);
         StateHasChanged();
     }
 

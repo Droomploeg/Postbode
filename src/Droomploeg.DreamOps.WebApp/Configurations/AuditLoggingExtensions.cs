@@ -1,17 +1,29 @@
-﻿using Droomploeg.DreamOps.Infrastructure.Audit.Disabled;
-using Droomploeg.DreamOps.WebApp.Common;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.DependencyInjection;
+using Droomploeg.DreamOps.Infrastructure.Audit;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
-internal static class AuditLoggingExtensions
+public static class AuditLoggingExtensions
 {
-    internal static IServiceCollection AddAuditLogging(this IServiceCollection services)
+    public static IServiceCollection AddAuditServices(this IServiceCollection services)
     {
-        return services
-            .AddScoped<IAuditLogger, AuditLogger>()
-            .AddScoped<IAuditContextAccessor, AuditContextAccessor>();
+        // services.AddScoped<IAuditContextAccessor, ScopedAuditContextAccessor>();
+        // services.AddSingleton<IAuditService, ApplicationInsightsAuditService>();
+        //
+        // // TelemetryClient is registered by AddApplicationInsightsTelemetry in Program.cs
+        // // but ensure a TelemetryClient is available for constructor injection
+        // services.AddSingleton<TelemetryClient>(sp => {
+        //     var client = sp.GetService<TelemetryClient>();
+        //     return client ?? new TelemetryClient();
+        // });
+        //
+        return services;
     }
 
-    internal static IApplicationBuilder UseAuditEnrichment(this IApplicationBuilder app)
-        => app.UseMiddleware<AuditEnrichmentMiddleware>();
+    public static IApplicationBuilder UseAuditEnrichment(this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<AuditEnrichmentMiddleware>();
+    }
 }
+

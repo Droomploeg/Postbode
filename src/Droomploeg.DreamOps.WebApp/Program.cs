@@ -1,10 +1,6 @@
-﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
-using Droomploeg.DreamOps.Domain.ServiceBus.Types;
-using Droomploeg.DreamOps.WebApp.Components;
+﻿﻿using Droomploeg.DreamOps.WebApp.Components;
 using Droomploeg.DreamOps.WebApp.Configurations;
 using Droomploeg.DreamOps.WebApp.Security;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -59,6 +55,7 @@ builder.Services
     .AddWorkerHostedServices()
     .AddApplicationCore()
     .AddApplicationInsightsTelemetry();
+    //.AddAuditServices();
 
 builder.Host.UseDefaultServiceProvider(o =>
 {
@@ -83,7 +80,7 @@ app.MapRazorComponents<App>()
 
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseAuditEnrichment();
+// app.UseAuditEnrichment();
 
 app.MapLoginAndLogout();
 

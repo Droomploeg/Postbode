@@ -106,7 +106,6 @@ internal static class ServiceBusReceiverExtensions
                 }
             }
 
-
             if (sendBatch.Count > 0)
             {
                 await sender.SendMessagesAsync(sendBatch, cancellationToken);
@@ -175,24 +174,7 @@ internal static class ServiceBusReceiverExtensions
         await receiver.UnlockMessagesAsync(lockedMessages, cancellationToken);
         return result;
     }
-
-    internal static async Task<List<ServiceBusReceivedMessage>> LockMessagesAsync(this ServiceBusReceiver receiver,
-        long numberOfMessagesToReceive, CancellationToken cancellationToken = default)
-    {
-        var calls = (int)Math.Ceiling((double)numberOfMessagesToReceive / ServiceBusConstants.BucketSize);
-
-        Task<IReadOnlyList<ServiceBusReceivedMessage>> receiveMessageCalls = receiver.ReceiveMessagesAsync(ServiceBusConstants.BucketSize, cancellationToken: cancellationToken);
-        
-        var tasks = Enumerable.Range(0, calls)
-            .Select(i => receiveMessageCalls).ToList();
-
-        await Task.WhenAll(tasks);
-
-        return tasks
-                .SelectMany(m => m.Result)
-                .ToList();
-    }
-
+    
     internal static async Task CompleteMessagesAsync(this ServiceBusReceiver receiver, DateTimeOffset dateTime, CancellationToken cancellationToken = default)
     {
         while (true)
@@ -212,29 +194,24 @@ internal static class ServiceBusReceiverExtensions
         }
     }
 
-    //internal static async Task CompleteMessagesAsync(this ServiceBusReceiver receiver, DateTime timestamp, CancellationToken cancellationToken = default)
-    //{
-    //    var canComplete = true;
-    //    while (canComplete)
-    //    {
-    //        var receivedMessageList = await receiver.LockMessagesAsync(ServiceBusConstants.BucketSize, cancellationToken);
-    //        var receivedMessagesToDeleteList = receivedMessageList.Where(m => m.EnqueuedTime < timestamp).ToList();
-    //        if (receivedMessagesToDeleteList.Count == 0)
-    //        {
-    //            return;
-    //        }
+    private static async Task<List<ServiceBusReceivedMessage>> LockMessagesAsync(this ServiceBusReceiver receiver,
+        long numberOfMessagesToReceive, CancellationToken cancellationToken = default)
+    {
+        var calls = (int)Math.Ceiling((double)numberOfMessagesToReceive / ServiceBusConstants.BucketSize);
 
-    //        foreach (var message in receivedMessagesToDeleteList)
-    //        {
-    //            await receiver.CompleteMessageAsync(message, cancellationToken);
-    //        }
+        Task<IReadOnlyList<ServiceBusReceivedMessage>> receiveMessageCalls = receiver.ReceiveMessagesAsync(ServiceBusConstants.BucketSize, cancellationToken: cancellationToken);
+        
+        var tasks = Enumerable.Range(0, calls)
+            .Select(i => receiveMessageCalls).ToList();
 
-    //        canComplete = receivedMessagesToDeleteList.Count > 0 ||
-    //            receivedMessageList.Count == receivedMessagesToDeleteList.Count;
-    //    }
-    //}
+        await Task.WhenAll(tasks);
 
-    internal static Task UnlockMessagesAsync(this ServiceBusReceiver receiver,
+        return tasks
+            .SelectMany(m => m.Result)
+            .ToList();
+    }
+
+    private static Task UnlockMessagesAsync(this ServiceBusReceiver receiver,
         ICollection<ServiceBusReceivedMessage> messages, CancellationToken cancellationToken = default)
     {
         var tasks = messages.Select(m => receiver.AbandonMessageAsync(m, cancellationToken: cancellationToken)).ToList();

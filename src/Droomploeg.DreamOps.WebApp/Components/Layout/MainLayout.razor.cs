@@ -62,6 +62,11 @@ public partial class MainLayout : IDisposable
     {
         _navigationManager.NavigateTo(PageConstants.HomePage, true);
     }
+    
+    private void RedirectToLogin()
+    {
+        _navigationManager.NavigateTo(PageConstants.LoginPath, true);
+    }
 
     private void TimerElapsed(object? state)
     {

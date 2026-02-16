@@ -70,15 +70,27 @@
                 </AuthorizeView>
             </middle>
         </ChildContent>
-        <ErrorContent>
+        <ErrorContent Context="error">
             <middle>
                 <div class="content-container">
                     <content>
-                        <h1>Sorry, there was an error.</h1>
-                        <p>We are unable to display the requested page.</p>
-                        <p>
-                            <error-button onclick="@ReturnToHome">Continue</error-button>
-                        </p>
+                        @error.GetType()
+                        @if (error is MicrosoftIdentityWebChallengeUserException)
+                        {
+                            <h1>Authentication required</h1>
+                            <p>Your session expired or you need to sign in again.</p>
+                            <p>
+                                <error-button @onclick="RedirectToLogin">Sign in</error-button>
+                            </p>
+                        }
+                        else
+                        {
+                            <h1>Sorry, there was an error.</h1>
+                            <p>We are unable to display the requested page.</p>
+                            <p>
+                                <error-button @onclick="ReturnToHome">Continue</error-button>
+                            </p>
+                        }
                     </content>
                 </div>
             </middle>

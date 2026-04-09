@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
     <File Path="build.props" />
+    <File Path="CLAUDE.md" />
     <File Path="droomploeg.props" />
     <File Path="LICENSE" />
     <File Path="README.md" />
@@ -44,6 +45,7 @@
     <Project Path="src/Droomploeg.DreamOps.WebApp/Droomploeg.DreamOps.WebApp.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Droomploeg.DreamOps.IntegrationsTests/Droomploeg.DreamOps.IntegrationsTests.csproj" />
+    <Project Path="tests/Droomploeg.DreamOps.Aspire.Tests.AppHost/Droomploeg.DreamOps.Aspire.Tests.AppHost.csproj" />
+    <Project Path="tests/Droomploeg.DreamOps.Aspire.Tests/Droomploeg.DreamOps.Aspire.Tests.csproj" />
   </Folder>
 </Solution>

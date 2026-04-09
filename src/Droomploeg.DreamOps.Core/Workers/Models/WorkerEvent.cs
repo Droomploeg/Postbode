@@ -12,7 +12,7 @@ public record WorkerEvent(WorkItemState State, Exception? Exception = null)
     private readonly DateTime _timestamp = DateTime.UtcNow;
 
     /// <summary>
-    /// <see cref="DateTimeOffset"/> timestamp of the event."/>
+    /// <see cref="DateTimeOffset"/> timestamp of the event.
     /// </summary>
     public DateTimeOffset Timestamp => _timestamp;
 }

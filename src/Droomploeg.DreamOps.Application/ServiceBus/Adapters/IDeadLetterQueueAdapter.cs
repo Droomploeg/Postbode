@@ -29,7 +29,7 @@ public interface IDeadLetterQueueAdapter<in TSendMessage, TReceiveMessage>
     /// <param name="queue">Name of the queue</param>
     /// <param name="options"><see cref="ResubmitOptions"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Task"></returns>
+    /// <returns><see cref="Task" /></returns>
     Task ResubmitAllMessagesAsync(string queue,
         ResubmitOptions options,
         CancellationToken cancellationToken = default);
@@ -39,7 +39,7 @@ public interface IDeadLetterQueueAdapter<in TSendMessage, TReceiveMessage>
     /// </summary>
     /// <param name="queue">Name of the queue</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Task"></returns>
+    /// <returns><see cref="Task" /></returns>
     Task DeleteAllMessagesAsync(string queue,
         CancellationToken cancellationToken = default);
 
@@ -47,11 +47,11 @@ public interface IDeadLetterQueueAdapter<in TSendMessage, TReceiveMessage>
     /// Resubmit single dead-letter message from the queue.
     /// </summary>
     /// <param name="queue">Name of the queue</param>
-    /// <param name="receivedMessage"><see cref="TReceiveMessage"></param>
+    /// <param name="receivedMessage"><see cref="TReceiveMessage"/></param>
     /// <param name="sendMessage"><typeparamref name="TSendMessage"/></param>
     /// <param name="options"><see cref="ResubmitOptions"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Task"></returns>
+    /// <returns><see cref="Task" /></returns>
     Task<bool> ResubmitMessageAsync(string queue,
         TReceiveMessage receivedMessage,
         TSendMessage sendMessage,

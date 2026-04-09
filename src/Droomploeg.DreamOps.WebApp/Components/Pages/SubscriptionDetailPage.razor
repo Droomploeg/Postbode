@@ -1,9 +1,8 @@
 ﻿@attribute [Route(PageConstants.SubscriptionDetailPageWithParameters)]
 
-@inject IRuntimeInfoService _runtimeInfoService;
-@inject ITopicService<ServiceBusMessage, ServiceBusReceivedMessage> _userTopicService;
-@* @inject IWorkerQueueService WorkerService;
- *@
+@inject IRuntimeInfoService RuntimeInfoService;
+@inject ITopicService<ServiceBusMessage, ServiceBusReceivedMessage> UserTopicService;
+
 <AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
     <entity-details>
         <buttonbar>

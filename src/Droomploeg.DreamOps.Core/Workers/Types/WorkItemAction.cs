@@ -6,7 +6,7 @@
 public enum WorkItemAction
 {
     /// <summary>
-    /// Create.
+    /// Schedule.
     /// </summary>
     Schedule,
 

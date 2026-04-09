@@ -10,9 +10,9 @@ public partial class Home
     {
         if (firstRender)
         {
-            if (_connectionService.Connections.Length == 1)
+            if (ConnectionService.Connections.Length == 1)
             {
-                _currentConnection = _connectionService.Connections[0];
+                _currentConnection = ConnectionService.Connections[0];
 
                 await SetConnection(_currentConnection);
                 return;
@@ -39,10 +39,10 @@ public partial class Home
     {
         if (_currentConnection.IsNotDefined)
         {
-            await _storage.DeleteAsync(nameof(ServiceBusConnection));
+            await Storage.DeleteAsync(nameof(ServiceBusConnection));
         }
 
-        await _storage.SetAsync(nameof(ServiceBusConnection), connection);
-        _navigationManager.NavigateTo(PageConstants.OverviewPage);
+        await Storage.SetAsync(nameof(ServiceBusConnection), connection);
+        NavigationManager.NavigateTo(PageConstants.OverviewPage);
     }
 }

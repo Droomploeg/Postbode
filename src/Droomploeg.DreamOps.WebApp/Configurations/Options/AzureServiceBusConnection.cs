@@ -1,5 +1,8 @@
-﻿namespace Droomploeg.DreamOps.WebApp.Configurations.Options;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Droomploeg.DreamOps.WebApp.Configurations.Options;
+
+[ExcludeFromCodeCoverage( Justification = "Options class")]
 public class AzureServiceBusConnection
 {
     public const string SectionName = "AzureServiceBusConnections";

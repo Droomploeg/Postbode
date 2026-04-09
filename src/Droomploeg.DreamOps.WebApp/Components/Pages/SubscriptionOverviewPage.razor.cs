@@ -30,7 +30,7 @@ public partial class SubscriptionOverviewPage
     {
         try
         {
-            var entities = await _runtimeInfoService.GetAllTopicsAsync();
+            var entities = await RuntimeInfoService.GetAllTopicsAsync();
             _subscriptions = [.. entities.SelectMany(t => t.Subscriptions)];
             _authorizationState = AuthorizationState.Authorized;
         }

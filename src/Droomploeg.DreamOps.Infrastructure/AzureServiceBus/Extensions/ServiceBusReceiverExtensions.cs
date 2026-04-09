@@ -3,11 +3,22 @@ using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
 
+/// <summary>
+/// Extension methods for <see cref="ServiceBusReceiver"/>.
+/// </summary>
 internal static class ServiceBusReceiverExtensions
 {
-    internal static async Task ResubmitNumberOfMessagesAsync(this ServiceBusReceiver receiver, 
-        ServiceBusSender sender, 
-        DateTimeOffset timestamp, 
+    /// <summary>
+    /// Resubmits messages enqueued before the given timestamp by peeking and resending them.
+    /// </summary>
+    /// <param name="receiver">The Service Bus receiver to peek messages from.</param>
+    /// <param name="sender">The Service Bus sender to resubmit messages to.</param>
+    /// <param name="timestamp">Only messages enqueued before this timestamp are resubmitted.</param>
+    /// <param name="generateNewMessageIds">Whether to generate new message IDs for resubmitted messages.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    internal static async Task ResubmitNumberOfMessagesAsync(this ServiceBusReceiver receiver,
+        ServiceBusSender sender,
+        DateTimeOffset timestamp,
         bool generateNewMessageIds,
         CancellationToken cancellationToken = default)
     {
@@ -54,9 +65,17 @@ internal static class ServiceBusReceiverExtensions
         }
     }
 
-    internal static async Task ResubmitNumberOfMessagesWithDeleteAsync(this ServiceBusReceiver receiver, 
+    /// <summary>
+    /// Resubmits messages enqueued before the given timestamp and deletes the originals after resending.
+    /// </summary>
+    /// <param name="receiver">The Service Bus receiver to receive and complete messages from.</param>
+    /// <param name="sender">The Service Bus sender to resubmit messages to.</param>
+    /// <param name="timestamp">Only messages enqueued before this timestamp are resubmitted.</param>
+    /// <param name="generateNewMessageIds">Whether to generate new message IDs for resubmitted messages.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    internal static async Task ResubmitNumberOfMessagesWithDeleteAsync(this ServiceBusReceiver receiver,
         ServiceBusSender sender,
-        DateTimeOffset timestamp, 
+        DateTimeOffset timestamp,
         bool generateNewMessageIds,
         CancellationToken cancellationToken = default)
     {
@@ -124,12 +143,23 @@ internal static class ServiceBusReceiverExtensions
 
 
 
-    internal static async Task<bool> SearchAndResubmitAsync(this ServiceBusReceiver receiver, 
+    /// <summary>
+    /// Searches for a specific message by locking a batch, then resubmits it if found.
+    /// </summary>
+    /// <param name="receiver">The Service Bus receiver to lock messages from.</param>
+    /// <param name="sender">The Service Bus sender to resubmit the message to.</param>
+    /// <param name="receivedMessage">The message to search for.</param>
+    /// <param name="sendMessage">The message to send as the resubmission.</param>
+    /// <param name="searchBucketSize">Number of messages to lock per search batch.</param>
+    /// <param name="options">Resubmit options controlling message ID generation and deletion.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns><see langword="true"/> if the message was found and resubmitted; otherwise <see langword="false"/>.</returns>
+    internal static async Task<bool> SearchAndResubmitAsync(this ServiceBusReceiver receiver,
         ServiceBusSender sender,
-        ServiceBusReceivedMessage receivedMessage, 
+        ServiceBusReceivedMessage receivedMessage,
         ServiceBusMessage sendMessage,
-        long searchBucketSize, 
-        ResubmitOptions options, 
+        long searchBucketSize,
+        ResubmitOptions options,
         CancellationToken cancellationToken = default)
     {
         var result = false;
@@ -155,6 +185,14 @@ internal static class ServiceBusReceiverExtensions
         return result;
     }
 
+    /// <summary>
+    /// Searches for a specific message by locking a batch, then completes (deletes) it if found.
+    /// </summary>
+    /// <param name="receiver">The Service Bus receiver to lock messages from.</param>
+    /// <param name="receivedMessage">The message to search for and complete.</param>
+    /// <param name="searchBucketSize">Number of messages to lock per search batch.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns><see langword="true"/> if the message was found and completed; otherwise <see langword="false"/>.</returns>
     internal static async Task<bool> SearchAndCompleteAsync(this ServiceBusReceiver receiver,
         ServiceBusReceivedMessage receivedMessage,
         long searchBucketSize,
@@ -175,6 +213,12 @@ internal static class ServiceBusReceiverExtensions
         return result;
     }
     
+    /// <summary>
+    /// Completes all messages enqueued before the given timestamp.
+    /// </summary>
+    /// <param name="receiver">The Service Bus receiver.</param>
+    /// <param name="dateTime">Only messages enqueued before this timestamp are completed.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     internal static async Task CompleteMessagesAsync(this ServiceBusReceiver receiver, DateTimeOffset dateTime, CancellationToken cancellationToken = default)
     {
         while (true)
@@ -194,6 +238,13 @@ internal static class ServiceBusReceiverExtensions
         }
     }
 
+    /// <summary>
+    /// Locks messages by receiving them in peek-lock mode.
+    /// </summary>
+    /// <param name="receiver">The Service Bus receiver.</param>
+    /// <param name="numberOfMessagesToReceive">Maximum number of messages to lock.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A list of locked messages.</returns>
     private static async Task<List<ServiceBusReceivedMessage>> LockMessagesAsync(this ServiceBusReceiver receiver,
         long numberOfMessagesToReceive, CancellationToken cancellationToken = default)
     {
@@ -202,7 +253,7 @@ internal static class ServiceBusReceiverExtensions
         Task<IReadOnlyList<ServiceBusReceivedMessage>> receiveMessageCalls = receiver.ReceiveMessagesAsync(ServiceBusConstants.BucketSize, cancellationToken: cancellationToken);
         
         var tasks = Enumerable.Range(0, calls)
-            .Select(i => receiveMessageCalls).ToList();
+            .Select(_ => receiveMessageCalls).ToList();
 
         await Task.WhenAll(tasks);
 
@@ -211,6 +262,12 @@ internal static class ServiceBusReceiverExtensions
             .ToList();
     }
 
+    /// <summary>
+    /// Unlocks messages by abandoning them back to the queue.
+    /// </summary>
+    /// <param name="receiver">The Service Bus receiver.</param>
+    /// <param name="messages">The messages to abandon.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     private static Task UnlockMessagesAsync(this ServiceBusReceiver receiver,
         ICollection<ServiceBusReceivedMessage> messages, CancellationToken cancellationToken = default)
     {

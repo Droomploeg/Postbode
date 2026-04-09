@@ -29,7 +29,7 @@ public readonly record struct ServiceBusConnection(string Name)
     public bool IsNotDefined => string.IsNullOrWhiteSpace(Name);
 
     /// <summary>
-    /// Create a <see cref="ServiceBusConnection"/> undefined."/>
+    /// Create a <see cref="ServiceBusConnection"/> undefined.
     /// </summary>
     public static ServiceBusConnection Undefined => new(string.Empty);
 }

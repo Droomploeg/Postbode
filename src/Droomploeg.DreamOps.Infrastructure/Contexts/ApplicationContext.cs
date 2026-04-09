@@ -1,10 +1,12 @@
-﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
+﻿using System.Diagnostics.CodeAnalysis;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.Infrastructure.Contexts;
 
 /// <summary>
 /// Application context.
 /// </summary>
+[ExcludeFromCodeCoverage( Justification = "This class is responsible for holding contextual information about the application, such as correlation identifiers and user information. Testing this class would not provide significant value in terms of code coverage, as it primarily serves as a data container.")]
 public class ApplicationContext
 {
     /// <summary>

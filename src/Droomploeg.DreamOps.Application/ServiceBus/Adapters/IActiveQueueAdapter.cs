@@ -35,7 +35,7 @@ public interface IActiveQueueAdapter<in TSendMessage, TReceiveMessage>
     /// </summary>
     /// <param name="queue">Name of the queue</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Task"></returns>
+    /// <returns><see cref="Task" /></returns>
     Task DeleteAllMessagesAsync(string queue, CancellationToken cancellationToken = default);
 
     /// <summary>

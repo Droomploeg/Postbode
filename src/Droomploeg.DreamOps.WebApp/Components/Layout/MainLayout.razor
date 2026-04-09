@@ -1,8 +1,7 @@
-﻿@using Droomploeg.DreamOps.WebApp.Components.Controls.Workers.Models
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
-@inject NavigationManager _navigationManager
-@inject INotificationService _notificationService
+@inject NavigationManager NavigationManager
+@inject INotificationService NotificationService
 
 <NotificationContainerControl Items="PopupNotificationsToDisplay" />
 
@@ -11,8 +10,9 @@
         <logo title="droomploeg.nl">
             <title>Azure ServiceBus DreamOps</title>
         </logo>
+        <version>version: @AppVersion.Version</version>
         <AuthorizeView>
-            <button class="notification-button" @onclick="ToggleNotification" />
+            <button class="notification-button" @onclick="ToggleNotification" ></button>
         </AuthorizeView>
         <login><LoginControl /></login>
     </top>
@@ -25,7 +25,7 @@
                         <NavigationPath @ref="_navigationPath" />
                         <div>
                             <div class="menu-container">
-                                <Menu @ref="_menu" />
+                                <Menu @ref="_menu" ></Menu>
                             </div>
                             <div class="content-container">
                                 @Body
@@ -33,7 +33,7 @@
                         </div>
                     </path>
 
-                    <OffCanvasControl Visible="@_notificationPanelVisible" Title="Notifications" OnClose="(value) => CloseNotificationPanel(value)">
+                    <OffCanvasControl Visible="@_notificationPanelVisible" Title="Notifications" OnClose="CloseNotificationPanel">
                         <div class="notification-container">
                             @if (_listNotifications.Count > 0)
                             {
@@ -74,7 +74,6 @@
             <middle>
                 <div class="content-container">
                     <content>
-                        @error.GetType()
                         @if (error is MicrosoftIdentityWebChallengeUserException)
                         {
                             <h1>Authentication required</h1>

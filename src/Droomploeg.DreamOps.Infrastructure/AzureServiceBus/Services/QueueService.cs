@@ -4,47 +4,53 @@ using Droomploeg.DreamOps.Application.ServiceBus.Services;
 using Droomploeg.DreamOps.Application.Workers.Dispatcher;
 using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 using Droomploeg.DreamOps.Domain.Workers.Models;
+using Droomploeg.DreamOps.Infrastructure.Audit;
 using Droomploeg.DreamOps.Infrastructure.Contexts;
-using Microsoft.Azure.Amqp.Framing;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Services;
 
 /// <summary>
 /// User queue service class.
 /// </summary>
-/// <typeparam name="TSendMessage">Type of send message</typeparam>
-/// <typeparam name="TReceiveMessage">Type of receive message</typeparam>
+/// <typeparam name="TSendMessage">Type of sent message</typeparam>
+/// <typeparam name="TReceiveMessage">Type of receiver message</typeparam>
 public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMessage, TReceiveMessage> where TReceiveMessage : class
     where TSendMessage : class
 {
     private readonly IContextSetter _contextSetter;
     private readonly IAdapterFactory<IActiveQueueAdapter<TSendMessage, TReceiveMessage>> _activeQueueAdapterFactory;
-    private readonly IAdapterFactory<IDeadLetterQueueAdapter<TSendMessage, TReceiveMessage>> _deadletterAdapterFactory;
+    private readonly IAdapterFactory<IDeadLetterQueueAdapter<TSendMessage, TReceiveMessage>> _deadLetterAdapterFactory;
     private readonly IWorkerDispatcher _dispatcher;
+    private readonly IAuditLogger _auditLogger;
 
-    /// <summary> 
+    /// <summary>
     /// Constructor of the queue service.
     /// </summary>
     /// <param name="contextSetter"><see cref="IContextSetter"/></param>"
     /// <param name="activeQueueAdapterFactory"><see cref="IAdapterFactory{T}"/> of <see cref="IActiveQueueAdapter{TSendMessage, TReceiveMessage}"/></param>
     /// <param name="deadLetterAdapterFactory"><see cref="IAdapterFactory{T}"/> of <see cref="IDeadLetterQueueAdapter{TSendMessage, TReceiveMessage}"/></param>
-    /// <param name="dispatcherFactory"><see cref="ICommandDispatcher"/></param>
+    /// <param name="workerDispatcher"><see cref="IWorkerDispatcher"/></param>
+    /// <param name="auditLogger"><see cref="IAuditLogger"/></param>
     public QueueService(
             IContextSetter contextSetter,
             IAdapterFactory<IActiveQueueAdapter<TSendMessage, TReceiveMessage>> activeQueueAdapterFactory,
             IAdapterFactory<IDeadLetterQueueAdapter<TSendMessage, TReceiveMessage>> deadLetterAdapterFactory,
-            IWorkerDispatcher workerDispatcher)
+            IWorkerDispatcher workerDispatcher,
+            IAuditLogger auditLogger)
     {
         _contextSetter = contextSetter ?? throw new ArgumentNullException(nameof(contextSetter));
         _activeQueueAdapterFactory = activeQueueAdapterFactory ?? throw new ArgumentNullException(nameof(activeQueueAdapterFactory));
-        _deadletterAdapterFactory = deadLetterAdapterFactory ?? throw new ArgumentNullException(nameof(deadLetterAdapterFactory));
+        _deadLetterAdapterFactory = deadLetterAdapterFactory ?? throw new ArgumentNullException(nameof(deadLetterAdapterFactory));
         _dispatcher = workerDispatcher ?? throw new ArgumentNullException(nameof(workerDispatcher));
+        _auditLogger = auditLogger ?? throw new ArgumentNullException(nameof(auditLogger));
     }
 
     /// <inheritdoc cref="IQueueService{TSendMessage, TReceiveMessage}.SendMessageAsync(string, TSendMessage, CancellationToken)"/>
     public async Task<bool> SendMessageAsync(string queue, TSendMessage message, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
+        await _auditLogger.LogAuditAsync(nameof(SendMessageAsync), queue, $"MessageType: {typeof(TSendMessage).Name}");
+        
         var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
         return await adapter.SendAsync(queue, message, cancellationToken);
     }
@@ -57,6 +63,8 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
+        await _auditLogger.LogAuditAsync(nameof(PeekActiveMessagesAsync), queue, $"FromSeq: {fromSequenceNumber}, Count: {numberOfMessages}");
+        
         var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
         return await adapter.PeekMessagesAsync(queue, fromSequenceNumber, numberOfMessages, cancellationToken);
     }
@@ -65,6 +73,8 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     public async Task<bool> DeleteActiveMessageAsync(string queue, TReceiveMessage message, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
+        await _auditLogger.LogAuditAsync(nameof(DeleteActiveMessageAsync), queue);
+        
         var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
         return await adapter.DeleteMessageAsync(queue, message, cancellationToken);
     }
@@ -73,11 +83,14 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     public async Task<bool> DeleteAllActiveMessagesAsync(string queue, CancellationToken cancellationToken = default)
     {
         var context = await _contextSetter.GetAndUpdateAsync();
+        await _auditLogger.LogAuditAsync(nameof(DeleteActiveMessageAsync), queue, "Bulk operation");
+        
         var adapter = _activeQueueAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
+            context.CorrelationId,
             queue,
-            $"Delete all message from queue",
+            $"Delete all message from '{queue}'",
             (token) => adapter.DeleteAllMessagesAsync(
                 queue, token));
 
@@ -89,6 +102,8 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     public async Task<bool> DeadLetterMessageAsync(string queue, TReceiveMessage message, string source, string reason, string description, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
+        await _auditLogger.LogAuditAsync(nameof(DeadLetterMessageAsync), queue, $"Reason: {reason}");
+        
         var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
         return await adapter.DeadLetterMessageAsync(queue, message, source, reason, description, cancellationToken);
     }
@@ -101,7 +116,9 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
-        var adapter = _deadletterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        await _auditLogger.LogAuditAsync(nameof(PeekDeadLetterMessagesAsync), queue, $"FromSeq: {fromSequenceNumber}, Count: {numberOfMessages}");
+        
+        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
         return await adapter.PeekMessagesAsync(queue, fromSequenceNumber, numberOfMessages, cancellationToken);
     }
 
@@ -111,7 +128,9 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         ResubmitOptions options, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
-        var adapter = _deadletterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        await _auditLogger.LogAuditAsync(nameof(ResubmitMessageAsync), queue, $"Options: {options}");
+        
+        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
         return await adapter.ResubmitMessageAsync(queue, receivedMessage, repairedMessage, options, cancellationToken);
     }
 
@@ -119,12 +138,15 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     public async Task<bool> ResubmitAllMessagesAsync(string queue, ResubmitOptions options, CancellationToken cancellationToken = default)
     {
         var context = await _contextSetter.GetAndUpdateAsync();
-        var adpater = _deadletterAdapterFactory.Create(AdapterMode.ManagedIdentity);
+        await _auditLogger.LogAuditAsync(nameof(ResubmitAllMessagesAsync), queue, $"Bulk operation, Options: {options}");
+        
+        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
+            context.CorrelationId,
             queue,
-            $"Resubmit all deadletter messages from queue",
-            (token) => adpater.ResubmitAllMessagesAsync(
+            $"Resubmit all dead letter messages from '{queue}'",
+            (token) => adapter.ResubmitAllMessagesAsync(
                 queue, options, token));
 
         _dispatcher.Dispatch(workItem);
@@ -135,7 +157,9 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     public async Task<bool> DeleteDeadLetterMessageAsync(string queue, TReceiveMessage message, CancellationToken cancellationToken = default)
     {
         _ = await _contextSetter.GetAndUpdateAsync();
-        var adapter = _deadletterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        await _auditLogger.LogAuditAsync(nameof(DeleteDeadLetterMessageAsync), queue);
+        
+        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
         return await adapter.DeleteMessageAsync(queue, message, cancellationToken);
     }
 
@@ -143,40 +167,18 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
     public async Task<bool> DeleteAllDeadLetterMessagesAsync(string queue, CancellationToken cancellationToken = default)
     {
         var context = await _contextSetter.GetAndUpdateAsync();
-        var adapter = _deadletterAdapterFactory.Create(AdapterMode.ManagedIdentity);
+        await _auditLogger.LogAuditAsync(nameof(DeleteAllDeadLetterMessagesAsync), queue, "Bulk operation");
+        
+        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
+            context.CorrelationId,
             queue,
-            $"Delete all deadletter message from queue",
+            description: $"Delete all dead letter message from '{queue}'",
             (token) => adapter.DeleteAllMessagesAsync(
                 queue, token));
 
         _dispatcher.Dispatch(workItem);
         return true;
-    }
-
-    // todo remove: dummy method to force generic type parameters to be used
-    public async Task<bool> LongRunningTaskAsync(string queue, CancellationToken cancellationToken = default)
-    {
-        var context = await _contextSetter.GetAndUpdateAsync();
-        var adapter = _deadletterAdapterFactory.Create(AdapterMode.ManagedIdentity);
-        var workItem = new WorkerItem(
-            context.UserName,
-            queue,
-            $"Dummy task for queue",
-            (token) => DoNothing(token)
-        );
-
-        _dispatcher.Dispatch(workItem);
-        return true;
-
-    }
-
-    private async Task DoNothing(CancellationToken cancellationToken)
-    {
-        while (cancellationToken.IsCancellationRequested == false)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(10));
-        }
     }
 }

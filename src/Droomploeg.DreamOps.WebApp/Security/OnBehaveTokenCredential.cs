@@ -1,8 +1,10 @@
-﻿using Azure.Core;
+﻿using System.Diagnostics.CodeAnalysis;
+using Azure.Core;
 using Microsoft.Identity.Web;
 
 namespace Droomploeg.DreamOps.WebApp.Security;
 
+[ExcludeFromCodeCoverage( Justification = "Custom token credential for on-behalf-of authentication")]
 public class OnBehalfOfTokenCredential : TokenCredential
 {
     public const string ServiceBusScope = "https://servicebus.azure.net/.default";

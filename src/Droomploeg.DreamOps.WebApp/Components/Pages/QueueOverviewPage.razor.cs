@@ -30,7 +30,7 @@ public partial class QueueOverviewPage
     {
         try
         {
-            var entities = await _runtimeInfoService.GetAllQueuesAsync();
+            var entities = await RuntimeInfoService.GetAllQueuesAsync();
             _queues = [.. entities];
             _authorizationState = AuthorizationState.Authorized;
         }

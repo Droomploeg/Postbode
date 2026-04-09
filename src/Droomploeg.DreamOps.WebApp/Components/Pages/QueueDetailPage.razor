@@ -1,14 +1,13 @@
 ﻿@attribute [Route(PageConstants.QueueDetailPageWithParameters)]
 
-@inject IRuntimeInfoService _runtimeInfoService;
-@inject IQueueService<ServiceBusMessage, ServiceBusReceivedMessage> _userEntityService;
+@inject IRuntimeInfoService RuntimeInfoService;
+@inject IQueueService<ServiceBusMessage, ServiceBusReceivedMessage> UserEntityService;
 
 <AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
     <entity-details>
         <buttonbar>
             <button class="send-button" @onclick="() => ShowOverlayOrDialog(SendMessageOverlay)">New Message</button>
             <button class="refresh-button" @onclick="Refresh">Refresh</button>
-            <button class="delete-button" @onclick="Dummy">Dummy</button>
         </buttonbar>
         <PeekControl Messages="_receivedMessages"
                      SessionEnabled="SessionEnabled"

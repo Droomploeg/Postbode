@@ -2,23 +2,28 @@
     background-color: rgb(255, 255, 255);
     color: rgb(1, 1, 1);
 }
-    button:hover {
-        background-color: rgb(230, 230, 230);
-    }
-    button.primary {
-        background-color: rgb(0, 120, 210);
-        color: rgb(255, 255, 255);
-    }
-        button.primary:hover {
-            background-color: rgb(0, 90, 180);
-        }
-    button.secondary {
-        background-color: rgb(200, 200, 200);
-        color: rgb(1, 1, 1);
-    }
-        button.secondary:hover {
-            background-color: rgb(170, 170, 170);
-        }
+
+button:hover {
+    background-color: rgb(230, 230, 230);
+}
+
+button.primary {
+    background-color: rgb(0, 120, 210);
+    color: rgb(255, 255, 255);
+}
+
+button.primary:hover {
+    background-color: rgb(0, 90, 180);
+}
+
+button.secondary {
+    background-color: rgb(200, 200, 200);
+    color: rgb(1, 1, 1);
+}
+
+button.secondary:hover {
+    background-color: rgb(170, 170, 170);
+}
 
 error-button {
     background-color: rgb(0, 100, 210);
@@ -28,42 +33,55 @@ error-button {
 buttonbar {
     border-bottom: 1px solid rgb(200, 200, 200);
 }
-    buttonbar button {
-        border-right: 1px solid rgb(200, 200, 200);
-    }
+
+buttonbar button {
+    border-right: 1px solid rgb(200, 200, 200);
+}
 
 top {
     background-color: rgb(0, 100, 210);
+    color: rgb(255, 255, 255);
 }
-    top a {
-        color: rgb(255, 255, 255);
-        text-decoration: none;
-    }
-        top a:visited {
-            color: rgb(255, 255, 255);
-            text-decoration: none;
-        }
-    top button {
-        background-color: rgb(0, 100, 210);
-        color: rgb(255, 255, 255);
-    }
-        top button:hover {
-            background-color: rgb(0, 80, 180);
-            height: 100%;
-        }
-    top login:hover {
-        background-color: rgb(0, 80, 180);
-    }
+
+top a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+top a:visited {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+top button {
+    background-color: rgb(0, 100, 210);
+    color: rgb(255, 255, 255);
+}
+
+top button:hover {
+    background-color: rgb(0, 80, 180);
+    height: 100%;
+}
+
+top login:hover {
+    background-color: rgb(0, 80, 180);
+}
+
+top version {
+    color: rgb(255, 255, 255);
+}
 
 gridcontrol tr.row-selected {
     background-color: rgb(230, 230, 230);
 }
-    gridcontrol tr.row-selected button {
-        background-color: rgb(230, 230, 230);
-    }
-        gridcontrol tr.row-selected button:hover {
-            background-color: rgb(200, 200, 200);
-        }
+
+gridcontrol tr.row-selected button {
+    background-color: rgb(230, 230, 230);
+}
+
+gridcontrol tr.row-selected button:hover {
+    background-color: rgb(200, 200, 200);
+}
 
 notification close-button:hover {
     background-color: rgb(255, 27, 27);
@@ -83,10 +101,11 @@ notification-item close-button:hover {
 offcanvas {
     background-color: rgb(255, 255, 255);
 }
-    offcanvas close-button:hover {
-        background-color: rgb(255, 27, 27);
-        color: rgb(255, 255, 255);
-    }
+
+offcanvas close-button:hover {
+    background-color: rgb(255, 27, 27);
+    color: rgb(255, 255, 255);
+}
 
 tabheader.selected:after {
     background-color: rgb(0, 120, 210);
@@ -99,7 +118,7 @@ tabheader.selected:after {
 
 .selected-servicebus {
     background-color: rgb(62, 191, 0);
-    color: rgb(0,0,0);
+    color: rgb(0, 0, 0);
 }
 
 .entity-state-nomessages-active {

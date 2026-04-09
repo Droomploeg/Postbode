@@ -1,11 +1,11 @@
 ﻿@attribute [Route(PageConstants.HomePage)]
-@inject IConnectionService _connectionService
-@inject NavigationManager _navigationManager
-@inject ProtectedSessionStorage _storage
+@inject IConnectionService ConnectionService
+@inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage Storage
 
 <AuthorizeView Context="authContext">
     <content>
-        <GridControl Items="@_connectionService.Connections" TItem="ServiceBusConnection">
+        <GridControl Items="@ConnectionService.Connections" TItem="ServiceBusConnection">
             <GridHeaderItemControl TItem="ServiceBusConnection">Name</GridHeaderItemControl>
             <GridValueItemControl TItem="ServiceBusConnection">
                 <span @onclick="() => SetClient(context)">@context.Name</span>

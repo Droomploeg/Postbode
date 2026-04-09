@@ -37,7 +37,7 @@ public partial class BackgroundJobsPage
     {
         _items.Clear();
 
-        var items = _workerService.GetAll();
+        var items = WorkerService.GetAll();
         _items.AddRange(items);
         _selectedWorker = null;
 
@@ -51,7 +51,7 @@ public partial class BackgroundJobsPage
             return;
         }
 
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         await item.CancelAsync(user.Identity?.Name ?? "Anonymous");
@@ -62,7 +62,7 @@ public partial class BackgroundJobsPage
 
     private async Task DeleteWorkerAsync(WorkerItem item)
     {
-        _workerService.Remove(item.Id);
+        WorkerService.Remove(item.Id);
 
         UpdateWorkers();
 

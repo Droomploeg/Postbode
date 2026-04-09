@@ -1,8 +1,10 @@
-﻿using Azure.Messaging.ServiceBus;
+﻿using System.Diagnostics.CodeAnalysis;
+using Azure.Messaging.ServiceBus;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 using Droomploeg.DreamOps.Application.ServiceBus.Factories;
 using Droomploeg.DreamOps.Application.ServiceBus.Services;
 using Droomploeg.DreamOps.Application.Workers.Services;
+using Droomploeg.DreamOps.Infrastructure.Audit;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Adapters;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Factories;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Services;
@@ -11,6 +13,7 @@ using Droomploeg.DreamOps.Infrastructure.Workers.Services;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
+[ExcludeFromCodeCoverage( Justification = "Application extensions")]
 internal static class ApplicationExtensions
 {
     extension(IServiceCollection services)
@@ -45,6 +48,7 @@ internal static class ApplicationExtensions
         private IServiceCollection AddAdapters()
         {
             return services
+                .AddTransient<ISessionInfoProvider, SessionInfoProvider>()
                 .AddTransient<IActiveQueueAdapter<ServiceBusMessage, ServiceBusReceivedMessage>, ActiveQueueAdapter>()
                 .AddTransient<IActiveTopicAdapter<ServiceBusMessage, ServiceBusReceivedMessage>, ActiveTopicAdapter>()
                 .AddTransient<IDeadLetterQueueAdapter<ServiceBusMessage, ServiceBusReceivedMessage>, DeadLetterQueueAdapter>()
@@ -55,7 +59,8 @@ internal static class ApplicationExtensions
         private IServiceCollection AddServices()
         {
             return services
-                .AddSingleton<IWorkerService>(new WorkerService())
+                .AddSingleton<IWorkerService, WorkerService>()
+                .AddTransient<IAuditLogger, AuditLogger>()
                 .AddTransient<INotificationService, NotificationService>()
                 .AddTransient<IQueueService<ServiceBusMessage, ServiceBusReceivedMessage>, QueueService<ServiceBusMessage, ServiceBusReceivedMessage>>()
                 .AddTransient<ITopicService<ServiceBusMessage, ServiceBusReceivedMessage>, TopicService<ServiceBusMessage, ServiceBusReceivedMessage>>()

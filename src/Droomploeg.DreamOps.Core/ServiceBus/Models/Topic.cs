@@ -15,7 +15,7 @@ namespace Droomploeg.DreamOps.Domain.ServiceBus.Models;
 /// <param name="AutoDeleteOnIdle"><see cref="TimeSpan"/> auto delete on idle</param>
 /// <param name="DefaultMessageTimeToLive"><see cref="TimeSpan"/> default message time to live</param>
 /// <param name="DuplicateDetectionHistoryTimeWindow"><see cref="TimeSpan"/> duplication dectected history time window</param>
-/// <param name="Subscriptions"><see cref=Array"/> of <see cref="Subscription"/></param>
+/// <param name="Subscriptions"><see cref="Array"/> of <see cref="Subscription"/></param>
 public record Topic(
     string Name,
     EntityRuntimeState RuntimeState,

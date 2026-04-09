@@ -11,7 +11,7 @@ public partial class Menu
     {
         _path = path;
 
-        var result = await _storage.GetAsync<ServiceBusConnection?>(nameof(ServiceBusConnection));
+        var result = await Storage.GetAsync<ServiceBusConnection?>(nameof(ServiceBusConnection));
         if (!result.Success || result.Value is null || result.Value == ServiceBusConnection.Undefined)
         {
             _connectionSelected = false;

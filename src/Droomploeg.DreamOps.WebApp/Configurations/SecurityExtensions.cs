@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.Identity.Web;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
+[ExcludeFromCodeCoverage( Justification = "Security configuration extensions")]
 internal static class SecurityExtensions
 {
     extension(IServiceCollection services)

@@ -25,8 +25,8 @@ public partial class MainLayout : IDisposable
     {
         if (firstRender)
         {
-            _locationChangeHandler = _navigationManager.RegisterLocationChangingHandler(LocationChangingHandler);
-            var relativeUrl = GetRelativeUri(_navigationManager.Uri);
+            _locationChangeHandler = NavigationManager.RegisterLocationChangingHandler(LocationChangingHandler);
+            var relativeUrl = GetRelativeUri(NavigationManager.Uri);
             await (_menu?.UpdateAsync(relativeUrl) ?? Task.CompletedTask);
             await (_navigationPath?.UpdatePathAsync(relativeUrl) ?? Task.CompletedTask);
         }
@@ -60,19 +60,19 @@ public partial class MainLayout : IDisposable
 
     private void ReturnToHome()
     {
-        _navigationManager.NavigateTo(PageConstants.HomePage, true);
+        NavigationManager.NavigateTo(PageConstants.HomePage, true);
     }
     
     private void RedirectToLogin()
     {
-        _navigationManager.NavigateTo(PageConstants.LoginPath, true);
+        NavigationManager.NavigateTo(PageConstants.LoginPath, true);
     }
 
     private void TimerElapsed(object? state)
     {
         var nowUtc = DateTimeOffset.UtcNow;
 
-        var hasPopupUpdate = _notificationService.TryUpdatePopupNotifications(
+        var hasPopupUpdate = NotificationService.TryUpdatePopupNotifications(
             _popupNotifications,
             nowUtc, TimeSpan.FromSeconds(-5),
             out var updatedPopupNotifications);
@@ -83,7 +83,7 @@ public partial class MainLayout : IDisposable
             _popupNotifications.AddRange(updatedPopupNotifications);
         }
         
-        var listNotification = _notificationService.UpdateNotifications(
+        var listNotification = NotificationService.UpdateNotifications(
             _listNotifications,
             nowUtc);
 
@@ -112,9 +112,9 @@ public partial class MainLayout : IDisposable
         StateHasChanged();
     }
 
-    private void CloseNotificationPanel(bool value)
+    private void CloseNotificationPanel()
     {
-        _notificationPanelVisible = value;
+        _notificationPanelVisible = false;
     }
 
     private void RemoveNotificationItem(Guid id)
@@ -125,8 +125,8 @@ public partial class MainLayout : IDisposable
 
     private string GetRelativeUri(string url)
     {
-        return url.StartsWith(_navigationManager.BaseUri, StringComparison.CurrentCultureIgnoreCase)
-            ? $"/{_navigationManager.ToBaseRelativePath(url)}"
+        return url.StartsWith(NavigationManager.BaseUri, StringComparison.CurrentCultureIgnoreCase)
+            ? $"/{NavigationManager.ToBaseRelativePath(url)}"
             : url;
     }
 }

@@ -41,7 +41,7 @@ public interface IActiveTopicAdapter<in TSendMessage, TReceiveMessage>
     /// <param name="topic">Name of the topic</param>
     /// <param name="subscription">Name of the subscription</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Task"></returns>
+    /// <returns><see cref="Task" /></returns>
     Task DeleteAllMessagesAsync(string topic, string subscription,
         CancellationToken cancellationToken = default);
 

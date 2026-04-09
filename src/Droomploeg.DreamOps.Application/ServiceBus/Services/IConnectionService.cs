@@ -1,5 +1,4 @@
-﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
-using Droomploeg.DreamOps.Domain.ServiceBus.Types;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.Application.ServiceBus.Services;
 

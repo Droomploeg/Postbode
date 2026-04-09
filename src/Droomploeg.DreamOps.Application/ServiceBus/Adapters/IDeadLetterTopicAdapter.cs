@@ -30,7 +30,7 @@ public interface IDeadLetterTopicAdapter<in TSendMessage, TReceiveMessage>
     /// <param name="subscription">Name of the subscription</param>
     /// <param name="options"><see cref="ResubmitOptions"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Task"></returns>
+    /// <returns><see cref="Task"/></returns>
     Task ResubmitAllMessagesAsync(string topic, string subscription,
         ResubmitOptions options,
         CancellationToken cancellationToken = default);
@@ -41,7 +41,7 @@ public interface IDeadLetterTopicAdapter<in TSendMessage, TReceiveMessage>
     /// <param name="topic">Name of the topic</param>
     /// <param name="subscription">Name of the subscription</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Task"></returns>
+    /// <returns><see cref="Task"/></returns>
     Task DeleteAllMessagesAsync(string topic, string subscription,
         CancellationToken cancellationToken = default);
 
@@ -50,11 +50,11 @@ public interface IDeadLetterTopicAdapter<in TSendMessage, TReceiveMessage>
     /// </summary>
     /// <param name="topic">Name of the topic</param>
     /// <param name="subscription">Name of the subscription</param>
-    /// <param name="receivedMessage"><see cref="TReceiveMessage"></param>
+    /// <param name="receivedMessage"><see cref="TReceiveMessage"/></param>
     /// <param name="sendMessage"><typeparamref name="TSendMessage"/></param>
     /// <param name="options"><see cref="ResubmitOptions"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Task"></returns>
+    /// <returns><see cref="Task"/></returns>
     Task<bool> ResubmitMessageAsync(string topic, string subscription,
         TReceiveMessage receivedMessage,
         TSendMessage sendMessage,

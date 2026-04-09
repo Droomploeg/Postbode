@@ -10,9 +10,6 @@ namespace Droomploeg.DreamOps.WebApp.HostedServices;
 public class WorkerHostedService(IWorkerService workerService, ILogger<WorkerHostedService> logger)
     : BackgroundService
 {
-    private readonly IWorkerService _workerService = workerService;
-    private readonly ILogger<WorkerHostedService> _logger = logger;
-
     /// <inheritdoc cref="BackgroundService" />
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -20,13 +17,13 @@ public class WorkerHostedService(IWorkerService workerService, ILogger<WorkerHos
         {
             try
             {
-                await _workerService.ExecuteNextAsync(cancellationToken);
+                await workerService.ExecuteNextAsync(cancellationToken);
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
             catch (Exception ex)
             {
-                // monitor service update to failed
-                _logger.LogError(ex, "Error occurred executing work item.");
+                // monitor service update to fail
+                logger.LogError(ex, "Error occurred executing work item.");
             }
         }
     }
@@ -34,7 +31,7 @@ public class WorkerHostedService(IWorkerService workerService, ILogger<WorkerHos
     /// <inheritdoc cref="BackgroundService" />
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Queued Hosted Service is stopping.");
+        logger.LogInformation("Queued Hosted Service is stopping.");
 
         await base.StopAsync(cancellationToken);
     }

@@ -64,7 +64,7 @@ public partial class SubscriptionDetailPage
     {
         try
         {
-            _subscription = await _runtimeInfoService.GetSubscriptionAsync(TopicName, SubscriptionName);
+            _subscription = await RuntimeInfoService.GetSubscriptionAsync(TopicName, SubscriptionName);
             _receivedMessages = [];
             _selectedMessage = null;
             _authorizationState = AuthorizationState.Authorized;
@@ -96,14 +96,14 @@ public partial class SubscriptionDetailPage
 
         if (_source == MessageSource.ActiveMessage)
         {
-            _receivedMessages = await _userTopicService.PeekActiveMessagesAsync(TopicName, SubscriptionName, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await UserTopicService.PeekActiveMessagesAsync(TopicName, SubscriptionName, args.StartIndex, args.NumberOfMessages);
         }
         else if (_source == MessageSource.DeadLetterMessage)
         {
-            _receivedMessages = await _userTopicService.PeekDeadLetterMessagesAsync(TopicName, SubscriptionName, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await UserTopicService.PeekDeadLetterMessagesAsync(TopicName, SubscriptionName, args.StartIndex, args.NumberOfMessages);
         }
 
-        _subscription = await _runtimeInfoService.GetSubscriptionAsync(TopicName, SubscriptionName);
+        _subscription = await RuntimeInfoService.GetSubscriptionAsync(TopicName, SubscriptionName);
         StateHasChanged();
     }
 
@@ -120,7 +120,7 @@ public partial class SubscriptionDetailPage
             return;
         }
 
-        await _userTopicService.DeadLetterMessageAsync(TopicName, SubscriptionName, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
+        await UserTopicService.DeadLetterMessageAsync(TopicName, SubscriptionName, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
 
         _selectedMessage = null;
         CloseOverlaysAndDialogs();
@@ -140,11 +140,11 @@ public partial class SubscriptionDetailPage
 
         if (_source == MessageSource.ActiveMessage)
         {
-            await _userTopicService.DeleteActiveMessageAsync(TopicName, SubscriptionName, _selectedMessage, default);
+            await UserTopicService.DeleteActiveMessageAsync(TopicName, SubscriptionName, _selectedMessage, default);
         }
         if (_source == MessageSource.DeadLetterMessage)
         {
-            await _userTopicService.DeleteDeadLetterMessageAsync(TopicName, SubscriptionName, _selectedMessage, default);
+            await UserTopicService.DeleteDeadLetterMessageAsync(TopicName, SubscriptionName, _selectedMessage, default);
         }
 
         _selectedMessage = null;
@@ -156,7 +156,6 @@ public partial class SubscriptionDetailPage
         }
     }
 
-    //todo background: resubmit selected in background (subscription)
     private async Task ResubmitSelectedMessageAsync(SendMessageModel model)
     {
         if (_selectedMessage == null)
@@ -164,67 +163,65 @@ public partial class SubscriptionDetailPage
             return;
         }
 
-        //async Task action(CancellationToken cancellationToken) =>
-        //    await UserEntityService.ResubmitMessageAsync(TopicName, SubscriptionName,
-        //        _selectedMessage,
-        //        model.ToSendMessage(),
-        //        new ResubmitOptions(model.GenenerateMessageId, model.DeleteMessageAfterResubmit),
-        //        cancellationToken);
-
-        //var workItem = new WorkItem($"{TopicName}/{SubscriptionName}", "Send messages", action);
-        //WorkerService.Register(workItem);
+        var result = await UserTopicService.ResubmitMessageAsync(
+            TopicName,
+            SubscriptionName,
+            _selectedMessage,
+            model.ToSendMessage(),
+            new ResubmitOptions(model.GenerateMessageId, model.DeleteMessageAfterResubmit));
 
         CloseOverlaysAndDialogs();
 
-        if (_peekModel != null)
+        if (result && _peekModel != null)
         {
             await PeekAsync(_peekModel);
         }
     }
 
-    //todo background: send selected in background (subscription)
     private async Task SendMessageAsync(SendMessageModel model)
     {
-        //async Task action(CancellationToken cancellationToken) =>
-        //await UserEntityService.SendMessageAsync(TopicName, [model.ToSendMessage()], cancellationToken);
-
-        //var workItem = new WorkItem($"{TopicName}/{SubscriptionName}", "Send messages", action);
-        //WorkerService.Register(workItem);
+        var result = await UserTopicService.SendMessageAsync(TopicName, model.ToSendMessage());
 
         CloseOverlaysAndDialogs();
 
-        if (_peekModel != null)
+        if (result && _peekModel != null)
         {
             await PeekAsync(_peekModel);
         }
     }
 
-    //todo background: resubmit all in background (subscription)
-    private void ResubmitAllMessages(bool generateMessageIds, bool deleteMesssages)
+    private async Task ResubmitAllMessages(bool generateMessageIds, bool deleteMesssages)
     {
-        //var resubmitOptions = new ResubmitOptions(generateMessageIds, deleteMesssages);
-        //async Task action(CancellationToken cancellationToken)
-        //    => await UserEntityService.ResubmitAllMessagesAsync(TopicName, SubscriptionName, resubmitOptions, cancellationToken);
+        var resubmitOptions = new ResubmitOptions(generateMessageIds, deleteMesssages);
 
-        //// todo general: const for action name
-        //var workItem = new WorkItem($"{TopicName}/{SubscriptionName}", "Resubmit all dead-letter messages", action);
-        //WorkerService.Register(workItem);
+        var result = await UserTopicService.ResubmitAllMessagesAsync(TopicName, SubscriptionName, resubmitOptions);
 
         CloseOverlaysAndDialogs();
+
+        if (result && _peekModel != null)
+        {
+            await PeekAsync(_peekModel);
+        }
     }
 
-    //todo background: delete all in background (subscription)
-    private void DeleteAllMessages()
+    private async Task DeleteAllMessages()
     {
-        //Func<CancellationToken, Task> action = _source == MessageSource.ActiveMessage
-        //    ? async (cancellationToken) => await UserEntityService.DeleteAllActiveMessagesAsync(TopicName, SubscriptionName, cancellationToken)
-        //    : async (cancellationToken) => await UserEntityService.DeleteAllDeadLetterMessagesAsync(TopicName, SubscriptionName, cancellationToken);
-
-        //// todo general: const for action name
-        //var workItem = new WorkItem($"{TopicName}/{SubscriptionName}", "Delete all messages", action);
-        //WorkerService.Register(workItem);
+        var result = false;
+        if (_source == MessageSource.ActiveMessage)
+        {
+            result = await UserTopicService.DeleteAllActiveMessagesAsync(TopicName, SubscriptionName);
+        }
+        else if (_source == MessageSource.DeadLetterMessage)
+        {
+            result = await UserTopicService.DeleteAllDeadLetterMessagesAsync(TopicName, SubscriptionName);
+        }
 
         CloseOverlaysAndDialogs();
+
+        if (result && _peekModel != null)
+        {
+            await PeekAsync(_peekModel);
+        }
     }
 
     private void ShowOverlayOrDialog(string overlayOrDialog, ServiceBusReceivedMessage? message = null)
@@ -245,6 +242,5 @@ public partial class SubscriptionDetailPage
 
         StateHasChanged();
     }
-
 }
 

@@ -1,8 +1,11 @@
-﻿namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Exceptions;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Exceptions;
 
 /// <summary>
 /// Invalid service bus connection exception class.
 /// </summary>
+[ExcludeFromCodeCoverage( Justification = "Mapper class")]
 public sealed class InvalidServiceBusConnectionException : Exception
 {
     /// <summary>

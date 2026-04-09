@@ -5,5 +5,7 @@
         <NeutralLanguage>en-150</NeutralLanguage>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <Version>0.0.0-dev</Version>
+        <InformationalVersion>0.0.0-dev</InformationalVersion>
     </PropertyGroup>
 </Project>

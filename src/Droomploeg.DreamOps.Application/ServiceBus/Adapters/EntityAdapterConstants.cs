@@ -1,9 +1,9 @@
 ﻿namespace Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 
 /// <summary>
-/// Entity constants.
+/// Entity adapter constants.
 /// </summary>
-public class EntityAdapterConstants
+public static class EntityAdapterConstants
 {
     /// <summary>
     /// Default start index.

@@ -1,4 +1,5 @@
-﻿using Droomploeg.DreamOps.Application.Workers.Dispatcher;
+﻿using System.Diagnostics.CodeAnalysis;
+using Droomploeg.DreamOps.Application.Workers.Dispatcher;
 using Droomploeg.DreamOps.Application.Workers.Services;
 using Droomploeg.DreamOps.Domain.Workers.Models;
 
@@ -7,6 +8,7 @@ namespace Droomploeg.DreamOps.Infrastructure.Workers.Dispatcher;
 /// <summary>
 /// Worker dispatcher implementation.
 /// </summary>
+[ExcludeFromCodeCoverage( Justification = "Testable via TestWorkerDispatcher")] 
 public class WorkerDispatcher : IWorkerDispatcher
 {
     private readonly IWorkerService _service;

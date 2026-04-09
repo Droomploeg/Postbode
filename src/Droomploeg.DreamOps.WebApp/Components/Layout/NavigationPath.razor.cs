@@ -82,7 +82,7 @@ public partial class NavigationPath : ComponentBase
 
     private async Task<ServiceBusConnection> GetServiceBusConnection()
     {
-        var result = await _storage.GetAsync<ServiceBusConnection?>(nameof(ServiceBusConnection));
+        var result = await Storage.GetAsync<ServiceBusConnection?>(nameof(ServiceBusConnection));
         if (!result.Success || result.Value is null || result.Value.Value == ServiceBusConnection.Undefined)
         {
             return ServiceBusConnection.Undefined;

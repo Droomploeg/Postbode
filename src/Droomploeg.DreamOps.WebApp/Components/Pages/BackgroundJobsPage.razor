@@ -1,7 +1,7 @@
 ﻿@attribute [Route(PageConstants.BackgroundJobsPage)]
 
-@inject IWorkerService _workerService;
-@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IWorkerService WorkerService;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <content>
     <entity-details>
@@ -11,7 +11,7 @@
 
         <GridControl Items="@_items" TItem="WorkerItem" OnSelected="OnSelected">
             <GridHeaderItemControl TItem="WorkerItem">Entity</GridHeaderItemControl>
-            <GridHeaderItemControl TItem="WorkerItem">Desciption</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="WorkerItem">Description</GridHeaderItemControl>
             <GridHeaderItemControl TItem="WorkerItem">State</GridHeaderItemControl>
             <GridHeaderItemControl TItem="WorkerItem">Updated timestamp</GridHeaderItemControl>
             <GridHeaderItemControl TItem="WorkerItem">&nbsp;</GridHeaderItemControl>

@@ -1,6 +1,6 @@
 ﻿@attribute [Route(PageConstants.OverviewPage)]
 
-@inject IRuntimeInfoService _runtimeInfoService;
+@inject IRuntimeInfoService RuntimeInfoService;
 
 <AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataReceiver]">
     <content>

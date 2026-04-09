@@ -7,7 +7,7 @@ namespace Droomploeg.DreamOps.Application.ServiceBus.Services;
 /// </summary>
 /// <typeparam name="TSendMessage">Send message type</typeparam>
 /// <typeparam name="TReceiveMessage">Receive message type</typeparam>
-public interface ITopicService<TSendMessage, TReceiveMessage>
+public interface ITopicService<in TSendMessage, TReceiveMessage>
     where TSendMessage : class
     where TReceiveMessage : class
 {

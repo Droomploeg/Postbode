@@ -1,17 +1,24 @@
-﻿using Azure.Messaging.ServiceBus.Administration;
+﻿using System.Diagnostics.CodeAnalysis;
+using Azure.Messaging.ServiceBus.Administration;
 using Droomploeg.DreamOps.Domain.ServiceBus.Models;
-using Model = Droomploeg.DreamOps.Domain.ServiceBus;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Mappers;
 
+/// <summary>Maps Azure Service Bus subscription properties to domain <see cref="Subscription"/> model.</summary>
+[ExcludeFromCodeCoverage( Justification = "Mapper class")]
 internal static class SubscriptionMapper
 {
+    /// <summary>Maps a <see cref="SubscriptionProperties"/> and <see cref="SubscriptionRuntimeProperties"/> to a <see cref="Subscription"/>.</summary>
+    /// <param name="subscriptionProperties">The subscription configuration properties.</param>
+    /// <param name="subscriptionRuntimeProperties">The subscription runtime properties containing message counts.</param>
+    /// <param name="topicRuntimeProperties">The parent topic runtime properties for a scheduled message counts.</param>
+    /// <returns>A domain <see cref="Subscription"/> instance.</returns>
     internal static Subscription Map(
         SubscriptionProperties subscriptionProperties,
         SubscriptionRuntimeProperties subscriptionRuntimeProperties,
         TopicRuntimeProperties topicRuntimeProperties)
     {
-        return new(
+        return new Subscription(
                 Name: subscriptionProperties.SubscriptionName,
                 TopicName: subscriptionProperties.TopicName,
                 RuntimeState: EntityRuntimeStateMapper.Map(subscriptionProperties.Status),

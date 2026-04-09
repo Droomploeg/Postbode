@@ -1,11 +1,17 @@
-﻿using Model = Droomploeg.DreamOps.Domain.ServiceBus;
+﻿using System.Diagnostics.CodeAnalysis;
 using Azure.Messaging.ServiceBus.Administration;
 using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Mappers;
 
+/// <summary>Maps Azure Service Bus queue properties to domain <see cref="Queue"/> model.</summary>
+[ExcludeFromCodeCoverage( Justification = "Mapper class")]
 internal static class QueueMapper
 {
+    /// <summary>Maps a <see cref="QueueProperties"/> and <see cref="QueueRuntimeProperties"/> to a <see cref="Queue"/>.</summary>
+    /// <param name="queueProperties">The queue configuration properties.</param>
+    /// <param name="runtimeProperties">The queue runtime properties containing message counts.</param>
+    /// <returns>A domain <see cref="Queue"/> instance.</returns>
     internal static Queue Map(QueueProperties queueProperties, QueueRuntimeProperties runtimeProperties)
         => new(
         Name: queueProperties.Name,

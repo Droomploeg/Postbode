@@ -1,5 +1,8 @@
 ﻿namespace Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
+/// <summary>
+/// Message source.
+/// </summary>
 public enum MessageSource
 {
     /// <summary>

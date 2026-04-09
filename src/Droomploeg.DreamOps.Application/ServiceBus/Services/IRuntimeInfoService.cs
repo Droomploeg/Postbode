@@ -29,27 +29,27 @@ public interface IRuntimeInfoService
     Task<ICollection<Topic>> GetAllTopicsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Get <see cref="Queue"> by name.
+    /// Get <see cref="Queue"/> by name.
     /// </summary>
-    /// <param name="name">Name of the <see cref="Queue"></param>
+    /// <param name="name">Name of the <see cref="Queue"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Queue"> if found else null</returns>
+    /// <returns><see cref="Queue"/> if found else null</returns>
     Task<Queue?> GetQueueByNameAsync(string name, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Get <see cref="Topic"> by name.
+    /// Get <see cref="Topic"/> by name.
     /// </summary>
-    /// <param name="name">Name of the <see cref="Topic"></param>
+    /// <param name="name">Name of the <see cref="Topic"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Topic"> if found else null</returns>
+    /// <returns><see cref="Topic"/> if found else null</returns>
     Task<Topic?> GetTopicByNameAsync(string name, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Get <see cref="Subscription"> by topic and name.
+    /// Get <see cref="Subscription"/> by topic and name.
     /// </summary>
     /// <param name="topicName">Name of the topic</param>
     /// <param name="subscriptionName">Name of the subscription</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="Subscription"> if found else null</returns>
+    /// <returns><see cref="Subscription"/> if found else null</returns>
     Task<Subscription?> GetSubscriptionAsync(string topicName, string subscriptionName, CancellationToken cancellationToken = default);
 }

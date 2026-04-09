@@ -1,7 +1,7 @@
 ﻿namespace Droomploeg.DreamOps.Domain.Workers.Types;
 
 /// <summary>
-/// Notifucation types.
+/// Notification types.
 /// </summary>
 public enum NotificationType
 {

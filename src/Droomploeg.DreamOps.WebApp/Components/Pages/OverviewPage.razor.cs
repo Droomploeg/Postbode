@@ -25,7 +25,7 @@ public partial class OverviewPage
 
             try
             {
-                var entities = await _runtimeInfoService.GetAllAsync<IEntity>();
+                var entities = await RuntimeInfoService.GetAllAsync<IEntity>();
 
                 _queues.AddRange(entities.OfType<Queue>());
                 _topics.AddRange(entities.OfType<Topic>());

@@ -4,12 +4,17 @@ using Droomploeg.DreamOps.Domain.Workers.Types;
 
 namespace Droomploeg.DreamOps.Infrastructure.Workers.Services;
 
+/// <summary>
+/// Manages UI notifications based on worker item state changes.
+/// </summary>
+/// <param name="workerService">The worker service to query for worker item updates.</param>
 public class NotificationService(IWorkerService workerService) : INotificationService
 {
     private readonly IWorkerService _workerService = workerService ?? throw new ArgumentNullException(nameof(workerService));
-    
-    public bool TryUpdatePopupNotifications(IList<Notification> inputNotifications, 
-        DateTimeOffset currentTimestamp, TimeSpan duration, 
+
+    /// <inheritdoc cref="INotificationService.TryUpdatePopupNotifications"/>
+    public bool TryUpdatePopupNotifications(IList<Notification> inputNotifications,
+        DateTimeOffset currentTimestamp, TimeSpan duration,
         out IList<Notification> outputNotifications)
     {
         var expiredTimestamp = currentTimestamp.Add(duration);
@@ -42,8 +47,9 @@ public class NotificationService(IWorkerService workerService) : INotificationSe
         return isUpdated;
     }
 
-    
-    public IList<Notification> UpdateNotifications(IList<Notification> currentNotifications, 
+
+    /// <inheritdoc cref="INotificationService.UpdateNotifications"/>
+    public IList<Notification> UpdateNotifications(IList<Notification> currentNotifications,
         DateTimeOffset currentTimestamp)
     {
         var newNotifications = _workerService.GetAll()
@@ -67,6 +73,9 @@ public class NotificationService(IWorkerService workerService) : INotificationSe
                 wi.State))];
     }
 
+    /// <summary>
+    /// Determines whether a notification is in a terminal state and has exceeded the expiry threshold.
+    /// </summary>
     private bool IsCompletedAndExpired(Notification notification, DateTimeOffset currentTimestamp)
     {
         return (notification.State is WorkItemState.Completed or WorkItemState.Failed or WorkItemState.Cancelled)

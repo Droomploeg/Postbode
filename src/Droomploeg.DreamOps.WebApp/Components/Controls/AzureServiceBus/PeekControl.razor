@@ -1,6 +1,4 @@
-﻿@using Droomploeg.DreamOps.Domain.ServiceBus
-@using Droomploeg.DreamOps.Domain.ServiceBus.Types
-<form method="Post" @onsubmit="async () => await PeekAsync()" @formname="@PageConstants.QueueDetailPageWithParameters">
+﻿<form method="Post" @onsubmit="async () => await PeekAsync()" @formname="@PageConstants.QueueDetailPageWithParameters">
     <AntiforgeryToken />
 
     <TabControl TabChanged="ChangeMessageSourceAsync">
@@ -49,7 +47,7 @@
     <GridValueItemControl TItem="ServiceBusReceivedMessage">
         <div class="message-actions">
             @{
-                var index = Messages!.ToList()!.IndexOf(context) + StartIndex;
+                var index = Messages!.ToList().IndexOf(context) + StartIndex;
             }
             @if (_source == MessageSource.ActiveMessage && index == 1)
             {

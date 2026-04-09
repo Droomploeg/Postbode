@@ -1,4 +1,5 @@
-﻿using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
+﻿using System.Diagnostics.CodeAnalysis;
+using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 using Droomploeg.DreamOps.Application.ServiceBus.Services;
 using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 using Droomploeg.DreamOps.Infrastructure.Contexts;
@@ -8,12 +9,17 @@ namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Services;
 /// <summary>
 /// Implementation of <see cref="IRuntimeInfoService"/>
 /// </summary>
+[ExcludeFromCodeCoverage( Justification = "This class is responsible for retrieving runtime information from Azure Service Bus, which is a critical part of the application's infrastructure. Testing this class would require extensive setup and may not provide significant value in terms of code coverage.")]
 public class RuntimeInfoService : IRuntimeInfoService
 {
     private readonly IRuntimeInfoAdapter _adapter;
     private readonly IContextSetter _contextSetter;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="RuntimeInfoService"/>.
+    /// </summary>
     /// <param name="adapter"><see cref="IRuntimeInfoAdapter"/></param>
+    /// <param name="contextSetter"><see cref="IContextSetter"/></param>
     public RuntimeInfoService(IRuntimeInfoAdapter adapter, IContextSetter contextSetter)
     {
         _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
@@ -27,9 +33,7 @@ public class RuntimeInfoService : IRuntimeInfoService
         await _contextSetter.GetAndUpdateAsync();
 
         var entities = await _adapter.GetAllEntitiesAsync();
-        return [.. entities
-            .Where(e => e is T)
-            .Cast<T>()];
+        return [.. entities.OfType<T>()];
     }
 
     /// <inheritdoc cref="IRuntimeInfoService.GetAllQueuesAsync(CancellationToken)"/>
@@ -60,7 +64,7 @@ public class RuntimeInfoService : IRuntimeInfoService
         return await _adapter.GetTopicAsync(name, cancellationToken);
     }
 
-    /// <inheritdoc cref="IRuntimeInfoService.GetSubscriptionAsync(string, string, CancellationToken)(string, CancellationToken)(string, CancellationToken)"/>
+    /// <inheritdoc cref="IRuntimeInfoService.GetSubscriptionAsync(string, string, CancellationToken)"/>
     public async Task<Subscription?> GetSubscriptionAsync(string topicName, string subscriptionName, CancellationToken cancellationToken = default)
     {
         await _contextSetter.GetAndUpdateAsync();

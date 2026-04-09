@@ -1,5 +1,4 @@
-﻿using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
+using Azure.Messaging.ServiceBus;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 using Droomploeg.DreamOps.Domain.ServiceBus.Models;
 using Droomploeg.DreamOps.Domain.ServiceBus.Types;
@@ -9,38 +8,33 @@ using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Adapters;
 
+/// <summary>Adapter for dead-letter topic subscription operations using Azure Service Bus.</summary>
 public class DeadLetterTopicAdapter : IDeadLetterTopicAdapter<ServiceBusMessage, ServiceBusReceivedMessage>
 {
     private readonly ApplicationContext _context;
     private readonly TimeProvider _timeProvider;
-    private readonly IAzureClientFactory<ServiceBusAdministrationClient> _adminClientFactory;
     private readonly IAzureClientFactory<ServiceBusClient> _clientFactory;
 
+    /// <summary>Initializes a new instance of <see cref="DeadLetterTopicAdapter"/>.</summary>
+    /// <param name="timeProvider">Provider for retrieving the current time.</param>
+    /// <param name="context"><see cref="ApplicationContext"/> for the current request.</param>
+    /// <param name="clientFactory">Factory for creating <see cref="ServiceBusClient"/> instances.</param>
     public DeadLetterTopicAdapter(
         TimeProvider timeProvider,
         ApplicationContext context,
-        IAzureClientFactory<ServiceBusAdministrationClient> adminClientFactory,
         IAzureClientFactory<ServiceBusClient> clientFactory)
     {
         _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-        _adminClientFactory = adminClientFactory ?? throw new ArgumentNullException(nameof(adminClientFactory));
         _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
+    /// <inheritdoc />
     public async Task<ICollection<ServiceBusReceivedMessage>> PeekMessagesAsync(string topic, string subscription,
         long fromSequenceNumber = EntityAdapterConstants.DefaultStartIndex,
         int numberOfMessages = EntityAdapterConstants.DefaultNumberOfMessage,
         CancellationToken cancellationToken = default)
     {
-        var adminClient = _adminClientFactory.CreateClient(_context);
-        var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
-        var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
-        if (fromSequenceNumber > azureSubscriptionRuntimeProperties.DeadLetterMessageCount)
-        {
-            return [];
-        }
-
         var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
         var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
@@ -50,19 +44,10 @@ public class DeadLetterTopicAdapter : IDeadLetterTopicAdapter<ServiceBusMessage,
         return [.. messages];
     }
 
+    /// <inheritdoc />
     public async Task ResubmitAllMessagesAsync(string topic, string subscription, ResubmitOptions options, CancellationToken cancellationToken)
     {
         var timestamp = _timeProvider.GetUtcNow();
-
-        var adminClient = _adminClientFactory.CreateClient(_context);
-        var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
-        var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
-        var numberOfMessages = azureSubscriptionRuntimeProperties.DeadLetterMessageCount;
-        if (numberOfMessages < 1)
-        {
-            return;
-        }
-
         var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
         var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
@@ -81,19 +66,10 @@ public class DeadLetterTopicAdapter : IDeadLetterTopicAdapter<ServiceBusMessage,
         await sender.CloseAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task DeleteAllMessagesAsync(string topic, string subscription, CancellationToken cancellationToken)
     {
         var timestamp = _timeProvider.GetUtcNow();
-
-        var adminClient = _adminClientFactory.CreateClient(_context);
-        var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
-        var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
-        var numberOfMessages = azureSubscriptionRuntimeProperties.DeadLetterMessageCount;
-        if (numberOfMessages < 1)
-        {
-            return;
-        }
-
         var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
         var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
@@ -102,16 +78,12 @@ public class DeadLetterTopicAdapter : IDeadLetterTopicAdapter<ServiceBusMessage,
         await receiver.CloseAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<bool> ResubmitMessageAsync(string topic, string subscription, ServiceBusReceivedMessage receivedMessage, ServiceBusMessage sendMessage, ResubmitOptions options, CancellationToken cancellationToken)
     {
-        var adminClient = _adminClientFactory.CreateClient(_context);
-        var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
-        var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
-        var numberOfMessages = azureSubscriptionRuntimeProperties.DeadLetterMessageCount;
-        if (numberOfMessages < 1)
-        {
-            return false;
-        }
+        sendMessage.CorrelationId = _context.CorrelationId.ToString();
+        sendMessage.ApplicationProperties["UserName"] = _context.UserName;
+        sendMessage.ApplicationProperties["ResubmittedAt"] = DateTimeOffset.UtcNow;
 
         var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
@@ -119,28 +91,19 @@ public class DeadLetterTopicAdapter : IDeadLetterTopicAdapter<ServiceBusMessage,
         var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
         var sender = client.CreateSender(topic);
 
-        var result = await receiver.SearchAndResubmitAsync(sender, receivedMessage, sendMessage, numberOfMessages, options, cancellationToken);
+        var result = await receiver.SearchAndResubmitAsync(sender, receivedMessage, sendMessage, receivedMessage.SequenceNumber, options, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
         await sender.CloseAsync(cancellationToken);
         return result;
     }
 
+    /// <inheritdoc />
     public async Task<bool> DeleteMessageAsync(string topic, string subscription, ServiceBusReceivedMessage message, CancellationToken cancellationToken)
     {
-        var adminClient = _adminClientFactory.CreateClient(_context);
-        var azureSubscriptionRuntimePropertiesResponse = await adminClient.GetSubscriptionRuntimePropertiesAsync(topic, subscription, cancellationToken);
-        var azureSubscriptionRuntimeProperties = azureSubscriptionRuntimePropertiesResponse.Value;
-        var numberOfMessages = azureSubscriptionRuntimeProperties.DeadLetterMessageCount;
-        var numberOfMessagesToReceive = Math.Min(numberOfMessages, message.SequenceNumber);
-        if (numberOfMessagesToReceive < 1)
-        {
-            return false;
-        }
-
         var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
         var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
         var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
-        var result = await receiver.SearchAndCompleteAsync(message, numberOfMessagesToReceive, cancellationToken);
+        var result = await receiver.SearchAndCompleteAsync(message, message.SequenceNumber, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
         return result;
     }

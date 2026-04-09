@@ -3,7 +3,7 @@
         <Authors>Mark van Leijenhorst</Authors>
         <Company>Droomploeg</Company>
         <Product>Droomploeg DreamOps</Product>
-        <Copyright>© 2024 Droomploeg. Licensed under the GNU GPL v3.0</Copyright>
-        <PackageLicenseExpression>GPL-3.0</PackageLicenseExpression>
+        <Copyright>© 2024 Droomploeg. Licensed under the GNU AGPL v3.0</Copyright>
+        <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
     </PropertyGroup>
 </Project>

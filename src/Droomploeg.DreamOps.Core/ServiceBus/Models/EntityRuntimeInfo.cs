@@ -6,7 +6,7 @@
 /// <param name="HasMessages"><see langword="true"/> if entity has messages</param>
 /// <param name="TransferMessagesCount">Number of transfer messages</param>
 /// <param name="ActiveMessageCount">Number of active messages</param>
-/// <param name="TransferDeadLetterMessageCount">Number of transfer dead letter message</param>
+/// <param name="TransferDeadLetterMessageCount">Number of transfer dead letter messages</param>
 /// <param name="DeadLetterMessageCount">Number of dead letter messages</param>
 /// <param name="ScheduleMessageCount">Number of scheduled messages</param>
 /// <param name="TotalMessageCount">Total number of messages</param>

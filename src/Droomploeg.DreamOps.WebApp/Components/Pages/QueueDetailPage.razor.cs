@@ -59,7 +59,7 @@ public partial class QueueDetailPage
     {
         try
         {
-            _queue = await _runtimeInfoService.GetQueueByNameAsync(QueueName);
+            _queue = await RuntimeInfoService.GetQueueByNameAsync(QueueName);
             _receivedMessages = [];
             _selectedMessage = null;
             _authorizationState = AuthorizationState.Authorized;
@@ -87,22 +87,17 @@ public partial class QueueDetailPage
     {
         _peekModel = args;
 
-        if (_queue == null)
-        {
-            return;
-        }
-
         _receivedMessages = null;
         if (_source == MessageSource.ActiveMessage)
         {
-            _receivedMessages = await _userEntityService.PeekActiveMessagesAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await UserEntityService.PeekActiveMessagesAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
         }
         else if (_source == MessageSource.DeadLetterMessage)
         {
-            _receivedMessages = await _userEntityService.PeekDeadLetterMessagesAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await UserEntityService.PeekDeadLetterMessagesAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
         }
 
-        _queue = await _runtimeInfoService.GetQueueByNameAsync(_queue.Name);
+        _queue = await RuntimeInfoService.GetQueueByNameAsync(_queue.Name);
         StateHasChanged();
     }
 
@@ -119,7 +114,7 @@ public partial class QueueDetailPage
             return;
         }
 
-        var result = await _userEntityService.DeadLetterMessageAsync(_queue!.Name, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
+        var result = await UserEntityService.DeadLetterMessageAsync(_queue!.Name, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
         _selectedMessage = null;
         CloseOverlaysAndDialogs();
 
@@ -139,11 +134,11 @@ public partial class QueueDetailPage
         var result = false;
         if (_source == MessageSource.ActiveMessage)
         {
-            result = await _userEntityService.DeleteActiveMessageAsync(_queue!.Name, _selectedMessage, default);
+            result = await UserEntityService.DeleteActiveMessageAsync(_queue!.Name, _selectedMessage, default);
         }
         if (_source == MessageSource.DeadLetterMessage)
         {
-            result = await _userEntityService.DeleteDeadLetterMessageAsync(_queue!.Name, _selectedMessage, default);
+            result = await UserEntityService.DeleteDeadLetterMessageAsync(_queue!.Name, _selectedMessage, default);
         }
 
         _selectedMessage = null;
@@ -162,7 +157,7 @@ public partial class QueueDetailPage
             return;
         }
 
-        var result = await _userEntityService.ResubmitMessageAsync(
+        var result = await UserEntityService.ResubmitMessageAsync(
             QueueName,
             _selectedMessage,
             model.ToSendMessage(),
@@ -178,7 +173,7 @@ public partial class QueueDetailPage
 
     private async Task SendMessageAsync(SendMessageModel model)
     {
-        var result = await _userEntityService.SendMessageAsync(QueueName, model.ToSendMessage());
+        var result = await UserEntityService.SendMessageAsync(QueueName, model.ToSendMessage());
 
         CloseOverlaysAndDialogs();
 
@@ -192,7 +187,7 @@ public partial class QueueDetailPage
     {
         var resubmitOptions = new ResubmitOptions(generateMessageIds, deleteMesssages);
 
-        var result = await _userEntityService.ResubmitAllMessagesAsync(QueueName, resubmitOptions);
+        var result = await UserEntityService.ResubmitAllMessagesAsync(QueueName, resubmitOptions);
 
         CloseOverlaysAndDialogs();
 
@@ -207,11 +202,11 @@ public partial class QueueDetailPage
         var result = false;
         if (_source == MessageSource.ActiveMessage)
         {
-            result = await _userEntityService.DeleteAllActiveMessagesAsync(QueueName);
+            result = await UserEntityService.DeleteAllActiveMessagesAsync(QueueName);
         }
         else if (_source == MessageSource.DeadLetterMessage)
         {
-            result = await _userEntityService.DeleteAllDeadLetterMessagesAsync(QueueName);
+            result = await UserEntityService.DeleteAllDeadLetterMessagesAsync(QueueName);
         }
 
         CloseOverlaysAndDialogs();
@@ -239,10 +234,5 @@ public partial class QueueDetailPage
         }
 
         StateHasChanged();
-    }
-
-    private void Dummy()
-    { 
-        _userEntityService.LongRunningTaskAsync(QueueName);
     }
 }

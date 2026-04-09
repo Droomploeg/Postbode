@@ -7,7 +7,7 @@ namespace Droomploeg.DreamOps.Application.ServiceBus.Services;
 /// </summary>
 /// <typeparam name="TSendMessage">Send message type</typeparam>
 /// <typeparam name="TReceiveMessage">Receive message type</typeparam>
-public interface IQueueService<TSendMessage, TReceiveMessage>
+public interface IQueueService<in TSendMessage, TReceiveMessage>
     where TSendMessage : class
     where TReceiveMessage : class
 {
@@ -15,7 +15,7 @@ public interface IQueueService<TSendMessage, TReceiveMessage>
     /// Deal-letter first active message from the queue.
     /// </summary>
     /// <param name="queue">Name of the queue</param>
-    /// <param name="message"><see cref="TReceiveMessage"></param>
+    /// <param name="message"><see cref="TReceiveMessage"/></param>
     /// <param name="source">Name of the source</param>
     /// <param name="reason">Reason for dead-letter the message</param>
     /// <param name="description">More detail about the dead-letter reason</param>
@@ -105,7 +105,4 @@ public interface IQueueService<TSendMessage, TReceiveMessage>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns>True if the message was sent</returns>
     Task<bool> SendMessageAsync(string queue, TSendMessage message, CancellationToken cancellationToken = default);
-
-    // todo remove: dummy method to force generic type parameters to be used
-    Task<bool> LongRunningTaskAsync(string queue, CancellationToken cancellationToken = default);
 }

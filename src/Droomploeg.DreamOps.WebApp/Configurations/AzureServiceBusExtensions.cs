@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using System.Diagnostics.CodeAnalysis;
+using Azure.Identity;
 using Droomploeg.DreamOps.Application.ServiceBus.Services;
 using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Services;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.DreamOps.WebApp.Configurations;
 
+[ExcludeFromCodeCoverage( Justification = "Azure service bus configuration extensions")]
 internal static class AzureServiceBusExtensions
 {
     extension(IServiceCollection services)

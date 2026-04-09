@@ -3,10 +3,12 @@
 namespace Droomploeg.DreamOps.Domain.Workers.Models;
 
 /// <summary>
-/// Represents a single unit of work that can be executed, cancelled and tracked.
+/// Represents a single unit of work that can be executed, canceled, and tracked.
 /// </summary>
 public class WorkerItem
 {
+    private const string AnonymousUserName = "Anonymous";
+    
     private readonly Func<CancellationToken, Task> _action;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
@@ -17,15 +19,17 @@ public class WorkerItem
     /// Initializes a new instance of <see cref="WorkerItem"/>.
     /// </summary>
     /// <param name="userName">Name of the user creating the work item. If null or whitespace, "Anonymous" will be used.</param>
+    /// <param name="correlationId">Unique identifier for the work item.</param>
     /// <param name="entity">Name of the entity the work item relates to.</param>
-    /// <param name="description">Human readable description of the work item.</param>
+    /// <param name="description">Readable description of the work item.</param>
     /// <param name="workerAction">The asynchronous action that will be executed for this work item. Receives a <see cref="CancellationToken"/>.</param>
-    public WorkerItem(string userName, string entity, string description, Func<CancellationToken, Task> workerAction)
+    public WorkerItem(string userName, Guid correlationId, string entity, string description, Func<CancellationToken, Task> workerAction)
     {
         _action = workerAction;
         Username = string.IsNullOrWhiteSpace(userName)
-            ? "Anonymous"
+            ? AnonymousUserName
             : userName;
+        CorrelationId = correlationId;
         Entity = entity;
         Description = description;
 
@@ -39,11 +43,16 @@ public class WorkerItem
     /// Gets the identifier of the work item.
     /// </summary>
     public Guid Id { get; } = Guid.NewGuid();
+    
+    /// <summary>
+    /// Gets the correlation identifier of the work item.
+    /// </summary>
+    public Guid CorrelationId { get; } 
 
     /// <summary>
     /// Gets the username who created the work item.
     /// </summary>
-    public string Username { get; } = "Anonymous";
+    public string Username { get; }
 
     /// <summary>
     /// Gets the entity associated with this work item.
@@ -71,7 +80,7 @@ public class WorkerItem
     public DateTimeOffset UpdatedTimestamp => _events.Last().Timestamp;
 
     /// <summary>
-    /// Determines whether the work item can be cancelled at this time.
+    /// Determines whether the work item can be canceled at this time.
     /// Returns true when the cancellation has not been requested and the current state
     /// is either <see cref="WorkItemState.Scheduled"/> or <see cref="WorkItemState.Started"/>.
     /// </summary>

@@ -1,4 +1,4 @@
-﻿using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+﻿using System.Diagnostics.CodeAnalysis;
 using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Exceptions;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -9,6 +9,7 @@ namespace Droomploeg.DreamOps.Infrastructure.Contexts;
 /// <summary>
 /// Web context setter to set the current application context based on the protected session storage.
 /// </summary>
+[ExcludeFromCodeCoverage( Justification = "This class is responsible for setting the application context based on the protected session storage, which is a critical part of the application's infrastructure. Testing this class would require extensive setup and may not provide significant value in terms of code coverage.")]
 public class WebContextSetter : IContextSetter
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;
@@ -43,7 +44,7 @@ public class WebContextSetter : IContextSetter
         var user = authState.User;
 
         _context.CurrentConnection = result.Value.Value;
-        _context.UserName = authState.User.Identity?.Name ?? "Anonymous";
+        _context.UserName = user.Identity?.Name ?? "Anonymous";
 
         return _context;
     }

@@ -1,6 +1,6 @@
 ﻿@attribute [Route(PageConstants.QueueOverviewPage)]
 
-@inject IRuntimeInfoService _runtimeInfoService;
+@inject IRuntimeInfoService RuntimeInfoService;
 
 <AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
     <div class="grid-container">

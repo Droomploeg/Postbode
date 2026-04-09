@@ -10,7 +10,7 @@ namespace Droomploeg.DreamOps.Infrastructure.Workers.Services;
 /// </summary>
 public class WorkerService : IWorkerService
 {
-    //private readonly ILogger<WorkerService> _logger;
+    private readonly ILogger<WorkerService> _logger;
     private readonly List<WorkerItem> _workItemList = [];
     private readonly Lock _sync = new();
 
@@ -19,15 +19,15 @@ public class WorkerService : IWorkerService
     /// </summary>
     /// <param name="logger"><see cref="ILogger{TCategoryName}"/></param>
     /// <exception cref="ArgumentNullException"><see cref="ArgumentNullException"/></exception>
-    public WorkerService()
+    public WorkerService(ILogger<WorkerService> logger)
     {
-        //_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    /// <inheritdoc cref="IWorkerService.Add(WorkerItem)"/>>
+    /// <inheritdoc cref="IWorkerService.Add(WorkerItem)"/>
     public bool Add(WorkerItem item)
     {
-        //_logger.LogInformation("Added work item {WorkItemId} of type {WorkItemType}", item.Id, item.GetType().Name);
+        _logger.LogDebug("Added work item {WorkItemId} of type {WorkItemType}", item.Id, item.GetType().Name);
         lock (_sync)
         {
             _workItemList.Add(item);
@@ -39,7 +39,7 @@ public class WorkerService : IWorkerService
     /// <inheritdoc cref="IWorkerService.Remove(Guid)"/>
     public bool Remove(Guid id)
     {
-        //_logger.LogInformation("Removing work item {WorkItemId}", id);
+        _logger.LogDebug("Removing work item {WorkItemId}", id);
         var item = _workItemList.FirstOrDefault(i => i.Id == id);
         if (item is null)
         {
@@ -48,7 +48,7 @@ public class WorkerService : IWorkerService
 
         if (item.State == WorkItemState.Started)
         {
-            //_logger.LogWarning("Cannot remove work item {WorkItemId} because it is in state {WorkItemState}", id, item?.State ?? WorkItemState.Invalid);
+            _logger.LogWarning("Cannot remove work item {WorkItemId} because it is in state {WorkItemState}", id, item.State);
             return false;
         }
 
@@ -64,10 +64,10 @@ public class WorkerService : IWorkerService
         => _workItemList.AsReadOnly();
 
 
-    /// <inheritdoc cref="IWorkerService.ExecuteNextAsync(CancellationToken)"/>>
+    /// <inheritdoc cref="IWorkerService.ExecuteNextAsync(CancellationToken)"/>
     public async Task<bool> ExecuteNextAsync(CancellationToken cancellationToken)
     {
-        //_logger.LogInformation("Starting next work item");
+        _logger.LogDebug("Starting next work item");
         var nextWorkItem = _workItemList
                 .Where(i => i.State == WorkItemState.Scheduled)
                 .OrderBy(i => i.UpdatedTimestamp)
@@ -75,13 +75,13 @@ public class WorkerService : IWorkerService
 
         if (nextWorkItem == null)
         {
-            //_logger.LogInformation("No pending work items found");
+            _logger.LogDebug("No pending work items found");
             return false;
         }
 
         await nextWorkItem.ExecuteAsync();
 
-        //_logger.LogInformation("Starting work item {WorkItemId} of type {WorkItemType}", nextWorkItem.Id, nextWorkItem.GetType().Name);
+        _logger.LogDebug("Starting work item {WorkItemId} of type {WorkItemType}", nextWorkItem.Id, nextWorkItem.GetType().Name);
 
         return true;
     }

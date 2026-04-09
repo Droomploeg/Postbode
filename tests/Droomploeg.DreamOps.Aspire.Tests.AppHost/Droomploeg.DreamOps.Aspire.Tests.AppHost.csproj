@@ -10,8 +10,16 @@
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.1"/>
         <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="13.1.1"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) AND '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64'">
         <PackageReference Include="Aspire.Hosting.Orchestration.osx-arm64" Version="13.1.1"/>
         <PackageReference Include="Aspire.Dashboard.Sdk.osx-arm64" Version="13.1.1"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) AND '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64'">
+        <PackageReference Include="Aspire.Hosting.Orchestration.linux-x64" Version="13.1.1"/>
+        <PackageReference Include="Aspire.Dashboard.Sdk.linux-x64" Version="13.1.1"/>
     </ItemGroup>
 
     <ItemGroup>

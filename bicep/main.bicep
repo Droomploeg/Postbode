@@ -37,7 +37,7 @@ module vnet 'networks/vnet.bicep' = {
 }
 
 module userAssignedIdentities 'managedIdentities/userAssignedIdentities.bicep' = {
-  name: 'creeteUserAssignedIdentity'
+  name: 'createUserAssignedIdentity'
   scope: resourceGroup
   params: {
     identityName: '${resourcePrefix}-mi01'
@@ -113,20 +113,7 @@ module webApp 'appServices/webapp.bicep' = {
   ]
 }
 
-module assignWebAppKeyVault 'keyvault/accessPolicies.bicep' = {
-  name: 'assignWebAppKeyVault'
-  scope: resourceGroup
-  params: {
-    keyVaultName: keyVault.outputs.keyVaultName
-    pricipalId: userAssignedIdentities.outputs.principalId
-  }
-  dependsOn: [
-    keyVault
-    webApp
-  ]
-}
-
-module assignWwebAppRole 'keyvault/assignRole.bicep' = {
+module assignWebAppRole 'keyvault/assignRole.bicep' = {
   name: 'assignWebAppRole'
   scope: resourceGroup
   params: {

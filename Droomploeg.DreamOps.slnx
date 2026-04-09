@@ -19,7 +19,6 @@
     <File Path="bicep/appServices/webApp.bicep" />
   </Folder>
   <Folder Name="/Solution Items/bicep/keyvault/">
-    <File Path="bicep/keyvault/accessPolicies.bicep" />
     <File Path="bicep/keyvault/assignRole.bicep" />
     <File Path="bicep/keyvault/keyvault.bicep" />
   </Folder>

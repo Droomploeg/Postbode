@@ -15,7 +15,7 @@ var senderRoleId = '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39'// Azure Service Bus Da
 var ownerRoleId = '090c5cfd-751d-490a-894a-3ce6f1109419'// Azure Service Bus Data Owner
 var roleDefinitionId = role == 'Reader' ? readerRoleId : role == 'Sender' ? senderRoleId : ownerRoleId
 
-resource serviceBus 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = {
+resource serviceBus 'Microsoft.ServiceBus/namespaces@2024-01-01' existing = {
   name: serviceBusNamespaceName
 }
 

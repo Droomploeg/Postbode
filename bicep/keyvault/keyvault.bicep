@@ -8,7 +8,7 @@ param ipRules array = []
 param subnetId string
 
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-04-01' = {
   name: keyVaultName
   location: location
   properties: {

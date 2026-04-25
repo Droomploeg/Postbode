@@ -1,5 +1,10 @@
 # DreamOps — Azure Service Bus Operations Tool
 
+[![CI](https://github.com/Droomploeg/DreamOps/actions/workflows/ci.yml/badge.svg)](https://github.com/Droomploeg/DreamOps/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Droomploeg/DreamOps/actions/workflows/codeql.yml/badge.svg)](https://github.com/Droomploeg/DreamOps/actions/workflows/codeql.yml)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4.svg)](https://dotnet.microsoft.com/)
+
 DreamOps is an operational management tool for Azure Service Bus, built with .NET Blazor Server. It provides advanced authorization through Azure Entra ID and focuses exclusively on **message management** — infrastructure provisioning (queues, topics, subscriptions) is intentionally left to Infrastructure as Code (Bicep).
 
 Unlike tools such as Service Bus Explorer, DreamOps offers fine-grained authorization at different levels, ensuring effective permission management. It operates entirely within Azure.
@@ -51,7 +56,7 @@ DreamOps follows Clean Architecture with four layers:
 | Service Bus | Azure.Messaging.ServiceBus SDK |
 | Telemetry | Application Insights |
 | IaC | Bicep |
-| CI/CD | Azure Pipelines |
+| CI/CD | GitHub Actions |
 
 ## Getting Started
 
@@ -148,6 +153,12 @@ The demo application name is "DreamOpsDemo01".
 4. Select **Users and Groups** to manage access
 5. Select **Add user/group**, choose a User/Group and the Role
 6. Press **Assign**
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution process and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards. By submitting a pull request, you agree to the [Contributor License Agreement](CLA.md).
+
+For security-related issues, please follow the process described in [SECURITY.md](SECURITY.md) — do **not** open a public issue.
 
 ## License
 

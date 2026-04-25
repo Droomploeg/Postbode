@@ -90,14 +90,14 @@ public partial class QueueDetailPage
         _receivedMessages = null;
         if (_source == MessageSource.ActiveMessage)
         {
-            _receivedMessages = await UserEntityService.PeekActiveMessagesAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await UserEntityService.PeekActiveMessagesAsync(_queue!.Name, args.StartIndex, args.NumberOfMessages);
         }
         else if (_source == MessageSource.DeadLetterMessage)
         {
-            _receivedMessages = await UserEntityService.PeekDeadLetterMessagesAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await UserEntityService.PeekDeadLetterMessagesAsync(_queue!.Name, args.StartIndex, args.NumberOfMessages);
         }
 
-        _queue = await RuntimeInfoService.GetQueueByNameAsync(_queue.Name);
+        _queue = await RuntimeInfoService.GetQueueByNameAsync(_queue!.Name);
         StateHasChanged();
     }
 

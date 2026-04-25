@@ -5,5 +5,9 @@
         <Product>Droomploeg DreamOps</Product>
         <Copyright>© 2024 Droomploeg. Licensed under the GNU AGPL v3.0</Copyright>
         <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/Droomploeg/DreamOps</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Droomploeg/DreamOps</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>azure;servicebus;blazor;dotnet;operations;dlq</PackageTags>
     </PropertyGroup>
 </Project>

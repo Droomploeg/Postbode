@@ -15,6 +15,10 @@ jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    env:
+      # Opt out of per-PR file coverage; we don't use coverage data and skipping
+      # speeds up analysis. Aligns with the upcoming April 2026 default.
+      CODEQL_ACTION_FILE_COVERAGE_ON_PRS: "false"
     permissions:
       security-events: write
       packages: read

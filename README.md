@@ -163,3 +163,7 @@ For security-related issues, please follow the process described in [SECURITY.md
 ## License
 
 This project is licensed under [AGPL-3.0](LICENSE). See [CLA.md](CLA.md) for the Contributor License Agreement.
+
+## Disclaimer
+
+DreamOps is provided **"AS IS"**, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or its use. See sections 15 and 16 of the [AGPL-3.0 license](LICENSE) for the full disclaimer.

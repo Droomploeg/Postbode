@@ -35,6 +35,14 @@ input.menu-toggler {
     background-image: url('/images/details.svg');
 }
 
+.background-item {
+    padding-left: 5px;
+    background-size: 16px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-image: url('/images/background.svg');
+}
+
 .menu-title {
     font-size: 0.9em;
     font-weight: 600;

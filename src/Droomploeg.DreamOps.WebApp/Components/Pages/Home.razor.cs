@@ -1,37 +1,48 @@
-﻿using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
-using Microsoft.AspNetCore.Components;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
 public partial class Home
 {
-    [CascadingParameter]
-    public IServiceBusClientContext ServiceBusContext { get; set; }
+    private ServiceBusConnection _currentConnection = ServiceBusConnection.Undefined;
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            if (ServiceBusClientManager.Clients.Length == 1)
+            if (ConnectionService.Connections.Length == 1)
             {
-                ServiceBusContext.CurrentClient = ServiceBusClientManager.Clients[0];
-                NavigationManager.NavigateTo(PageConstants.OverviewPage);
+                _currentConnection = ConnectionService.Connections[0];
+
+                await SetConnection(_currentConnection);
+                return;
             }
 
             StateHasChanged();
         }
-        base.OnAfterRender(firstRender);
+        await base.OnAfterRenderAsync(firstRender);
     }
 
-    private bool IsSelected(string client)
+    private bool IsSelected(ServiceBusConnection connection)
     {
-        return ServiceBusContext.CurrentClient == client;
+        return _currentConnection == connection;
     }
 
-    private void SetClient(string client)
+    private async Task SetClient(ServiceBusConnection? connection)
     {
-        ServiceBusContext.CurrentClient = client;
+        _currentConnection = connection ?? ServiceBusConnection.Undefined;
+
+        await SetConnection(_currentConnection);
+    }
+
+    private async Task SetConnection(ServiceBusConnection connection)
+    {
+        if (_currentConnection.IsNotDefined)
+        {
+            await Storage.DeleteAsync(nameof(ServiceBusConnection));
+        }
+
+        await Storage.SetAsync(nameof(ServiceBusConnection), connection);
         NavigationManager.NavigateTo(PageConstants.OverviewPage);
     }
-
 }

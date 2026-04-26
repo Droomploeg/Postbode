@@ -1,13 +1,25 @@
-﻿
-using Droomploeg.DreamOps.Infrastructure.AzureServiceBus;
-using Microsoft.AspNetCore.Components;
+﻿using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Layout;
 
 public partial class Menu
 {
-    [CascadingParameter]
-    public IServiceBusClientContext ServiceBusContext { get; set; } = null!;
+    private string _path = string.Empty;
+    private bool _connectionSelected = false;
 
-    private bool HasClientSelected => !string.IsNullOrWhiteSpace(ServiceBusContext.CurrentClient);
+    internal async Task UpdateAsync(string path)
+    {
+        _path = path;
+
+        var result = await Storage.GetAsync<ServiceBusConnection?>(nameof(ServiceBusConnection));
+        if (!result.Success || result.Value is null || result.Value == ServiceBusConnection.Undefined)
+        {
+            _connectionSelected = false;
+            StateHasChanged();
+            return;
+        }
+
+        _connectionSelected = !"/".Equals(_path);
+        StateHasChanged();
+    }
 }

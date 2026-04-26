@@ -1,8 +1,12 @@
-﻿<input type="checkbox" title="Menu" class="menu-toggler" />
+﻿
+@inject IConnectionService ConnectionService
+@inject ProtectedSessionStorage Storage
+
+<input type="checkbox" title="Menu" class="menu-toggler" />
 
     <div class="menu-scrollable" onclick="document.querySelector('.menu-toggler').click()">
         <div class="menu-item-list">
-        @if (HasClientSelected)
+        @if (_connectionSelected)
         {
             <div class="menu-item overview-item">
                 <NavLink href="@PageConstants.OverviewPage">Overview</NavLink>
@@ -16,6 +20,10 @@
 
             <div class="menu-item topic-item">
                 <NavLink href="@PageConstants.SubscriptionOverviewPage">Subscriptions</NavLink>
+            </div>
+
+            <div class="menu-item background-item">
+                <NavLink href="@PageConstants.BackgroundJobsPage">Background jobs</NavLink>
             </div>
         }
     </div>

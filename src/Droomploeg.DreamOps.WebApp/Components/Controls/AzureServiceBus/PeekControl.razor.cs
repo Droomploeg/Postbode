@@ -1,5 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Droomploeg.DreamOps.Core.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.WebApp.Components.Controls.AzureServiceBus.Models;
 using Droomploeg.DreamOps.WebApp.Components.Controls.Forms;
 using Microsoft.AspNetCore.Components;
@@ -8,11 +8,11 @@ namespace Droomploeg.DreamOps.WebApp.Components.Controls.AzureServiceBus;
 
 public partial class PeekControl : ComponentBase
 {
-    [SupplyParameterFromForm] private PeekModel Model { get; set; } = new PeekModel();
+    [SupplyParameterFromForm] private PeekModel? Model { get; set; } 
 
     [Parameter] public bool SessionEnabled { get; set; } = false;
 
-    [Parameter] public IEnumerable<ServiceBusReceivedMessage>? Messages { get; set; }
+    [Parameter] public ICollection<ServiceBusReceivedMessage>? Messages { get; set; }
 
     [Parameter] public long ActiveMessageCount { get; set; }
 
@@ -34,10 +34,36 @@ public partial class PeekControl : ComponentBase
 
     [Parameter] public EventCallback<ServiceBusReceivedMessage> OnSelected { get; set; }
 
+    protected override void OnInitialized()
+    {
+        Model = new PeekModel();
+        base.OnInitialized();
+    }
+    
     private MessageSource _source = MessageSource.ActiveMessage;
     private string ActiveMessageTabTitle => $"Active ({ActiveMessageCount})";
     private string DeadLetterMessageTabTitle => $"Dead-letter ({DeadLetterMessageCount})";
 
+    private int StartIndex
+    {
+        get => Model?.StartIndex ?? 0;
+        set
+        {
+            Model ??= new PeekModel();
+            Model.StartIndex = value;
+        } 
+    }
+
+    private int NumberOfMessages
+    {
+        get => Model?.NumberOfMessages ?? 0;
+        set
+        {
+            Model ??= new PeekModel();
+            Model.NumberOfMessages = value;
+        }
+    }
+    
     private async Task PeekAsync()
     {
         if (OnPeek.HasDelegate)

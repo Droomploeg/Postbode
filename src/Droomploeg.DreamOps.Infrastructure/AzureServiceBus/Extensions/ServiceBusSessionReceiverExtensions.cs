@@ -2,8 +2,17 @@
 
 namespace Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Extensions;
 
+/// <summary>
+/// Extension methods for <see cref="ServiceBusSessionReceiver"/>.
+/// </summary>
 internal static class ServiceBusSessionReceiverExtensions
 {
+    /// <summary>
+    /// Completes all session messages enqueued before the given timestamp.
+    /// </summary>
+    /// <param name="receiver">The Service Bus session receiver.</param>
+    /// <param name="dateTime">Only messages enqueued before this timestamp are completed.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     internal static async Task CompleteMessagesAsync(this ServiceBusSessionReceiver receiver, DateTimeOffset dateTime, CancellationToken cancellationToken = default)
     {
         while (true)

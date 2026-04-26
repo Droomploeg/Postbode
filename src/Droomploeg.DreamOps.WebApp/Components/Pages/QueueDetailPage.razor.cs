@@ -1,9 +1,10 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Droomploeg.DreamOps.Core.Models;
-using Droomploeg.DreamOps.Core.Services;
-using Droomploeg.DreamOps.Infrastructure.HostedServices.WorkerService;
+using Droomploeg.DreamOps.Domain.ServiceBus.Models;
+using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.WebApp.Components.Controls.AzureServiceBus.Models;
+using Droomploeg.DreamOps.WebApp.Components.Controls.Security;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Identity.Web;
 
 namespace Droomploeg.DreamOps.WebApp.Components.Pages;
 
@@ -19,7 +20,7 @@ public partial class QueueDetailPage
     [Parameter] public string QueueName { get; set; } = null!;
 
     private Queue? _queue = null!;
-    private IEnumerable<ServiceBusReceivedMessage>? _receivedMessages;
+    private ICollection<ServiceBusReceivedMessage>? _receivedMessages;
     private MessageSource _source = MessageSource.ActiveMessage;
     private ServiceBusReceivedMessage? _selectedMessage;
 
@@ -33,37 +34,47 @@ public partial class QueueDetailPage
         { ResubmitSingleMessageOverlay, false }
     };
 
+    private AuthorizationState _authorizationState = AuthorizationState.Loading;
     private PeekModel? _peekModel;
 
     private bool SessionEnabled => _queue?.RequiresSession ?? false;
     private long ActiveMessageCount => _queue?.RuntimeInfo.ActiveMessageCount ?? 0;
     private long DeadLetterMessageCount => _queue?.RuntimeInfo.DeadLetterMessageCount ?? 0;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        await Refresh();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _receivedMessages = [];
             _selectedMessage = null;
             StateHasChanged();
+
+            await Refresh();
         }
-        base.OnAfterRender(firstRender);
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task Refresh()
     {
-        _queue = await ServiceBusService.GetQueueByNameAsync(QueueName);
-        _receivedMessages = [];
-        _selectedMessage = null;
+        try
+        {
+            _queue = await RuntimeInfoService.GetQueueByNameAsync(QueueName);
+            _receivedMessages = [];
+            _selectedMessage = null;
+            _authorizationState = AuthorizationState.Authorized;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            _authorizationState = AuthorizationState.Unauthorized;
+        }
+        catch (MicrosoftIdentityWebChallengeUserException)
+        {
+            _authorizationState = AuthorizationState.TokenExpired;
+        }
+
         StateHasChanged();
     }
-
     private void SourceChanged(MessageSource source)
     {
         _source = source;
@@ -76,23 +87,17 @@ public partial class QueueDetailPage
     {
         _peekModel = args;
 
-        if (_queue == null)
-        {
-            return;
-        }
-
+        _receivedMessages = null;
         if (_source == MessageSource.ActiveMessage)
         {
-            _receivedMessages = null;
-            _receivedMessages = await EntityService.PeekAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await UserEntityService.PeekActiveMessagesAsync(_queue!.Name, args.StartIndex, args.NumberOfMessages);
         }
         else if (_source == MessageSource.DeadLetterMessage)
         {
-            _receivedMessages = null;
-            _receivedMessages = await EntityService.PeekDeadletterAsync(_queue.Name, args.StartIndex, args.NumberOfMessages);
+            _receivedMessages = await UserEntityService.PeekDeadLetterMessagesAsync(_queue!.Name, args.StartIndex, args.NumberOfMessages);
         }
 
-        _queue = await ServiceBusService.GetQueueByNameAsync(_queue.Name);
+        _queue = await RuntimeInfoService.GetQueueByNameAsync(_queue!.Name);
         StateHasChanged();
     }
 
@@ -109,13 +114,11 @@ public partial class QueueDetailPage
             return;
         }
 
-        // todo bool back
-        await EntityService.DeadLetterMessageAsync(_queue!.Name, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
-
+        var result = await UserEntityService.DeadLetterMessageAsync(_queue!.Name, _selectedMessage, ApplicationConstants.ApplicationName, reason, description);
         _selectedMessage = null;
         CloseOverlaysAndDialogs();
 
-        if (_peekModel != null)
+        if (result && _peekModel != null)
         {
             await PeekAsync(_peekModel);
         }
@@ -128,19 +131,20 @@ public partial class QueueDetailPage
             return;
         }
 
+        var result = false;
         if (_source == MessageSource.ActiveMessage)
         {
-            await EntityService.DeleteActiveMessageAsync(_queue!.Name, _selectedMessage, default);
+            result = await UserEntityService.DeleteActiveMessageAsync(_queue!.Name, _selectedMessage, default);
         }
         if (_source == MessageSource.DeadLetterMessage)
         {
-            await EntityService.DeleteDeadletterMessageAsync(_queue!.Name, _selectedMessage, default);
+            result = await UserEntityService.DeleteDeadLetterMessageAsync(_queue!.Name, _selectedMessage, default);
         }
 
         _selectedMessage = null;
         CloseOverlaysAndDialogs();
 
-        if (_peekModel != null)
+        if (result && _peekModel != null)
         {
             await PeekAsync(_peekModel);
         }
@@ -153,19 +157,15 @@ public partial class QueueDetailPage
             return;
         }
 
-        async Task action(CancellationToken cancellationToken) =>
-            await EntityService.ResubmitDeadletterMessageAsync(QueueName,
-                _selectedMessage,
-                model.ToSendMessage(),
-                new ResubmitOptions(model.GenenerateMessageId, model.DeleteMessageAfterResubmit),
-                cancellationToken);
-
-        var workItem = new WorkItem(QueueName, "Send messages", action);
-        WorkerService.Register(workItem);
+        var result = await UserEntityService.ResubmitMessageAsync(
+            QueueName,
+            _selectedMessage,
+            model.ToSendMessage(),
+            new ResubmitOptions(model.GenerateMessageId, model.DeleteMessageAfterResubmit));
 
         CloseOverlaysAndDialogs();
 
-        if (_peekModel != null)
+        if (result && _peekModel != null)
         {
             await PeekAsync(_peekModel);
         }
@@ -173,45 +173,48 @@ public partial class QueueDetailPage
 
     private async Task SendMessageAsync(SendMessageModel model)
     {
-        async Task action(CancellationToken cancellationToken) =>
-            await EntityService.SendMessageAsync(QueueName, [model.ToSendMessage()], cancellationToken);
-
-        // todo: const for action name
-        var workItem = new WorkItem(QueueName, "Send messages", action);
-        WorkerService.Register(workItem);
+        var result = await UserEntityService.SendMessageAsync(QueueName, model.ToSendMessage());
 
         CloseOverlaysAndDialogs();
 
-        if (_peekModel != null)
+        if (result && _peekModel != null)
         {
             await PeekAsync(_peekModel);
         }
     }
 
-    private void ResubmitAllMessages(bool generateMessageIds, bool deleteMesssages)
+    private async Task ResubmitAllMessages(bool generateMessageIds, bool deleteMesssages)
     {
         var resubmitOptions = new ResubmitOptions(generateMessageIds, deleteMesssages);
-        async Task action(CancellationToken cancellationToken)
-            => await EntityService.ResubmitAllDeadletterMessagesAsync(QueueName, resubmitOptions, cancellationToken);
 
-        // todo: const for action name
-        var workItem = new WorkItem(QueueName, "Resubmit all dead-letter messages", action);
-        WorkerService.Register(workItem);
+        var result = await UserEntityService.ResubmitAllMessagesAsync(QueueName, resubmitOptions);
 
         CloseOverlaysAndDialogs();
+
+        if (result && _peekModel != null)
+        {
+            await PeekAsync(_peekModel);
+        }
     }
 
-    private void DeleteAllMessages()
+    private async Task DeleteAllMessages()
     {
-        Func<CancellationToken, Task> action = _source == MessageSource.ActiveMessage
-            ? async (cancellationToken) => await EntityService.DeleteAllActiveMessagesAsync(QueueName, cancellationToken)
-            : async (cancellationToken) => await EntityService.DeleteAllDeadLetterMessagesAsync(QueueName, cancellationToken);
-
-        // todo: const for action name
-        var workItem = new WorkItem(QueueName, "Delete all messages", action);
-        WorkerService.Register(workItem);
+        var result = false;
+        if (_source == MessageSource.ActiveMessage)
+        {
+            result = await UserEntityService.DeleteAllActiveMessagesAsync(QueueName);
+        }
+        else if (_source == MessageSource.DeadLetterMessage)
+        {
+            result = await UserEntityService.DeleteAllDeadLetterMessagesAsync(QueueName);
+        }
 
         CloseOverlaysAndDialogs();
+
+        if (result && _peekModel != null)
+        {
+            await PeekAsync(_peekModel);
+        }
     }
 
     private void ShowOverlayOrDialog(string overlayOrDialog, ServiceBusReceivedMessage? message = null)

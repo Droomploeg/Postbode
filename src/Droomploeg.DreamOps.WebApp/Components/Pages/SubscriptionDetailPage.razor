@@ -1,58 +1,58 @@
 ﻿@attribute [Route(PageConstants.SubscriptionDetailPageWithParameters)]
-@attribute [Authorize(Roles = AuthorisationRoles.GeneralAccess)]
 
-@inject ServiceBusService ServiceBusService;
-@inject TopicService<ServiceBusMessage, ServiceBusReceivedMessage> EntityService;
-@inject IWorkerService WorkerService;
+@inject IRuntimeInfoService RuntimeInfoService;
+@inject ITopicService<ServiceBusMessage, ServiceBusReceivedMessage> UserTopicService;
 
-<entity-details>
-    <buttonbar>
-        <button class="send-button" @onclick="() => ShowOverlayOrDialog(SendMessageOverlay)">New Message</button>
-        <button class="refresh-button" @onclick="Refresh">Refresh</button>
-    </buttonbar>
-    <PeekControl Messages="_receivedMessages"
-                 SessionEnabled="SessionEnabled"
-                 DeadLetterMessageCount="DeadLetterMessageCount"
-                 ActiveMessageCount="ActiveMessageCount"
-                 OnMessageSourceChanged="(source) => SourceChanged(source)"
-                 OnPeek="async (args) => await PeekAsync(args)"
-                 OnResubmitAll="() => ShowOverlayOrDialog(ResubmitAllMessagesOverlay)"
-                 OnDeleteAll="() => ShowOverlayOrDialog(DeleteAllMessagesDialog)"
-                 OnSelected="(args)  => SelectMessage(args)"
-                 OnDelete="(args) => ShowOverlayOrDialog(DeleteSingleMessageDialog, args)"
-                 OnDeadLetter="(args) => ShowOverlayOrDialog(DeadLetterMessageOverlay, args)"
-                 OnResubmit="(args) => ShowOverlayOrDialog(ResubmitSingleMessageOverlay, args)" />
+<AuthorizationControl State="_authorizationState" Roles="[AuthorizationRole.DataOwner]">
+    <entity-details>
+        <buttonbar>
+            <button class="send-button" @onclick="() => ShowOverlayOrDialog(SendMessageOverlay)">New Message</button>
+            <button class="refresh-button" @onclick="Refresh">Refresh</button>
+        </buttonbar>
+        <PeekControl Messages="_receivedMessages"
+                     SessionEnabled="SessionEnabled"
+                     DeadLetterMessageCount="DeadLetterMessageCount"
+                     ActiveMessageCount="ActiveMessageCount"
+                     OnMessageSourceChanged="(source) => SourceChanged(source)"
+                     OnPeek="async (args) => await PeekAsync(args)"
+                     OnResubmitAll="() => ShowOverlayOrDialog(ResubmitAllMessagesOverlay)"
+                     OnDeleteAll="() => ShowOverlayOrDialog(DeleteAllMessagesDialog)"
+                     OnSelected="(args)  => SelectMessage(args)"
+                     OnDelete="(args) => ShowOverlayOrDialog(DeleteSingleMessageDialog, args)"
+                     OnDeadLetter="(args) => ShowOverlayOrDialog(DeadLetterMessageOverlay, args)"
+                     OnResubmit="(args) => ShowOverlayOrDialog(ResubmitSingleMessageOverlay, args)" />
 
-    <details-panel>
-        @if (_selectedMessage is not null)
-        {
-            <ReceivedMessageControl Message="_selectedMessage" />
-        }
-    </details-panel>
+        <details-panel>
+            @if (_selectedMessage is not null)
+            {
+                <ReceivedMessageControl Message="_selectedMessage" />
+            }
+        </details-panel>
 
-    <DialogControl IsDialogVisible="_visibleOverlaysAndDialogs[DeleteSingleMessageDialog]">
-        <div class="dialog-container">
-            <div class="dialog-title">Delete message?</div>
-            <div class="dialog-text">Do you want to delete this message?</div>
-            <div class="dialog-buttons">
-                <button class="primary" @onclick="DeleteSelectedMessageAsync">Confirm</button>
-                <button class="secondary" @onclick="CloseOverlaysAndDialogs">Cancel</button>
+        <DialogControl IsDialogVisible="_visibleOverlaysAndDialogs[DeleteSingleMessageDialog]">
+            <div class="dialog-container">
+                <div class="dialog-title">Delete message?</div>
+                <div class="dialog-text">Do you want to delete this message?</div>
+                <div class="dialog-buttons">
+                    <button class="primary" @onclick="DeleteSelectedMessageAsync">Confirm</button>
+                    <button class="secondary" @onclick="CloseOverlaysAndDialogs">Cancel</button>
+                </div>
             </div>
-        </div>
-    </DialogControl>
+        </DialogControl>
 
-    <DialogControl IsDialogVisible="_visibleOverlaysAndDialogs[DeleteAllMessagesDialog]">
-        <div class="dialog-container">
-            <div class="dialog-title">Delete all messages?</div>
-            <div class="dialog-text">Do you want to delete all the messages?</div>
-            <div class="dialog-buttons">
-                <button class="primary" @onclick="DeleteAllMessages">Confirm</button>
-                <button class="secondary" @onclick="CloseOverlaysAndDialogs">Cancel</button>
+        <DialogControl IsDialogVisible="_visibleOverlaysAndDialogs[DeleteAllMessagesDialog]">
+            <div class="dialog-container">
+                <div class="dialog-title">Delete all messages?</div>
+                <div class="dialog-text">Do you want to delete all the messages?</div>
+                <div class="dialog-buttons">
+                    <button class="primary" @onclick="DeleteAllMessages">Confirm</button>
+                    <button class="secondary" @onclick="CloseOverlaysAndDialogs">Cancel</button>
+                </div>
             </div>
-        </div>
-    </DialogControl>
+        </DialogControl>
 
-</entity-details>
+    </entity-details>
+</AuthorizationControl>
 
 <OffCanvasControl Visible="@_visibleOverlaysAndDialogs[DeadLetterMessageOverlay]" Title="Dead-letter messsage" OnClose="CloseOverlaysAndDialogs">
     <DeadLetterMessageControl OnSend="async (model) => await DeadLetterSelectedMessageAsync(model.Reason, model.Description)" OnCancel="CloseOverlaysAndDialogs" />

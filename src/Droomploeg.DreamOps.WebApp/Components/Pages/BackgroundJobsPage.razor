@@ -1,0 +1,79 @@
+﻿@attribute [Route(PageConstants.BackgroundJobsPage)]
+
+@inject IWorkerService WorkerService;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<content>
+    <entity-details>
+        <buttonbar>
+            <button class="refresh-button" @onclick="Refresh">Refresh</button>
+        </buttonbar>
+
+        <GridControl Items="@_items" TItem="WorkerItem" OnSelected="OnSelected">
+            <GridHeaderItemControl TItem="WorkerItem">Entity</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="WorkerItem">Description</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="WorkerItem">State</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="WorkerItem">Updated timestamp</GridHeaderItemControl>
+            <GridHeaderItemControl TItem="WorkerItem">&nbsp;</GridHeaderItemControl>
+
+            <GridValueItemControl TItem="WorkerItem">@context.Entity</GridValueItemControl>
+            <GridValueItemControl TItem="WorkerItem">@context.Description</GridValueItemControl>
+            <GridValueItemControl TItem="WorkerItem">@context.State</GridValueItemControl>
+            <GridValueItemControl TItem="WorkerItem">@context.UpdatedTimestamp</GridValueItemControl>
+            <GridValueItemControl TItem="WorkerItem">
+                <div class="worker-actions">
+                    @if (context.CanBeCancelled())
+                    {
+                        <button @onclick="async () => await StopWorkerAsync(context)" class="stop-button" alt="stop"></button>
+                    }
+                    else if (!context.IsCancelled || context.State != WorkItemState.Started)
+                    {
+                        <button @onclick="async () => await DeleteWorkerAsync(context)" class="delete-button" alt="delete"></button>
+                    }
+                </div>
+            </GridValueItemControl>
+        </GridControl>
+
+        <details-panel>
+            @if (_selectedWorker is not null)
+            {
+                <TabControl>
+                    <TabItemControl Title="Actions">
+                        <gridTable>
+                            <gridRow>
+                                <gridCell class="title">Timestamp</gridCell>
+                                <gridCell class="title">User</gridCell>
+                                <gridCell class="title">Action</gridCell>
+                            </gridRow>
+                            @foreach (var item in _selectedWorker.Actions)
+                            {
+                                <gridRow>
+                                    <gridCell>@item.Timestamp</gridCell>
+                                    <gridCell>@item.UserName</gridCell>
+                                    <gridCell>@item.Action</gridCell>
+                                </gridRow>
+                            }
+                        </gridTable>
+                    </TabItemControl>
+                    <TabItemControl Title="Events">
+                        <gridTable>
+                            <gridRow>
+                                <gridCell class="title">Timestamp</gridCell>
+                                <gridCell class="title">State</gridCell>
+                                <gridCell class="title">Error message</gridCell>
+                            </gridRow>
+                            @foreach (var item in _selectedWorker.Events)
+                            {
+                                <gridRow>
+                                    <gridCell>@item.Timestamp</gridCell>
+                                    <gridCell>@item.State</gridCell>
+                                    <gridCell>@item.Exception</gridCell>
+                                </gridRow>
+                            }
+                        </gridTable>
+                    </TabItemControl>
+                </TabControl>
+            }
+        </details-panel>
+    </entity-details>
+</content>

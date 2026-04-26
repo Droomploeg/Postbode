@@ -1,0 +1,38 @@
+﻿.notification-item {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.6rem;
+    border: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+    min-width: 0; 
+    background-color: rgb(255, 255, 255, 0.95);
+    margin-bottom: 1rem;
+}
+
+.notification-item .icon {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    display: inline-block;
+    background-size: cover;
+    background-position: center;
+    color: rgb(0,0,0);
+}
+
+.notification-item .notification-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1 1 auto;
+    min-width: 0; 
+    overflow: hidden;
+}
+
+.notification-item .notification-body .title {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+}

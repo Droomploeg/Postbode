@@ -13,39 +13,39 @@ top {
     align-items: center;
 }
 
-    top logo {
-        flex: 1;
-        white-space: nowrap;
-        background-image: url('/images/logo.svg');
-        background-repeat: no-repeat;
-        background-position-x: 0px;
-        background-position-y: -3px;
-        background-size: 20px;
-        color: rgb(255, 255, 255);
-    }
+top logo {
+    flex: 1;
+    white-space: nowrap;
+    background-image: url('/images/logo.svg');
+    background-repeat: no-repeat;
+    background-position-x: 0px;
+    background-position-y: -3px;
+    background-size: 20px;
+    color: rgb(255, 255, 255);
+}
 
-    top logo title {
-        display: none;
-    }
+top logo title {
+    display: none;
+}
 
-    top .notification-button {
-        background-image: url('/images/notification.svg');
-        background-position-x: center;
-        background-position-y: center;
-        background-repeat: no-repeat;
-        background-size: 16px;
-        width: 40px;
-        height: 100%;
-        border-radius: 0px;
-    }
+top .notification-button {
+    background-image: url('/images/notification.svg');
+    background-position-x: center;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    width: 40px;
+    height: 100%;
+    border-radius: 0px;
+}
 
-    top login {
-        padding-left: 10px;
-        height: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
+top login {
+    padding-left: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 
 middle {
     display: flex;
@@ -54,13 +54,13 @@ middle {
     overflow: auto;
 }
 
-    middle div {
-        display: flex;
-        flex-direction: row;
-        flex-grow: 1;
-        overflow: auto;
-        padding: 0 0 0 0;
-    }
+middle div {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    overflow: auto;
+    padding: 0 0 0 0;
+}
 
 path {
     display: flex;
@@ -92,66 +92,77 @@ path {
 
 .notification-item {
     display: flex;
-    flex-direction: row;
-    flex-grow: 0;
-    padding: 10px 0 10px 0;
-    width: 300px;
-    border-bottom: 1px solid rgb(200, 200, 200);
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.6rem;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+    min-width: 0; 
 }
 
-    .notification-item:first-child {
-        border-top: 1px solid rgb(200, 200, 200);
-    }
+.notification-item .icon {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    display: inline-block;
+    background-size: cover;
+    background-position: center;
+    color: rgb(0,0,0);
+}
 
-    .notification-item div {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 0;
-        overflow: hidden;
-        height: 55px;
-        width: 100%;
-    }
+.notification-item .notification-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1 1 auto;
+    min-width: 0; 
+    overflow: hidden;
+}
 
-    .notification-item .icon {
-        flex: 0 0 auto;
-        background-size: 25px;
-        background-position-y: center;
-        width: 30px;
-    }
+.notification-item .notification-body .entity {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* keep title single-line */
+}
 
-    .notification-item .title {
-        font-weight: bold;
-        overflow: hidden;
-        max-width: 170px;
-        height: 20px;
-    }
+.notification-item .state {
+    word-wrap: break-word;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
 
-    .notification-item .message {
-        word-wrap: break-word;
-        max-width: 170px;
-        overflow: hidden;
-        height: 20px;
-    }
+.notification-item .message {
+    word-wrap: break-word;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
 
-    .notification-item .datetime {
-        font-size: 0.8em;
-        color: rgb(100, 100, 100);
-        max-width: 170px;
-        height: 15px;
-    }
+.notification-item .datetime {
+    font-size: 0.8em;
+    color: rgb(100, 100, 100);
+    max-width: 170px;
+    height: 15px;
+}
 
-    .notification-item close-button {
-        margin: 10px;
-        width: 25px;
-        height: 25px;
-        border-radius: 3px;
-        flex: 0 0 auto;
-        color: rgb(200, 200, 200);
-    }
+.notification-item .close-button {
+    margin: 10px;
+    border-radius: 3px;
+    flex: 0 0 auto;
+    color: rgb(0, 0, 0);
+}
 
-        .notification-item close-button:hover {
-            color: rgb(255, 255, 255);
-        }
+.version {
+    font-size: 0.7em;
+    padding-right: 8px;
+    display: flex;
+    align-items: center;
+    flex-grow: 0;
+    overflow: visible;
+}
 
 @media (min-width: 641px) {
     top logo {
@@ -180,9 +191,9 @@ path {
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

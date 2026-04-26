@@ -7,7 +7,7 @@
                     <resubmitoption>
                         <div>
                             <label class="switch">
-                                <InputCheckbox @bind-Value="Model.GenenerateMessageId" class="checkbox" />
+                                <InputCheckbox @bind-Value="GenerateMessageId" class="checkbox" />
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -17,7 +17,7 @@
                     <resubmitoption>
                         <div>
                             <label class="switch">
-                                <InputCheckbox @bind-Value="Model.DeleteMessageAfterResubmit" />
+                                <InputCheckbox @bind-Value="DeleteMessageAfterResubmit" />
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -27,13 +27,13 @@
             }
         <content>
             <label>Content type</label>
-            <select id="ContentType" @bind="Model.ContentType">
+            <select id="ContentType" @bind="ContentType">
                 <option value="application/json">application/json</option>
                 <option value="application/xml">application/xml</option>
                 <option value="text/plain">text/plain</option>
             </select>
             <label>Message Body</label>
-            <textarea rows="10" cols="50" id="Body" @bind="Model.Body" />
+            <textarea rows="10" cols="50" id="Body" @bind="Body" ></textarea>
             <TabControl>
                 <TabItemControl Title="Broker Properties">
                     <brokerproperties>
@@ -47,39 +47,39 @@
                             <tbody>
                                 <tr>
                                     <td>Message Id</td>
-                                    @if (Model.GenenerateMessageId)
+                                    @if (GenerateMessageId)
                                     {
                                         <td><span class="generatedMessageId">Generated Message Id</span></td>
                                     }
                                     else
                                     {
-                                        <td><InputText @bind-Value="@Model.MessageId" class="prop-value" /></td>
+                                        <td><InputText @bind-Value="@MessageId" class="prop-value" /></td>
                                     }
                                 </tr>
                                 <tr>
                                     <td>Correlation Id</td>
-                                    <td><InputText @bind-Value="@Model.CorrelationId" class="prop-value" /></td>
+                                    <td><InputText @bind-Value="@CorrelationId" class="prop-value" /></td>
                                 </tr>
                                 <tr>
                                     <td>Subject</td>
-                                    <td><InputText @bind-Value="@Model.Subject" class="prop-value" /></td>
+                                    <td><InputText @bind-Value="@Subject" class="prop-value" /></td>
                                 </tr>
                                 @if (SessionEnabled)
                                 {
                                     <tr>
                                         <td>Session Id</td>
-                                        <td><InputText @bind-Value="@Model.SessionId" class="prop-value" /></td>
+                                        <td><InputText @bind-Value="@SessionId" class="prop-value" /></td>
                                     </tr>
                                     <tr>
                                         <td>Reply To SessionId</td>
-                                        <td><InputText @bind-Value="@Model.ReplyToSessionId" class="prop-value" /></td>
+                                        <td><InputText @bind-Value="@ReplyToSessionId" class="prop-value" /></td>
                                     </tr>
                                 }
                                 else
                                 {
                                     <tr>
                                         <td>Reply To</td>
-                                        <td><InputText @bind-Value="@Model.ReplyTo" class="prop-value" /></td>
+                                        <td><InputText @bind-Value="@ReplyTo" class="prop-value" /></td>
                                     </tr>
                                 }
                             </tbody>
@@ -98,7 +98,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var property in Model.CustomProperties)
+                                @foreach (var property in Model?.CustomProperties ?? [])
                                 {
                                     <tr>
                                         <td><InputText @bind-Value="@property.Key" /></td>

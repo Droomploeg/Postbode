@@ -13,7 +13,7 @@ var keyVaultAdministrator = '00482a5a-887f-4fb3-b363-3b7fe8e74483'// Key Vault A
 var keyVaultOfficer = 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7' // Key Vault Officer
 var roleDefinitionId = role == 'KeyVaultAdministrator' ? keyVaultAdministrator : keyVaultOfficer
 
-resource keyvault 'Microsoft.KeyVault/vaults@2024-04-01-preview' existing = {
+resource keyvault 'Microsoft.KeyVault/vaults@2024-04-01' existing = {
   name: keyVaultName
 }
 

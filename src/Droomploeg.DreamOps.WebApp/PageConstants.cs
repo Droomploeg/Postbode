@@ -1,6 +1,9 @@
-﻿namespace Droomploeg.DreamOps.WebApp;
+﻿using System.Diagnostics.CodeAnalysis;
 
-internal class PageConstants
+namespace Droomploeg.DreamOps.WebApp;
+
+[ExcludeFromCodeCoverage(Justification = "Page constants for the web app")]
+internal static class PageConstants
 {
     internal const string LoginPath = $"{AuthenticationGroup}{LoginPage}";
     internal const string LogoutPath = $"{AuthenticationGroup}{LogoutPage}";
@@ -19,4 +22,6 @@ internal class PageConstants
     internal const string SubscriptionOverviewPage = "/subscription-overview";
     internal const string SubscriptionDetailPage = "/subscription";
     internal const string SubscriptionDetailPageWithParameters = "/subscription/{topicName}/{subscriptionName}";
+
+    internal const string BackgroundJobsPage = "/background-jobs";
 }

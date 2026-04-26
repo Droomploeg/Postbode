@@ -1,5 +1,7 @@
-﻿<Router AppAssembly="@typeof(Program).Assembly">
-    <Found Context="routeData">     
+﻿@inject NavigationManager NavigationManager
+
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
             <NotAuthorized>
                 <a href="@PageConstants.LoginPath">Login</a>

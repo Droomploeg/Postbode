@@ -9,13 +9,13 @@ public partial class OffCanvasControl : ComponentBase
 
     [Parameter] public string Title { get; set; } = string.Empty;
     [Parameter] public RenderFragment? ChildContent { get; set; }
-    [Parameter] public EventCallback<bool> OnClose { get; set; }
-    [Parameter] public bool Visible { get; set; } = false;
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public bool Visible { get; set; } 
     [Parameter] public string CssClass { get; set; } = string.Empty;
 
-    public void ToggleOffCanvas()
+    private void ToggleOffCanvas()
     {
-        InvokeAsync(() => OnClose.InvokeAsync(!Visible));
+        InvokeAsync(() => OnClose.InvokeAsync(false));
     }
 
     private string GetOffCanvasClass()

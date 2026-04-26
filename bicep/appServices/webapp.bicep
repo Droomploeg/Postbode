@@ -1,4 +1,4 @@
-@description('Create a web app with .NET Core 8.0 runtime.')
+@description('Create a web app with .NET 10.0 runtime.')
 param appName string
 @description('Location for all resources.')
 param location string
@@ -13,7 +13,7 @@ param keyVaultName string
 @description('SubnetId')
 param subnetId string 
 
-resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-07-31-preview' existing = {
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: identityName
 }
 
@@ -32,7 +32,7 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
     vnetRouteAllEnabled: true
     siteConfig: {
       alwaysOn: true
-      linuxFxVersion: 'DOTNETCORE|8.0'
+      linuxFxVersion: 'DOTNETCORE|10.0'
       minTlsVersion: '1.3'
       virtualApplications: [
         {
@@ -62,7 +62,6 @@ var defaultAppSettings = {
   'Logging__LogLevel__Microsoft.AspNetCore': 'Warning'
   AZURE_CLIENT_ID: userAssignedIdentity.properties.clientId
   ASPNETCORE_ENVIRONMENT: 'Production'
-  APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
   APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
   ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
   XDT_MicrosoftApplicationInsights_Mode: 'recommended'  

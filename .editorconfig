@@ -137,13 +137,14 @@ csharp_preserve_single_line_blocks = true
 
 # CA1303: Do not pass literals as localized parameters
 dotnet_diagnostic.CA1303.severity = none
+dotnet_diagnostic.CS9236.severity = none
 csharp_using_directive_placement = outside_namespace:silent
 csharp_style_namespace_declarations = block_scoped:silent
 csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
-csharp_style_prefer_primary_constructors = true:suggestion
+csharp_style_prefer_primary_constructors = true:none
 
 [*.vb] 
 # Modifier preferences 

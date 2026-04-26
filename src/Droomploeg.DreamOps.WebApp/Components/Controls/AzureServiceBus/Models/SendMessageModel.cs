@@ -16,7 +16,7 @@ public class SendMessageModel
 
     public bool IsResubmitMessage { get; set; }
 
-    public bool GenenerateMessageId { get; set; }
+    public bool GenerateMessageId { get; set; }
 
     public bool DeleteMessageAfterResubmit { get; set; }
 

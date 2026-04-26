@@ -6,7 +6,7 @@ namespace Droomploeg.DreamOps.WebApp.Components.Controls.AzureServiceBus;
 
 public partial class SendMessageControl : ComponentBase
 {
-    [SupplyParameterFromForm] private SendMessageModel Model { get; set; } = new SendMessageModel();
+    [SupplyParameterFromForm] private SendMessageModel? Model { get; set; }
 
     [Parameter] public ServiceBusReceivedMessage? Message { get; set; }
 
@@ -16,6 +16,112 @@ public partial class SendMessageControl : ComponentBase
 
     [Parameter] public EventCallback OnCancel { get; set; }
 
+    protected override void OnInitialized()
+    {
+        Model = new SendMessageModel();
+        base.OnInitialized();
+    }
+
+    private bool GenerateMessageId
+    {
+        get => Model?.GenerateMessageId ?? true;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.GenerateMessageId = value;
+        }
+    }
+    
+    private bool DeleteMessageAfterResubmit
+    {
+        get => Model?.DeleteMessageAfterResubmit ?? false;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.DeleteMessageAfterResubmit = value;
+        }
+    }
+    
+    private string ContentType
+    {
+        get => Model?.ContentType ?? string.Empty;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.ContentType = value;
+        }
+    }
+    
+    private string Subject
+    {
+        get => Model?.Subject ?? string.Empty;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.Subject = value;
+        }
+    }
+
+    private string Body
+    {
+        get => Model?.Body ?? string.Empty;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.Body = value;
+        }
+    }
+    
+    private string CorrelationId
+    {
+        get => Model?.CorrelationId ?? string.Empty;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.CorrelationId = value;
+        }
+    }
+    
+    private string MessageId
+    {
+        get => Model?.MessageId ?? string.Empty;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.MessageId = value;
+        }
+    }
+    
+    private string SessionId
+    {
+        get => Model?.SessionId ?? string.Empty;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.SessionId = value;
+        }
+    }
+    
+    private string ReplyTo
+    {
+        get => Model?.ReplyTo ?? string.Empty;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.ReplyTo = value;
+        }
+    }
+
+    private string ReplyToSessionId
+    {
+        get => Model?.ReplyToSessionId ?? string.Empty;
+        set
+        {
+            Model ??= new SendMessageModel();
+            Model.ReplyToSessionId = value;
+        }
+    }
+    
     private async Task SendAsync()
     {
         if (OnSend.HasDelegate)
@@ -39,6 +145,7 @@ public partial class SendMessageControl : ComponentBase
     {
         if (Message is not null)
         {
+            Model ??= new SendMessageModel();
             Model.Subject = Message.Subject;
             Model.Body = Message.Body.ToString();
             Model.ContentType = Message.ContentType;
@@ -62,12 +169,14 @@ public partial class SendMessageControl : ComponentBase
 
     private void AddCustomProperty()
     {
+        Model ??= new SendMessageModel();
         Model.CustomProperties.Add(new CustomPropertyModel());
         StateHasChanged();
     }
 
     private void RemoveCustomProperty(CustomPropertyModel property)
     {
+        Model ??= new SendMessageModel();
         Model.CustomProperties.Remove(property);
         StateHasChanged();
     }

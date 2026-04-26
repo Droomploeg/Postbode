@@ -1,26 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\..\build.props"/>
+    <Import Project="..\..\droomploeg.props"/>
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <ItemGroup>
+        <Compile Remove="Channels\**"/>
+        <EmbeddedResource Remove="Channels\**"/>
+        <None Remove="Channels\**"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Channels\**" />
-    <EmbeddedResource Remove="Channels\**" />
-    <None Remove="Channels\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1"/>
+        <PackageReference Include="Microsoft.Extensions.Azure" Version="1.13.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.7" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="4.8.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
+        <!-- Transitive override for GHSA-9mv3-2cwr-p262 (Microsoft.Identity.Web 4.8.0 still pins 10.0.0). -->
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.7" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.4" />
-    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.10.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Droomploeg.DreamOps.Core\Droomploeg.DreamOps.Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../Droomploeg.DreamOps.Application/Droomploeg.DreamOps.Application.csproj"/>
+        <ProjectReference Include="../Droomploeg.DreamOps.Core/Droomploeg.DreamOps.Domain.csproj"/>
+    </ItemGroup>
 
 </Project>

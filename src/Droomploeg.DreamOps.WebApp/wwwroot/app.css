@@ -20,9 +20,17 @@ button {
     background-size: 16px;
     height: 100%;
 }
-    button span {
-        padding-left: 5px;
-    }
+
+button span {
+    padding-left: 5px;
+}
+
+error-button {
+    border: none;
+    padding: 3px;
+    height: 30px;
+    border-radius: 3px;
+}
 
 input {
     height: 18px;
@@ -31,11 +39,12 @@ input {
     border-radius: 3px;
     border: 1px solid rgb(200, 200, 200);
 }
-    input.number {
-        text-align: right;
-        width: 77px;
-        margin: 0px 3px 0px 3px;
-    }
+
+input.number {
+    text-align: right;
+    width: 77px;
+    margin: 0px 3px 0px 3px;
+}
 
 select {
     height: 23px;
@@ -46,40 +55,45 @@ select {
 }
 
 
-
 table {
     width: 100%;
     border-collapse: collapse;
 }
-    table thead tr {
-        background: rgb(255,255, 255);
-        position: sticky;
-        z-index: 5;
-        top: 0;
-    }
+
+table thead tr {
+    background: rgb(255, 255, 255);
+    position: sticky;
+    z-index: 5;
+    top: 0;
+}
+
 th {
     border-bottom: 1px solid rgb(200, 200, 200);
     padding: 4px 3px 4px 3px;
     margin: 0px;
     text-align: left;
 }
+
 td {
     border-bottom: 1px solid rgb(200, 200, 200);
     padding: 6px 3px 6px 2px;
     margin: 0px;
 }
-    td a {
-        color: rgb(0, 100, 210);
-        text-decoration: none;
-    }
-        td a:hover {
-            color: rgb(0, 100, 210);
-            text-decoration: none;
-        }
-        td a:visited {
-            color: rgb(0, 100, 210);
-            text-decoration: none;
-        }
+
+td a {
+    color: rgb(0, 100, 210);
+    text-decoration: none;
+}
+
+td a:hover {
+    color: rgb(0, 100, 210);
+    text-decoration: none;
+}
+
+td a:visited {
+    color: rgb(0, 100, 210);
+    text-decoration: none;
+}
 
 buttonbar {
     flex: 0;
@@ -88,38 +102,51 @@ buttonbar {
     margin-bottom: 20px;
     padding-bottom: 10px;
 }
-    buttonbar button {
-        border-radius: 0px;
-        flex: 0 0 auto;
-        background-position-x: 10px;
-        padding: 0px 10px 0px 33px;
-        height: 100%;
-    }
-        buttonbar button:last-child {
-            border: none;
-        }
+
+buttonbar button {
+    border-radius: 0px;
+    flex: 0 0 auto;
+    background-position-x: 10px;
+    padding: 0px 10px 0px 33px;
+    height: 100%;
+}
+
+buttonbar button:last-child {
+    border: none;
+}
 
 .refresh-button {
     background-image: url('/images/refresh.svg');
 }
+
 .delete-button {
     background-image: url('/images/delete.svg');
 }
+
 .resubmit-button {
     background-image: url('/images/resubmit.svg');
 }
+
 .send-button {
     background-image: url('/images/send.svg');
 }
+
 .peek-button {
     background-image: url('/images/peek.svg');
 }
+
 .deadletter-button {
     background-image: url('/images/deadletter.svg');
 }
+
 .add-button {
     background-image: url('/images/add.svg');
 }
+
+.stop-button {
+    background-image: url('/images/stop.svg');
+}
+
 
 entity-details gridcontrol {
     max-height: 250px;
@@ -150,7 +177,7 @@ entity-details gridcontrol {
     background-repeat: no-repeat;
 }
 
-offcanvas-notification{
+offcanvas-notification {
     width: 300px;
 }
 
@@ -166,38 +193,6 @@ brokerproperties .prop-value {
         min-height: 324px;
     }
 }
-
-/*.notification-button {
-    background-image: url('/images/notification.svg');
-    background-position-x: 5px;
-    background-position-y: 3px;
-    background-size: 13px;
-    background-repeat: no-repeat;
-    padding-left: 25px;
-    cursor: pointer;
-}
-
-
-
-.content-table {
-    font-size: 0.8em;
-}
-
-
-.notification .message {
-    font-size: 0.8em;
-    padding: 2px;
-    margin-left: 20px;
-}
-
-.notification .icon {
-    width: 20px;
-    padding-right: 5px;
-}
-
-.offcanvas .title {
-    font-size: 1.5em;
-}*/
 
 .dialog-title {
     padding: 10px;
@@ -218,12 +213,12 @@ brokerproperties .prop-value {
     justify-content: center;
 }
 
-    .dialog-buttons button {
-        border-radius: 3px;
-        padding: 2px 5px 2px 5px;
-        margin: 0 5px 0 5px;
-        color: rgb(0, 0, 0);
-    }
+.dialog-buttons button {
+    border-radius: 3px;
+    padding: 2px 5px 2px 5px;
+    margin: 0 5px 0 5px;
+    color: rgb(0, 0, 0);
+}
 
 
 .invalid {
@@ -240,7 +235,7 @@ brokerproperties .prop-value {
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}
    

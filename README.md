@@ -1,7 +1,6 @@
 # DreamOps — Azure Service Bus Operations Tool
 
 [![CI](https://github.com/Droomploeg/DreamOps/actions/workflows/ci.yml/badge.svg)](https://github.com/Droomploeg/DreamOps/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/Droomploeg/DreamOps/actions/workflows/codeql.yml/badge.svg)](https://github.com/Droomploeg/DreamOps/actions/workflows/codeql.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4.svg)](https://dotnet.microsoft.com/)
 

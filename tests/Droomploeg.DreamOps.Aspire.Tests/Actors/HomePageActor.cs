@@ -4,17 +4,15 @@ using Droomploeg.DreamOps.Application.ServiceBus.Services;
 using Droomploeg.DreamOps.Domain.ServiceBus.Types;
 using Droomploeg.DreamOps.WebApp.Components.Pages;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Droomploeg.DreamOps.Aspire.Tests.Actors;
 
 public class HomePageActor
 {
     private readonly IRenderedComponent<Home> _page;
-    private readonly FakeNavigationManager _navigationManager;
+    private readonly BunitNavigationManager _navigationManager;
 
-    private HomePageActor(IRenderedComponent<Home> page, FakeNavigationManager navigationManager)
+    private HomePageActor(IRenderedComponent<Home> page, BunitNavigationManager navigationManager)
     {
         _page = page;
         _navigationManager = navigationManager;
@@ -29,7 +27,7 @@ public class HomePageActor
     public bool HasNavigatedTo(string path) =>
         _navigationManager.Uri.Contains(path);
 
-    public static HomePageActor Create(TestContext context, params string[] connectionNames)
+    public static HomePageActor Create(BunitContext context, params string[] connectionNames)
     {
         var connections = connectionNames.Select(n => new ServiceBusConnection(n)).ToArray();
         context.Services.AddSingleton<IConnectionService>(new TestConnectionService(connections));
@@ -37,8 +35,8 @@ public class HomePageActor
         context.Services.AddSingleton<ProtectedSessionStorage>();
         context.JSInterop.Mode = JSRuntimeMode.Loose;
 
-        var navigationManager = context.Services.GetRequiredService<FakeNavigationManager>();
-        var page = context.RenderComponent<Home>();
+        var navigationManager = context.Services.GetRequiredService<BunitNavigationManager>();
+        var page = context.Render<Home>();
         return new HomePageActor(page, navigationManager);
     }
 

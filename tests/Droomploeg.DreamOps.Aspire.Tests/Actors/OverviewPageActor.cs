@@ -29,15 +29,15 @@ public class OverviewPageActor<TPage> where TPage : IComponent
 
 public static class OverviewPageActor
 {
-    public static OverviewPageActor<QueueOverviewPage> CreateQueueOverview(TestContext context)
+    public static OverviewPageActor<QueueOverviewPage> CreateQueueOverview(BunitContext context)
     {
-        var page = context.RenderComponent<QueueOverviewPage>();
+        var page = context.Render<QueueOverviewPage>();
         return new OverviewPageActor<QueueOverviewPage>(page);
     }
 
-    public static OverviewPageActor<SubscriptionOverviewPage> CreateSubscriptionOverview(TestContext context)
+    public static OverviewPageActor<SubscriptionOverviewPage> CreateSubscriptionOverview(BunitContext context)
     {
-        var page = context.RenderComponent<SubscriptionOverviewPage>();
+        var page = context.Render<SubscriptionOverviewPage>();
         return new OverviewPageActor<SubscriptionOverviewPage>(page);
     }
 }

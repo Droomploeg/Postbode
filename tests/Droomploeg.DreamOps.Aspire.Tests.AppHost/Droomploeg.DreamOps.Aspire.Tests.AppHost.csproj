@@ -8,17 +8,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.1"/>
-        <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="13.1.1"/>
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="13.3.5" />
+        <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="13.3.5" />
         <!-- Transitive override for GHSA-9mv3-2cwr-p262. -->
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.7"/>
-        <!-- Transitive override for GHSA-7j59-v9qr-6fq9. -->
-        <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.22.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.8" />
     </ItemGroup>
 
     <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) AND '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64'">
-        <PackageReference Include="Aspire.Hosting.Orchestration.osx-arm64" Version="13.1.1"/>
-        <PackageReference Include="Aspire.Dashboard.Sdk.osx-arm64" Version="13.1.1"/>
+        <PackageReference Include="Aspire.Hosting.Orchestration.osx-arm64" Version="13.3.5" />
+        <PackageReference Include="Aspire.Dashboard.Sdk.osx-arm64" Version="13.3.5" />
     </ItemGroup>
 
     <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) AND '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64'">

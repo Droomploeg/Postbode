@@ -52,9 +52,9 @@ public class BackgroundJobsPageActor
         await deleteButton.ClickAsync(new());
     }
 
-    public static BackgroundJobsPageActor Create(TestContext context)
+    public static BackgroundJobsPageActor Create(BunitContext context)
     {
-        var page = context.RenderComponent<BackgroundJobsPage>();
+        var page = context.Render<BackgroundJobsPage>();
         return new BackgroundJobsPageActor(page);
     }
 }

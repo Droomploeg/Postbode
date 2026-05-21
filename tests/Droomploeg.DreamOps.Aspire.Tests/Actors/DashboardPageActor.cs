@@ -25,9 +25,9 @@ public class DashboardPageActor
     public bool HasSubscriptionSection =>
         _page.Markup.Contains("Subscriptions");
 
-    public static DashboardPageActor Create(TestContext context)
+    public static DashboardPageActor Create(BunitContext context)
     {
-        var page = context.RenderComponent<OverviewPage>();
+        var page = context.Render<OverviewPage>();
         page.WaitForState(() => !page.Markup.Contains("Loading"), TimeSpan.FromSeconds(5));
         return new DashboardPageActor(page);
     }

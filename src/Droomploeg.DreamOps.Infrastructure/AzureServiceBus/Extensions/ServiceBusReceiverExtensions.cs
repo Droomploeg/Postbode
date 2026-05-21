@@ -134,8 +134,6 @@ internal static class ServiceBusReceiverExtensions
                 }
             }
 
-            await sender.SendMessagesAsync(sendBatch, cancellationToken);
-            
             canResubmit = receivedMessagesToResubmitList.Count > 0 ||
                 receivedMessageList.Count == receivedMessagesToResubmitList.Count;
         }

@@ -15,6 +15,8 @@ public partial class SendMessageControl : ComponentBase
     [Parameter] public EventCallback<SendMessageModel> OnSend { get; set; }
 
     [Parameter] public EventCallback OnCancel { get; set; }
+    
+    private bool EnableSendButton => (!SessionEnabled || !string.IsNullOrWhiteSpace(SessionId)) && !string.IsNullOrWhiteSpace(ContentType) && !string.IsNullOrWhiteSpace(Body);
 
     protected override void OnInitialized()
     {

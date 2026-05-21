@@ -67,7 +67,12 @@
                                 @if (SessionEnabled)
                                 {
                                     <tr>
-                                        <td>Session Id</td>
+                                        <td>Session Id (required)
+                                            @if (string.IsNullOrWhiteSpace(SessionId))
+                                            {
+                                                <label class="error">Session Id is required</label>
+                                            }
+                                        </td>
                                         <td><InputText @bind-Value="@SessionId" class="prop-value" /></td>
                                     </tr>
                                     <tr>
@@ -139,7 +144,10 @@
             </TabControl>
         </content>
         <buttons>
-            <button class="primary" type="submit">Send</button>
+            @if (EnableSendButton)
+            {
+                <button class="primary" type="submit">Send</button>
+            }
             <button class="secondary" type="reset" @onclick="async () => await CancelAsync()">Cancel</button>
         </buttons>
     </control>

@@ -11,9 +11,12 @@
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.Testing" Version="13.3.5" />
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1"/>
-        <PackageReference Include="bunit" Version="1.40.0"/>
-        <PackageReference Include="coverlet.collector" Version="6.0.4"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
+        <PackageReference Include="bunit" Version="2.7.2" />
+        <PackageReference Include="coverlet.collector" Version="10.0.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
         <PackageReference Include="xunit" Version="2.9.3"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
           <PrivateAssets>all</PrivateAssets>
@@ -22,7 +25,7 @@
         <!-- Transitive override for GHSA-9mv3-2cwr-p262. -->
         <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.8" />
         <!-- Transitive override for GHSA-7j59-v9qr-6fq9. -->
-        <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.22.0"/>
+        <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
     </ItemGroup>
 
     <ItemGroup>

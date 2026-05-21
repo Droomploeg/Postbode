@@ -10,7 +10,7 @@ public class SendMessageControlTests : DreamOpsTestBase
     [Fact]
     public void Send_Should_BeHidden_WhenBodyIsEmpty()
     {
-        var cut = RenderComponent<SendMessageControl>();
+        var cut = Render<SendMessageControl>();
 
         Assert.Empty(cut.FindAll("button.primary"));
     }
@@ -18,7 +18,7 @@ public class SendMessageControlTests : DreamOpsTestBase
     [Fact]
     public void Send_Should_AppearAfterBodyIsFilled()
     {
-        var cut = RenderComponent<SendMessageControl>();
+        var cut = Render<SendMessageControl>();
 
         cut.Find("#Body").Change("hello world");
 
@@ -28,7 +28,7 @@ public class SendMessageControlTests : DreamOpsTestBase
     [Fact]
     public void Send_Should_BeHidden_WhenSessionEnabledAndSessionIdIsEmpty()
     {
-        var cut = RenderComponent<SendMessageControl>(p => p
+        var cut = Render<SendMessageControl>(p => p
             .Add(c => c.SessionEnabled, true));
 
         cut.Find("#Body").Change("hello world");
@@ -39,7 +39,7 @@ public class SendMessageControlTests : DreamOpsTestBase
     [Fact]
     public void Send_Should_AppearWhenSessionEnabledAndAllRequiredFieldsAreFilled()
     {
-        var cut = RenderComponent<SendMessageControl>(p => p
+        var cut = Render<SendMessageControl>(p => p
             .Add(c => c.SessionEnabled, true));
 
         cut.Find("#Body").Change("hello world");
@@ -51,7 +51,7 @@ public class SendMessageControlTests : DreamOpsTestBase
     [Fact]
     public void SessionIdRequiredError_Should_AppearWhenSessionEnabledAndSessionIdIsEmpty()
     {
-        var cut = RenderComponent<SendMessageControl>(p => p
+        var cut = Render<SendMessageControl>(p => p
             .Add(c => c.SessionEnabled, true));
 
         Assert.Contains("Session Id is required", cut.Markup);
@@ -60,7 +60,7 @@ public class SendMessageControlTests : DreamOpsTestBase
     [Fact]
     public void SessionIdRequiredError_Should_DisappearAfterSessionIdIsFilled()
     {
-        var cut = RenderComponent<SendMessageControl>(p => p
+        var cut = Render<SendMessageControl>(p => p
             .Add(c => c.SessionEnabled, true));
 
         FindSessionIdInput(cut).Change("my-session");
@@ -71,7 +71,7 @@ public class SendMessageControlTests : DreamOpsTestBase
     [Fact]
     public void SessionIdRequiredError_Should_NotAppearWhenSessionDisabled()
     {
-        var cut = RenderComponent<SendMessageControl>();
+        var cut = Render<SendMessageControl>();
 
         Assert.DoesNotContain("Session Id is required", cut.Markup);
     }

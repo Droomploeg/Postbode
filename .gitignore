@@ -17,6 +17,10 @@
 *.userprefs
 **/appsettings.*.json
 
+# Visual Studio publish profiles (may contain environment-specific resource names)
+**/Properties/ServiceDependencies/
+**/Properties/PublishProfiles/
+
 # Mono auto generated files
 mono_crash.*
 

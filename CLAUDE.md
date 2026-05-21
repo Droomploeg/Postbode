@@ -8,7 +8,7 @@ DreamOps is an Azure Service Bus operational management tool built with .NET Bla
 - **Authentication**: Microsoft Entra ID (OpenID Connect + On-Behalf-Of token flow)
 - **Infrastructure**: Azure (App Service, Service Bus, Key Vault, Application Insights)
 - **IaC**: Bicep (in `/bicep/`)
-- **CI/CD**: Azure Pipelines (in `/pipelines/`)
+- **CI/CD**: GitHub Actions (in `/.github/workflows/`)
 
 ## Architecture
 
@@ -113,7 +113,7 @@ dreamops/
 │   ├── Droomploeg.DreamOps.Aspire.Tests/     # Aspire integration tests
 │   └── Droomploeg.DreamOps.IntegrationsTests/ # bUnit component tests
 ├── bicep/                                     # Azure infrastructure (IaC)
-├── pipelines/                                 # Azure Pipelines CI/CD
+├── .github/workflows/                         # GitHub Actions CI/CD
 ├── build.props                                # Shared build properties (net10.0)
 ├── droomploeg.props                           # License metadata (AGPL-3.0)
 ├── global.json                                # .NET SDK version

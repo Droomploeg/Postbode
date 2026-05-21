@@ -10,17 +10,17 @@ namespace Droomploeg.DreamOps.Aspire.Tests.Actors;
 
 public static class DetailPageActor
 {
-    public static DetailPageActor<QueueDetailPage> Create(TestContext context, string queueName)
+    public static DetailPageActor<QueueDetailPage> Create(BunitContext context, string queueName)
     {
-        var page = context.RenderComponent<QueueDetailPage>(p =>
+        var page = context.Render<QueueDetailPage>(p =>
             p.Add(x => x.QueueName, queueName));
         return new DetailPageActor<QueueDetailPage>(page);
     }
 
     public static DetailPageActor<SubscriptionDetailPage> Create(
-        TestContext context, string topicName, string subscriptionName)
+        BunitContext context, string topicName, string subscriptionName)
     {
-        var page = context.RenderComponent<SubscriptionDetailPage>(p => p
+        var page = context.Render<SubscriptionDetailPage>(p => p
             .Add(x => x.TopicName, topicName)
             .Add(x => x.SubscriptionName, subscriptionName));
         return new DetailPageActor<SubscriptionDetailPage>(page);
@@ -30,6 +30,10 @@ public static class DetailPageActor
 public class DetailPageActor<TPage> where TPage : IComponent
 {
     private readonly IRenderedComponent<TPage> _page;
+
+    // RenderedComponent<TPage> also implements IRenderedComponent<IComponent>, so a runtime
+    // cast unlocks the FindComponent / FindComponents extensions in bUnit 2.x.
+    private IRenderedComponent<IComponent> Root => (IRenderedComponent<IComponent>)(object)_page;
 
     public DetailPageActor(IRenderedComponent<TPage> page)
     {
@@ -58,7 +62,7 @@ public class DetailPageActor<TPage> where TPage : IComponent
 
     public async Task SelectMessageAsync(ServiceBusReceivedMessage message)
     {
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         await _page.InvokeAsync(() => peekControl.Instance.OnSelected.InvokeAsync(message));
     }
 
@@ -82,12 +86,12 @@ public class DetailPageActor<TPage> where TPage : IComponent
 
         while (DateTime.UtcNow < deadline)
         {
-            var peekControl = _page.FindComponent<PeekControl>();
+            var peekControl = Root.FindComponent<PeekControl>();
             var previousMessages = peekControl.Instance.Messages;
             await _page.InvokeAsync(() => peekControl.Instance.OnPeek.InvokeAsync(peekModel));
 
             _page.WaitForState(
-                () => peekControl.Instance.Messages != previousMessages,
+                () => !Equals(previousMessages, peekControl.Instance.Messages),
                 TimeSpan.FromSeconds(5));
 
             var messages = peekControl.Instance.Messages ?? [];
@@ -102,9 +106,9 @@ public class DetailPageActor<TPage> where TPage : IComponent
         return [];
     }
 
-    public async Task SwitchToDeadLetterTabAsync()
+    private async Task SwitchToDeadLetterTabAsync()
     {
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         await _page.InvokeAsync(() => peekControl.Instance.OnMessageSourceChanged.InvokeAsync(MessageSource.DeadLetterMessage));
     }
 
@@ -113,13 +117,13 @@ public class DetailPageActor<TPage> where TPage : IComponent
     {
         await SwitchToDeadLetterTabAsync();
 
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         var previousMessages = peekControl.Instance.Messages;
         var peekModel = new PeekModel { StartIndex = startIndex, NumberOfMessages = numberOfMessages };
         await _page.InvokeAsync(() => peekControl.Instance.OnPeek.InvokeAsync(peekModel));
 
         _page.WaitForState(
-            () => peekControl.Instance.Messages != previousMessages,
+            () => !Equals(previousMessages, peekControl.Instance.Messages),
             TimeSpan.FromSeconds(5));
 
         return peekControl.Instance.Messages ?? [];
@@ -127,7 +131,7 @@ public class DetailPageActor<TPage> where TPage : IComponent
 
     public async Task DeleteAsync(ServiceBusReceivedMessage message)
     {
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         await _page.InvokeAsync(() => peekControl.Instance.OnDelete.InvokeAsync(message));
 
         _page.WaitForState(
@@ -144,7 +148,7 @@ public class DetailPageActor<TPage> where TPage : IComponent
 
     public async Task DeleteAllActiveAsync()
     {
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         await _page.InvokeAsync(() => peekControl.Instance.OnDeleteAll.InvokeAsync());
 
         _page.WaitForState(
@@ -163,7 +167,7 @@ public class DetailPageActor<TPage> where TPage : IComponent
     {
         await SwitchToDeadLetterTabAsync();
 
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         await _page.InvokeAsync(() => peekControl.Instance.OnDeleteAll.InvokeAsync());
 
         _page.WaitForState(
@@ -181,10 +185,10 @@ public class DetailPageActor<TPage> where TPage : IComponent
     public async Task DeadLetterAsync(
         ServiceBusReceivedMessage message, string reason, string description)
     {
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         await _page.InvokeAsync(() => peekControl.Instance.OnDeadLetter.InvokeAsync(message));
 
-        var dlControl = _page.FindComponent<DeadLetterMessageControl>();
+        var dlControl = Root.FindComponent<DeadLetterMessageControl>();
         var model = new DeadLetterMessageModel { Reason = reason, Description = description };
         await _page.InvokeAsync(() => dlControl.Instance.OnSend.InvokeAsync(model));
 
@@ -194,7 +198,7 @@ public class DetailPageActor<TPage> where TPage : IComponent
     public async Task SendAsync(SendMessageModel model)
     {
         _page.Find(".send-button").Click();
-        var sendControl = _page.FindComponent<SendMessageControl>();
+        var sendControl = Root.FindComponent<SendMessageControl>();
         await _page.InvokeAsync(() => sendControl.Instance.OnSend.InvokeAsync(model));
 
         WaitForNoOpenOverlays();
@@ -202,10 +206,10 @@ public class DetailPageActor<TPage> where TPage : IComponent
 
     public async Task ResubmitAsync(ServiceBusReceivedMessage message, SendMessageModel model)
     {
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         await _page.InvokeAsync(() => peekControl.Instance.OnResubmit.InvokeAsync(message));
 
-        var sendControls = _page.FindComponents<SendMessageControl>();
+        var sendControls = Root.FindComponents<SendMessageControl>();
         var resubmitControl = sendControls.First(c => c.Instance.Message is not null);
 
         await _page.InvokeAsync(() => resubmitControl.Instance.OnSend.InvokeAsync(model));
@@ -217,10 +221,10 @@ public class DetailPageActor<TPage> where TPage : IComponent
     {
         await SwitchToDeadLetterTabAsync();
 
-        var peekControl = _page.FindComponent<PeekControl>();
+        var peekControl = Root.FindComponent<PeekControl>();
         await _page.InvokeAsync(() => peekControl.Instance.OnResubmitAll.InvokeAsync());
 
-        var resubmitControl = _page.FindComponent<ResubmitAllMessageControl>();
+        var resubmitControl = Root.FindComponent<ResubmitAllMessageControl>();
         var args = (GenerateMessageIds: generateMessageIds, DeleteMessages: deleteMessages);
         await _page.InvokeAsync(() => resubmitControl.Instance.OnSend.InvokeAsync(args));
 

@@ -1,11 +1,9 @@
 using Bunit;
-using Bunit.TestDoubles;
 using Droomploeg.DreamOps.Application.ServiceBus.Adapters;
 using Droomploeg.DreamOps.Application.ServiceBus.Services;
 using Droomploeg.DreamOps.Application.Workers.Dispatcher;
 using Droomploeg.DreamOps.Application.Workers.Services;
 using Droomploeg.DreamOps.Infrastructure.Audit;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Droomploeg.DreamOps.Aspire.Tests.Infrastructure;
 
@@ -14,7 +12,7 @@ namespace Droomploeg.DreamOps.Aspire.Tests.Infrastructure;
 /// Initializes the shared DreamOpsFixture singleton and registers application services.
 /// Test classes inheriting from this can run in parallel.
 /// </summary>
-public abstract class DreamOpsTestBase : TestContext, IAsyncLifetime
+public abstract class DreamOpsTestBase : BunitContext, IAsyncLifetime
 {
     protected DreamOpsFixture Fixture { get; private set; } = null!;
     protected TestAuditLogger AuditLogger { get; } = new();
@@ -30,7 +28,7 @@ public abstract class DreamOpsTestBase : TestContext, IAsyncLifetime
             Fixture.ConnectionString,
             DreamOpsFixture.EmulatorConnectionName);
 
-        this.AddTestAuthorization().SetAuthorized("test-user");
+        AddAuthorization().SetAuthorized("test-user");
 
         Services.AddSingleton<IRuntimeInfoService>(RuntimeInfoService);
         Services.AddSingleton<ISessionInfoProvider>(SessionInfoProvider);
@@ -52,5 +50,5 @@ public abstract class DreamOpsTestBase : TestContext, IAsyncLifetime
         SessionInfoProvider.RegisterSessionEntity(name);
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public new Task DisposeAsync() => Task.CompletedTask;
 }

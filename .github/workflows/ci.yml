@@ -121,7 +121,7 @@ jobs:
         run: cd publish && zip -r ../dreamops-${{ steps.version.outputs.VERSION }}.zip .
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: DreamOps ${{ steps.version.outputs.VERSION }}
           generate_release_notes: true

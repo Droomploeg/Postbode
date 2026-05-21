@@ -8,7 +8,7 @@ DreamOps is an operational management tool for Azure Service Bus, built with .NE
 
 Unlike tools such as Service Bus Explorer, DreamOps offers fine-grained authorization at different levels, ensuring effective permission management. It operates entirely within Azure.
 
-Ideally, no messages should end up in the dead-letter queue of a service bus. However, in reality, this can happen due to factors outside your team's control. DreamOps helps by grouping messages from the dead-letter queue for analysis, enabling you to focus on manageable outages. Additionally, it allows you to resend messages or send new ones, ensuring efficient message handling.
+Ideally, no messages should end up in the dead-letter queue of a service bus. However, in reality, this can happen due to factors outside your team's control. DreamOps surfaces the dead-letter reason and description for each message, and can deep-link to Azure Application Insights — by correlation ID or message ID — so you can trace what happened end-to-end. From there you can delete the message, resubmit it, or send a new one.
 
 ## Features
 
@@ -17,7 +17,8 @@ Ideally, no messages should end up in the dead-letter queue of a service bus. Ho
 - Peek and inspect messages on queues and topics
 - Send new messages to queues and topics
 - Delete messages from queues
-- Dead-letter queue management (inspect, resubmit, delete)
+- Dead-letter queue management (inspect, resubmit, delete) with reason and description
+- Deep-link from messages to Application Insights for end-to-end tracing (optional, requires configuration)
 - Background processing for long-running operations
 - Audit logging of all user message actions
 - Authorization through Azure Entra ID

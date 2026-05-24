@@ -1,8 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\..\build.props"/>
-    <Import Project="..\..\droomploeg.props"/>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Droomploeg.DreamOps.Core\Droomploeg.DreamOps.Domain.csproj"/>
-    </ItemGroup>
-</Project>

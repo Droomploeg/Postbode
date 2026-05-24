@@ -1,4 +1,4 @@
-param appName string = 'dreamops'
+param appName string = 'postbode'
 param company string  
 param environment string = 'dev' //dev, test, acc, prod
 

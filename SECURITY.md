@@ -1,6 +1,6 @@
 # Security Policy
 
-We take the security of DreamOps seriously. Thank you for helping keep the project and its users safe.
+We take the security of Postbode seriously. Thank you for helping keep the project and its users safe.
 
 ## Reporting a Vulnerability
 
@@ -9,7 +9,7 @@ We take the security of DreamOps seriously. Thank you for helping keep the proje
 Instead, report them through one of the following private channels:
 
 1. **GitHub Security Advisories** (preferred) — open a private advisory at:
-   https://github.com/Droomploeg/DreamOps/security/advisories/new
+   https://github.com/Droomploeg/Postbode/security/advisories/new
 2. **Email** — send details to **mark@droomploeg.nl**
 
 Please include the following information (as much as you can provide):
@@ -31,7 +31,7 @@ This information helps us triage the report quickly.
 
 ## Supported Versions
 
-DreamOps is currently in pre-1.0 development. Security fixes are applied to the **`main` branch** and the **latest release tag** only.
+Postbode is currently in pre-1.0 development. Security fixes are applied to the **`main` branch** and the **latest release tag** only.
 
 | Version | Supported |
 |---------|-----------|
@@ -43,7 +43,7 @@ DreamOps is currently in pre-1.0 development. Security fixes are applied to the 
 
 In scope for security reports:
 
-- The DreamOps web application (Blazor Server)
+- The Postbode web application (Blazor Server)
 - The audit-logging pipeline
 - Authentication and authorization flows (Entra ID, On-Behalf-Of, Managed Identity)
 - Token handling and storage

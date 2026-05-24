@@ -51,7 +51,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test --no-build --configuration Release --settings tests/Droomploeg.DreamOps.Aspire.Tests/coverage.runsettings --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test --no-build --configuration Release --settings tests/Droomploeg.Postbode.Aspire.Tests/coverage.runsettings --logger "trx;LogFileName=test-results.trx"
         env:
           DOTNET_RUNNING_IN_CONTAINER: "true"
 
@@ -115,14 +115,14 @@ jobs:
         run: dotnet build --no-restore --configuration Release -p:Version=${{ steps.version.outputs.VERSION }} -p:InformationalVersion=${{ steps.version.outputs.VERSION }}
 
       - name: Publish
-        run: dotnet publish src/Droomploeg.DreamOps.WebApp/Droomploeg.DreamOps.WebApp.csproj --no-build --configuration Release --output ./publish
+        run: dotnet publish src/Droomploeg.Postbode.WebApp/Droomploeg.Postbode.WebApp.csproj --no-build --configuration Release --output ./publish
 
       - name: Package artifact
-        run: cd publish && zip -r ../dreamops-${{ steps.version.outputs.VERSION }}.zip .
+        run: cd publish && zip -r ../postbode-${{ steps.version.outputs.VERSION }}.zip .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          name: DreamOps ${{ steps.version.outputs.VERSION }}
+          name: Postbode ${{ steps.version.outputs.VERSION }}
           generate_release_notes: true
-          files: dreamops-${{ steps.version.outputs.VERSION }}.zip
+          files: postbode-${{ steps.version.outputs.VERSION }}.zip

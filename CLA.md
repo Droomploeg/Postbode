@@ -1,6 +1,6 @@
 # Contributor License Agreement (CLA)
 
-Thank you for your interest in contributing to DreamOps, a project by Droomploeg ("We" or "Us").
+Thank you for your interest in contributing to Postbode, a project by Droomploeg ("We" or "Us").
 
 By submitting a contribution (including but not limited to code, documentation, or other materials) to this project, you agree to the following terms:
 

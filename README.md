@@ -1,14 +1,14 @@
-# DreamOps — Azure Service Bus Operations Tool
+# Postbode — Azure Service Bus Operations Tool
 
-[![CI](https://github.com/Droomploeg/DreamOps/actions/workflows/ci.yml/badge.svg)](https://github.com/Droomploeg/DreamOps/actions/workflows/ci.yml)
+[![CI](https://github.com/Droomploeg/Postbode/actions/workflows/ci.yml/badge.svg)](https://github.com/Droomploeg/Postbode/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4.svg)](https://dotnet.microsoft.com/)
 
-DreamOps is an operational management tool for Azure Service Bus, built with .NET Blazor Server. It provides advanced authorization through Azure Entra ID and focuses exclusively on **message management** — infrastructure provisioning (queues, topics, subscriptions) is intentionally left to Infrastructure as Code (Bicep).
+Postbode is an operational management tool for Azure Service Bus, built with .NET Blazor Server. It provides advanced authorization through Azure Entra ID and focuses exclusively on **message management** — infrastructure provisioning (queues, topics, subscriptions) is intentionally left to Infrastructure as Code (Bicep).
 
-Unlike tools such as Service Bus Explorer, DreamOps offers fine-grained authorization at different levels, ensuring effective permission management. It operates entirely within Azure.
+Unlike tools such as Service Bus Explorer, Postbode offers fine-grained authorization at different levels, ensuring effective permission management. It operates entirely within Azure.
 
-Ideally, no messages should end up in the dead-letter queue of a service bus. However, in reality, this can happen due to factors outside your team's control. DreamOps surfaces the dead-letter reason and description for each message, and can deep-link to Azure Application Insights — by correlation ID or message ID — so you can trace what happened end-to-end. From there you can delete the message, resubmit it, or send a new one.
+Ideally, no messages should end up in the dead-letter queue of a service bus. However, in reality, this can happen due to factors outside your team's control. Postbode surfaces the dead-letter reason and description for each message, and can deep-link to Azure Application Insights — by correlation ID or message ID — so you can trace what happened end-to-end. From there you can delete the message, resubmit it, or send a new one.
 
 ## Features
 
@@ -26,7 +26,7 @@ Ideally, no messages should end up in the dead-letter queue of a service bus. Ho
 
 ## Architecture
 
-DreamOps follows Clean Architecture with four layers:
+Postbode follows Clean Architecture with four layers:
 
 ```
 ┌──────────────────────────────────────────┐
@@ -76,10 +76,10 @@ DreamOps follows Clean Architecture with four layers:
 dotnet build
 
 # Run the web application
-dotnet run --project src/Droomploeg.DreamOps.WebApp
+dotnet run --project src/Droomploeg.Postbode.WebApp
 
 # Run with Aspire orchestration (development)
-dotnet run --project src/Droomploeg.DreamOps.AppHost
+dotnet run --project src/Droomploeg.Postbode.AppHost
 
 # Run tests
 dotnet test
@@ -116,7 +116,7 @@ The application requires the following settings in `appsettings.json`:
 ## Installation on Azure
 
 For this manual, a demo application name is used. You can change it as needed.
-The demo application name is "DreamOpsDemo01".
+The demo application name is "PostbodeDemo01".
 
 ### Setting Up Azure Entra ID
 
@@ -125,11 +125,11 @@ The demo application name is "DreamOpsDemo01".
 1. Open [Azure Entra ID](https://entra.microsoft.com)
 2. Go to **Applications** > **App registrations**
 3. Select **New registration**
-4. Fill in the form (this is where the demo name is set: "DreamOpsDemo01")
+4. Fill in the form (this is where the demo name is set: "PostbodeDemo01")
 5. After creation, go to the app registration and set the **Authentication**:
    - Select **Add URI** and fill in the redirect URIs:
      - Localhost: `https://localhost:7273/signin-oidc`
-     - Azure: `https://dreamopsdemo01.azurewebsites.net/signin-oidc`
+     - Azure: `https://postbodedemo01.azurewebsites.net/signin-oidc`
    - Select checkbox **ID tokens (used for implicit and hybrid flows)**
    - Press **Save**
 6. Go to **Certificates & Secrets**:
@@ -141,7 +141,7 @@ The demo application name is "DreamOpsDemo01".
    - Display name: `General_Access`
    - Allowed member types: **Users/Groups**
    - Value: `General_Access`
-   - Description: `General access for DreamOps`
+   - Description: `General access for Postbode`
    - Check **Do you want to enable this app role?**
    - Press **Apply**
 
@@ -166,4 +166,4 @@ This project is licensed under [AGPL-3.0](LICENSE). See [CLA.md](CLA.md) for the
 
 ## Disclaimer
 
-DreamOps is provided **"AS IS"**, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or its use. See sections 15 and 16 of the [AGPL-3.0 license](LICENSE) for the full disclaimer.
+Postbode is provided **"AS IS"**, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or its use. See sections 15 and 16 of the [AGPL-3.0 license](LICENSE) for the full disclaimer.

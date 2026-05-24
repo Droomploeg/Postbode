@@ -1,8 +1,8 @@
-# Claude Code Instructions for DreamOps
+# Claude Code Instructions for Postbode
 
 ## Project Overview
 
-DreamOps is an Azure Service Bus operational management tool built with .NET Blazor Server. It focuses on **message management** (not infrastructure provisioning — that is handled via Bicep IaC). Users can monitor queues/topics, send/delete messages, manage dead-letter queues, and resubmit messages. All user actions on messages are audit-logged.
+Postbode is an Azure Service Bus operational management tool built with .NET Blazor Server. It focuses on **message management** (not infrastructure provisioning — that is handled via Bicep IaC). Users can monitor queues/topics, send/delete messages, manage dead-letter queues, and resubmit messages. All user actions on messages are audit-logged.
 
 - **Framework**: .NET 10.0, C# latest, Blazor Server (Interactive Server)
 - **Authentication**: Microsoft Entra ID (OpenID Connect + On-Behalf-Of token flow)
@@ -28,15 +28,15 @@ Infrastructure (Implementations - Azure Service Bus, Audit, Workers)
 
 | Layer | Project | Responsibility |
 |-------|---------|----------------|
-| **WebApp** | `Droomploeg.DreamOps.WebApp` | Blazor components, pages, DI setup, security config, `WorkerHostedService` |
-| **Application** | `Droomploeg.DreamOps.Application` | Interfaces only: service contracts, adapter contracts, factory contracts |
-| **Core/Domain** | `Droomploeg.DreamOps.Core` | Pure domain models (`Queue`, `Topic`, `Subscription`, `WorkerItem`), value types, enums |
-| **Infrastructure** | `Droomploeg.DreamOps.Infrastructure` | Azure Service Bus adapters/services, audit logging, worker service, context management |
+| **WebApp** | `Droomploeg.Postbode.WebApp` | Blazor components, pages, DI setup, security config, `WorkerHostedService` |
+| **Application** | `Droomploeg.Postbode.Application` | Interfaces only: service contracts, adapter contracts, factory contracts |
+| **Core/Domain** | `Droomploeg.Postbode.Core` | Pure domain models (`Queue`, `Topic`, `Subscription`, `WorkerItem`), value types, enums |
+| **Infrastructure** | `Droomploeg.Postbode.Infrastructure` | Azure Service Bus adapters/services, audit logging, worker service, context management |
 
 ### Additional Projects
 
-- **AppHost** (`Droomploeg.DreamOps.AppHost`): .NET Aspire orchestration (development)
-- **Tests**: `tests/Droomploeg.DreamOps.Aspire.Tests/` (Aspire), `tests/Droomploeg.DreamOps.IntegrationsTests/` (bUnit + xUnit)
+- **AppHost** (`Droomploeg.Postbode.AppHost`): .NET Aspire orchestration (development)
+- **Tests**: `tests/Droomploeg.Postbode.Aspire.Tests/` (Aspire), `tests/Droomploeg.Postbode.IntegrationsTests/` (bUnit + xUnit)
 
 ## Key Architectural Patterns
 
@@ -70,36 +70,36 @@ All user actions on messages are audit-logged via `IAuditLogger`. Dual output: A
 dotnet build
 
 # Run the web application
-dotnet run --project src/Droomploeg.DreamOps.WebApp
+dotnet run --project src/Droomploeg.Postbode.WebApp
 
 # Run tests
 dotnet test
 
 # Run the AppHost (Aspire orchestration)
-dotnet run --project src/Droomploeg.DreamOps.AppHost
+dotnet run --project src/Droomploeg.Postbode.AppHost
 ```
 
 ## Project Structure
 
 ```
-dreamops/
+postbode/
 ├── src/
-│   ├── Droomploeg.DreamOps.WebApp/          # Blazor Server app + BackgroundService
+│   ├── Droomploeg.Postbode.WebApp/          # Blazor Server app + BackgroundService
 │   │   ├── Components/                       # Blazor components (Layout, Controls, Pages)
 │   │   ├── Configurations/                   # DI extensions (Security, ServiceBus, Workers)
 │   │   ├── Security/                         # OnBehalfOfTokenCredential, route mapping
 │   │   ├── HostedServices/                   # WorkerHostedService
 │   │   └── Program.cs                        # App entry point, DI composition root
-│   ├── Droomploeg.DreamOps.Application/      # Interfaces only
+│   ├── Droomploeg.Postbode.Application/      # Interfaces only
 │   │   ├── ServiceBus/Adapters/              # Adapter contracts
 │   │   ├── ServiceBus/Services/              # Service contracts
 │   │   ├── ServiceBus/Factories/             # Factory contracts
 │   │   └── Workers/                          # Worker + Notification contracts
-│   ├── Droomploeg.DreamOps.Core/             # Domain models
+│   ├── Droomploeg.Postbode.Core/             # Domain models
 │   │   ├── ServiceBus/Models/                # Queue, Topic, Subscription, EntityRuntimeInfo
 │   │   ├── ServiceBus/Types/                 # Value types, enums
 │   │   └── Workers/                          # WorkerItem, WorkerEvent, WorkerAction
-│   ├── Droomploeg.DreamOps.Infrastructure/   # Implementations
+│   ├── Droomploeg.Postbode.Infrastructure/   # Implementations
 │   │   ├── AzureServiceBus/Adapters/         # Service Bus adapter implementations
 │   │   ├── AzureServiceBus/Services/         # Service implementations
 │   │   ├── AzureServiceBus/Factories/        # AdapterFactory
@@ -108,23 +108,23 @@ dreamops/
 │   │   ├── Contexts/                         # ApplicationContext, WebContextSetter
 │   │   ├── Workers/                          # WorkerService, NotificationService, Dispatcher
 │   │   └── Audit/                            # AuditLogger
-│   └── Droomploeg.DreamOps.AppHost/          # Aspire orchestration
+│   └── Droomploeg.Postbode.AppHost/          # Aspire orchestration
 ├── tests/
-│   ├── Droomploeg.DreamOps.Aspire.Tests/     # Aspire integration tests
-│   └── Droomploeg.DreamOps.IntegrationsTests/ # bUnit component tests
+│   ├── Droomploeg.Postbode.Aspire.Tests/     # Aspire integration tests
+│   └── Droomploeg.Postbode.IntegrationsTests/ # bUnit component tests
 ├── bicep/                                     # Azure infrastructure (IaC)
 ├── .github/workflows/                         # GitHub Actions CI/CD
 ├── build.props                                # Shared build properties (net10.0)
 ├── droomploeg.props                           # License metadata (AGPL-3.0)
 ├── global.json                                # .NET SDK version
-└── Droomploeg.DreamOps.slnx                   # Solution file
+└── Droomploeg.Postbode.slnx                   # Solution file
 ```
 
 ## Design Principles
 
 1. **Clean Architecture** — strict layer separation, dependencies flow inward
 2. **Interfaces in Application layer** — all contracts live here, implementations in Infrastructure
-3. **No infrastructure provisioning** — DreamOps manages messages only; queue/topic creation is done via Bicep
+3. **No infrastructure provisioning** — Postbode manages messages only; queue/topic creation is done via Bicep
 4. **On-Behalf-Of flow** — user actions execute with the user's delegated Azure token
 5. **Background processing** — long-running operations go through the worker pattern, not inline
 6. **Audit everything** — all message operations are logged with correlation IDs
@@ -155,13 +155,13 @@ Pages use route constants: `@attribute [Route(PageConstants.HomePage)]`
 
 ### Namespaces
 
-Pattern: `Droomploeg.DreamOps.[Layer].[Feature].[Category]`
+Pattern: `Droomploeg.Postbode.[Layer].[Feature].[Category]`
 
 Examples:
-- `Droomploeg.DreamOps.Application.ServiceBus.Services`
-- `Droomploeg.DreamOps.Infrastructure.AzureServiceBus.Mappers`
-- `Droomploeg.DreamOps.Domain.ServiceBus.Models`
-- `Droomploeg.DreamOps.WebApp.Components.Controls.Forms`
+- `Droomploeg.Postbode.Application.ServiceBus.Services`
+- `Droomploeg.Postbode.Infrastructure.AzureServiceBus.Mappers`
+- `Droomploeg.Postbode.Domain.ServiceBus.Models`
+- `Droomploeg.Postbode.WebApp.Components.Controls.Forms`
 
 ### Code Style
 
@@ -262,7 +262,7 @@ Tests should cover **user-facing functionality** as performed through Blazor pag
 
 ```
 tests/
-├── Droomploeg.DreamOps.Aspire.Tests/     # Aspire-based functional tests
+├── Droomploeg.Postbode.Aspire.Tests/     # Aspire-based functional tests
 │   ├── Infrastructure/                    # Test setup, Aspire resource builders
 │   └── Features/                          # Tests organized by feature/page
 │       ├── QueueTests.cs                  # Queue page actions

@@ -1,0 +1,49 @@
+﻿using Droomploeg.Postbode.Domain.ServiceBus.Models;
+using Droomploeg.Postbode.WebApp.Components.Controls.Security;
+using Microsoft.Identity.Web;
+
+namespace Droomploeg.Postbode.WebApp.Components.Pages;
+
+public partial class QueueOverviewPage
+{
+    private AuthorizationState _authorizationState = AuthorizationState.Authorized;
+    private List<Queue>? _queues = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await UpdateEntitiesAsync();
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RefreshAsync()
+    {
+        await UpdateEntitiesAsync();
+        StateHasChanged();
+    }
+
+    private async Task UpdateEntitiesAsync()
+    {
+        try
+        {
+            var entities = await RuntimeInfoService.GetAllQueuesAsync();
+            _queues = [.. entities];
+            _authorizationState = AuthorizationState.Authorized;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            _authorizationState = AuthorizationState.Unauthorized;
+        }
+        catch (MicrosoftIdentityWebChallengeUserException)
+        {
+            _authorizationState = AuthorizationState.TokenExpired;
+        }
+    }
+
+    private static string GetLink(Queue queue)
+        => $"{PageConstants.QueueDetailPage}/{Uri.EscapeDataString(queue.Name)}";
+}

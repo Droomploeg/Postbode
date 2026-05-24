@@ -1,4 +1,4 @@
-@description('Create an App Service Plan for the DreamOps web app')
+@description('Create an App Service Plan for the Postbode web app')
 param appServicePlanName string
 @description('Location for all resources.')
 param location string

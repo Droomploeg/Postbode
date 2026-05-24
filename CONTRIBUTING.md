@@ -1,6 +1,6 @@
-# Contributing to DreamOps
+# Contributing to Postbode
 
-Thank you for your interest in contributing to DreamOps! This document explains how to contribute effectively.
+Thank you for your interest in contributing to Postbode! This document explains how to contribute effectively.
 
 By submitting a pull request, you agree to the terms of the [Contributor License Agreement (CLA)](CLA.md).
 
@@ -35,7 +35,7 @@ dotnet test
 For local development with Aspire orchestration:
 
 ```bash
-dotnet run --project src/Droomploeg.DreamOps.AppHost
+dotnet run --project src/Droomploeg.Postbode.AppHost
 ```
 
 ## Pull Request Process
@@ -52,14 +52,14 @@ A maintainer will review your PR. Reviews focus on: architecture, code quality, 
 
 ## Architecture Guidelines
 
-DreamOps follows **Clean Architecture** with strict layer separation. Dependencies flow inward only.
+Postbode follows **Clean Architecture** with strict layer separation. Dependencies flow inward only.
 
 | Layer | Project | Responsibility |
 |-------|---------|----------------|
-| WebApp | `Droomploeg.DreamOps.WebApp` | Blazor components, DI, security config |
-| Application | `Droomploeg.DreamOps.Application` | Interfaces / contracts only |
-| Core/Domain | `Droomploeg.DreamOps.Core` | Pure domain models |
-| Infrastructure | `Droomploeg.DreamOps.Infrastructure` | Azure Service Bus adapters, audit, workers |
+| WebApp | `Droomploeg.Postbode.WebApp` | Blazor components, DI, security config |
+| Application | `Droomploeg.Postbode.Application` | Interfaces / contracts only |
+| Core/Domain | `Droomploeg.Postbode.Core` | Pure domain models |
+| Infrastructure | `Droomploeg.Postbode.Infrastructure` | Azure Service Bus adapters, audit, workers |
 
 Key rules:
 
@@ -89,7 +89,7 @@ Key rules:
 | Blazor Controls | `[Name]Control` | `DialogControl` |
 | Config Options | `[Service]Connection` / `[Service]Options` | `AzureServiceBusConnection` |
 
-Namespaces follow `Droomploeg.DreamOps.[Layer].[Feature].[Category]`.
+Namespaces follow `Droomploeg.Postbode.[Layer].[Feature].[Category]`.
 
 ## Commit Conventions
 
@@ -118,9 +118,9 @@ Rules:
 
 ## Testing Guidelines
 
-DreamOps uses **functional/integration tests**, not unit tests. We test what a user can do via a page against a real Service Bus instance.
+Postbode uses **functional/integration tests**, not unit tests. We test what a user can do via a page against a real Service Bus instance.
 
-- Tests live in `tests/Droomploeg.DreamOps.Aspire.Tests`
+- Tests live in `tests/Droomploeg.Postbode.Aspire.Tests`
 - Tests spin up real dependencies (Service Bus emulator, Application Insights) via .NET Aspire
 - Use standard xUnit `Assert` methods — do **not** introduce FluentAssertions
 - Do not mock the Service Bus — always use a real instance through Aspire

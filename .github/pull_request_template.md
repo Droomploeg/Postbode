@@ -1,5 +1,5 @@
 <!--
-Thanks for contributing to DreamOps!
+Thanks for contributing to Postbode!
 Please fill in the sections below. By submitting this PR you agree to the CLA (CLA.md).
 -->
 

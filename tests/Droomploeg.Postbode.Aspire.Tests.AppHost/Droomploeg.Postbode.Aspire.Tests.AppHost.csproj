@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) AND '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64'">
-        <PackageReference Include="Aspire.Hosting.Orchestration.linux-x64" Version="13.3.5" />
+        <PackageReference Include="Aspire.Hosting.Orchestration.linux-x64" Version="13.4.2" />
         <PackageReference Include="Aspire.Dashboard.Sdk.linux-x64" Version="13.3.5" />
     </ItemGroup>
 

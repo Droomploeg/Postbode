@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Hosting.AppHost" Version="13.3.5" />
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="13.4.2" />
         <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="13.3.5" />
         <!-- Transitive override for GHSA-9mv3-2cwr-p262. -->
         <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.8" />

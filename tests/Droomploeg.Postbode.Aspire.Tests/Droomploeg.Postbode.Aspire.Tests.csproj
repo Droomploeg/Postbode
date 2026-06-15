@@ -23,7 +23,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <!-- Transitive override for GHSA-9mv3-2cwr-p262. -->
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.9" />
         <!-- Transitive override for GHSA-7j59-v9qr-6fq9. -->
         <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
     </ItemGroup>

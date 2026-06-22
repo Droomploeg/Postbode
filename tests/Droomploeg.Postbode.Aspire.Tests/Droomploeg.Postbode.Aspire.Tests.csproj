@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Hosting.Testing" Version="13.4.4" />
+        <PackageReference Include="Aspire.Hosting.Testing" Version="13.4.6" />
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1"/>
         <PackageReference Include="bunit" Version="2.7.2" />
         <PackageReference Include="coverlet.collector" Version="10.0.1">

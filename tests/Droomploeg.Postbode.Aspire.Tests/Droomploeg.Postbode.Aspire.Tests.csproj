@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Hosting.Testing" Version="13.4.4" />
+        <PackageReference Include="Aspire.Hosting.Testing" Version="13.4.6" />
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1"/>
         <PackageReference Include="bunit" Version="2.7.2" />
         <PackageReference Include="coverlet.collector" Version="10.0.1">
@@ -25,7 +25,7 @@
         <!-- Transitive override for GHSA-9mv3-2cwr-p262. -->
         <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.9" />
         <!-- Transitive override for GHSA-hv8m-jj95-wg3x. -->
-        <PackageReference Include="MessagePack" Version="2.5.301" />
+        <PackageReference Include="MessagePack" Version="3.1.7" />
         <!-- Transitive override for GHSA-7j59-v9qr-6fq9. -->
         <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
     </ItemGroup>

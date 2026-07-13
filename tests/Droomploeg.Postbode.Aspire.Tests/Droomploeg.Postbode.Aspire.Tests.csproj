@@ -25,7 +25,7 @@
         <!-- Transitive override for GHSA-9mv3-2cwr-p262. -->
         <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.9" />
         <!-- Transitive override for GHSA-hv8m-jj95-wg3x. -->
-        <PackageReference Include="MessagePack" Version="3.1.7" />
+        <PackageReference Include="MessagePack" Version="3.1.8" />
         <!-- Transitive override for GHSA-7j59-v9qr-6fq9. -->
         <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
     </ItemGroup>

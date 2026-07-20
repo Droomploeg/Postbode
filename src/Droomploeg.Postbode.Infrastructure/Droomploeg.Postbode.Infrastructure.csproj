@@ -10,14 +10,14 @@
 
     <ItemGroup>
         <PackageReference Include="Azure.Identity" Version="1.21.0" />
-        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1"/>
+        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.2" />
         <PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.9" />
-        <PackageReference Include="Microsoft.Identity.Web" Version="4.12.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="4.13.2" />
         <PackageReference Include="Microsoft.ApplicationInsights" Version="3.1.2" />
         <!-- Transitive override for GHSA-9mv3-2cwr-p262 (Microsoft.Identity.Web 4.8.0 still pins 10.0.0). -->
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.10" />
     </ItemGroup>
 
     <ItemGroup>

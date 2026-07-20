@@ -11,8 +11,8 @@
     <ItemGroup>
         <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.1.2" />
-        <PackageReference Include="Microsoft.Identity.Web" Version="4.12.2" />
-        <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" Version="4.12.2" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="4.13.2" />
+        <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" Version="4.13.2" />
         <!-- Transitive override for GHSA-7j59-v9qr-6fq9. -->
         <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
     </ItemGroup>

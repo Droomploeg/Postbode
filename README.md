@@ -113,6 +113,43 @@ The application requires the following settings in `appsettings.json`:
 }
 ```
 
+### Secrets in Azure Key Vault (recommended)
+
+Rather than keeping secrets such as `ClientSecret` in `appsettings.json`, store them in Azure Key Vault. When the `AzureKeyVault` setting points to a vault URL, Postbode loads the vault's secrets as configuration at startup. Key Vault is registered as the last configuration source, so its values override anything in `appsettings.json` — you can therefore remove the secret from `appsettings.json` entirely.
+
+```json
+{
+  "AzureKeyVault": "https://<keyvaultname>.vault.azure.net/"
+}
+```
+
+Nested configuration keys map to secret names using `--` as the separator:
+
+| Configuration key        | Key Vault secret name       |
+|--------------------------|-----------------------------|
+| `AzureEntra:ClientSecret`| `AzureEntra--ClientSecret`  |
+| `AzureEntra:ClientId`    | `AzureEntra--ClientId`      |
+| `AzureEntra:TenantId`    | `AzureEntra--TenantId`      |
+
+Create a secret (example for the client secret):
+
+```bash
+az keyvault secret set \
+  --vault-name <keyvaultname> \
+  --name "AzureEntra--ClientSecret" \
+  --value "<the-client-secret>"
+```
+
+**Access requirements** — authentication uses `DefaultAzureCredential`:
+
+- **On Azure**: the App Service uses its managed identity (`AZURE_CLIENT_ID`). The Bicep templates provision the vault and set the `AzureKeyVault` app setting automatically. Grant the identity the **Key Vault Secrets User** role on the vault (RBAC authorization is enabled).
+- **Locally**: sign in with a developer credential (e.g. `az login`) whose account has the **Key Vault Secrets User** role. Alternatively, leave `AzureKeyVault` empty and use [.NET user-secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) — Key Vault is then skipped and no vault access is required for development:
+
+  ```bash
+  dotnet user-secrets set "AzureEntra:ClientSecret" "<the-client-secret>" \
+    --project src/Droomploeg.Postbode.WebApp
+  ```
+
 ## Installation on Azure
 
 For this manual, a demo application name is used. You can change it as needed.
@@ -133,7 +170,7 @@ The demo application name is "PostbodeDemo01".
    - Select checkbox **ID tokens (used for implicit and hybrid flows)**
    - Press **Save**
 6. Go to **Certificates & Secrets**:
-   - Select tab **Client secrets** and create a secret (this will be the `ClientSecret` in appsettings)
+   - Select tab **Client secrets** and create a secret (this is the `ClientSecret` — store it in Key Vault as `AzureEntra--ClientSecret`, see [Secrets in Azure Key Vault](#secrets-in-azure-key-vault-recommended))
 7. Go to **API permissions** and grant:
    - `Microsoft.Graph` > `User.Read` (Delegated)
    - `Microsoft.ServiceBus` > `user_impersonation` (Delegated)

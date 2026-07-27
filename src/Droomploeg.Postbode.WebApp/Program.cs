@@ -4,6 +4,8 @@ using Droomploeg.Postbode.WebApp.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddKeyVaultConfiguration();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -11,7 +13,7 @@ builder.Services
     .AddDistributedMemoryCache()
     .AddSession()
     .AddSecurityServices(builder.Configuration)
-    .AddAzureServiceBus(builder.Configuration)
+    .AddAzureServiceBus(builder.Configuration, builder.Environment)
     .AddWorkerHostedServices()
     .AddApplicationCore()
     .AddApplicationInsightsTelemetry();

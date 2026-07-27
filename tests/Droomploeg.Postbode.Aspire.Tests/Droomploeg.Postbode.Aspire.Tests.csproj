@@ -16,41 +16,36 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.AspNetCore.App.Internal.Assets" Version="10.0.8" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-        <PackageReference Include="xunit" Version="2.9.3"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <!-- Transitive override for GHSA-9mv3-2cwr-p262. -->
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.10" />
-        <!-- Transitive override for GHSA-hv8m-jj95-wg3x. -->
-        <PackageReference Include="MessagePack" Version="3.1.8" />
-        <!-- Transitive override for GHSA-7j59-v9qr-6fq9. -->
-        <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
-        <!-- Transitive override for GHSA-pgww-w46g-26qg (bunit 2.7.2 still pins 1.4.0). -->
-        <PackageReference Include="AngleSharp" Version="1.5.2" />
+        <PackageReference Include="xunit.v3" Version="3.2.2" />
+        <!-- Transitive override for GHSA-pgww-w46g-26qg (bunit 2.7.2 still pins vulnerable AngleSharp 1.4.0). -->
+        <PackageReference Include="AngleSharp" Version="1.6.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="System.Net"/>
-        <Using Include="Microsoft.Extensions.DependencyInjection"/>
-        <Using Include="Aspire.Hosting.ApplicationModel"/>
-        <Using Include="Aspire.Hosting.Testing"/>
-        <Using Include="Xunit"/>
-        <Using Include="Droomploeg.Postbode.Aspire.Tests.Actors"/>
+        <Using Include="System.Net" />
+        <Using Include="Microsoft.Extensions.DependencyInjection" />
+        <Using Include="Aspire.Hosting.ApplicationModel" />
+        <Using Include="Aspire.Hosting.Testing" />
+        <Using Include="Xunit" />
+        <Using Include="Droomploeg.Postbode.Aspire.Tests.Actors" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Droomploeg.Postbode.Aspire.Tests.AppHost\Droomploeg.Postbode.Aspire.Tests.AppHost.csproj"/>
-        <ProjectReference Include="..\..\src\Droomploeg.Postbode.Application\Droomploeg.Postbode.Application.csproj"/>
-        <ProjectReference Include="..\..\src\Droomploeg.Postbode.Infrastructure\Droomploeg.Postbode.Infrastructure.csproj"/>
-        <ProjectReference Include="..\..\src\Droomploeg.Postbode.Core\Droomploeg.Postbode.Domain.csproj"/>
-        <ProjectReference Include="..\..\src\Droomploeg.Postbode.WebApp\Droomploeg.Postbode.WebApp.csproj"/>
+        <ProjectReference Include="..\Droomploeg.Postbode.Aspire.Tests.AppHost\Droomploeg.Postbode.Aspire.Tests.AppHost.csproj" />
+        <ProjectReference Include="..\..\src\Droomploeg.Postbode.Application\Droomploeg.Postbode.Application.csproj" />
+        <ProjectReference Include="..\..\src\Droomploeg.Postbode.Infrastructure\Droomploeg.Postbode.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\src\Droomploeg.Postbode.Core\Droomploeg.Postbode.Domain.csproj" />
+        <ProjectReference Include="..\..\src\Droomploeg.Postbode.WebApp\Droomploeg.Postbode.WebApp.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+        <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

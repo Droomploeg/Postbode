@@ -20,7 +20,7 @@ public abstract class PostbodeTestBase : BunitContext, IAsyncLifetime
     protected TestRuntimeInfoService RuntimeInfoService { get; } = new();
     private TestSessionInfoProvider SessionInfoProvider { get; } = new();
 
-    public virtual async Task InitializeAsync()
+    public virtual async ValueTask InitializeAsync()
     {
         Fixture = await PostbodeFixture.GetInstanceAsync();
 
@@ -49,6 +49,4 @@ public abstract class PostbodeTestBase : BunitContext, IAsyncLifetime
         RuntimeInfoService.RegisterSessionEntity(name);
         SessionInfoProvider.RegisterSessionEntity(name);
     }
-
-    public new Task DisposeAsync() => Task.CompletedTask;
 }

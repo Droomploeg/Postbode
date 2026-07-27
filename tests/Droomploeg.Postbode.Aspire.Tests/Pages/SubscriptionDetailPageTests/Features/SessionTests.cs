@@ -12,7 +12,7 @@ public class SessionTests : PostbodeTestBase
     private const string SubscriptionName = "sub-session";
     private const string SessionId = "test-session-1";
 
-    public override async Task InitializeAsync()
+    public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
         RegisterSessionEntity(SubscriptionName);

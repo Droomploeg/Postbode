@@ -15,18 +15,20 @@ internal static class AzureServiceBusExtensions
 {
     extension(IServiceCollection services)
     {
-        internal IServiceCollection AddAzureServiceBus(IConfiguration configuration)
+        internal IServiceCollection AddAzureServiceBus(IConfiguration configuration, IHostEnvironment environment)
         {
             ArgumentNullException.ThrowIfNull(configuration);
+            ArgumentNullException.ThrowIfNull(environment);
 
             var managedIdentityClientId = configuration["ManagedIdentityClientId"];
             var configConnectionList = configuration
                 .GetSection(AzureServiceBusConnection.SectionName)
-                .Get<List<AzureServiceBusConnection>>() ?? []; 
-        
+                .Get<List<AzureServiceBusConnection>>() ?? [];
+
             var defaultCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
             {
-                ManagedIdentityClientId = managedIdentityClientId
+                ManagedIdentityClientId = managedIdentityClientId,
+                ExcludeManagedIdentityCredential = environment.IsDevelopment()
             });
 
 

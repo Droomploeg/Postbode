@@ -24,7 +24,7 @@
         </PackageReference>
         <PackageReference Include="xunit.v3" Version="3.2.2" />
         <!-- Transitive override for GHSA-pgww-w46g-26qg (bunit 2.7.2 still pins vulnerable AngleSharp 1.4.0). -->
-        <PackageReference Include="AngleSharp" Version="1.6.0" />
+        <PackageReference Include="AngleSharp" Version="1.7.0" />
     </ItemGroup>
 
     <ItemGroup>

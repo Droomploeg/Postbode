@@ -11,6 +11,7 @@
     <ItemGroup>
         <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.1.2" />
+        <PackageReference Include="Microsoft.AspNetCore.App.Internal.Assets" Version="10.0.10" />
         <PackageReference Include="Microsoft.Identity.Web" Version="4.13.2" />
         <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" Version="4.13.2" />
     </ItemGroup>

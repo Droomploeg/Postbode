@@ -14,10 +14,10 @@
         <PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.10" />
-        <PackageReference Include="Microsoft.Identity.Web" Version="4.13.2" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="4.14.2" />
         <PackageReference Include="Microsoft.ApplicationInsights" Version="3.1.2" />
         <!-- Transitive override for GHSA-cvvh-rhrc-wg4q and related System.Security.Cryptography.Xml advisories:
-             Microsoft.Identity.Web.TokenCache 4.13.2 pins Microsoft.AspNetCore.DataProtection 10.0.7,
+             Microsoft.Identity.Web.TokenCache 4.14.2 pins Microsoft.AspNetCore.DataProtection 10.0.7,
              which drags in the vulnerable System.Security.Cryptography.Xml 10.0.7. -->
         <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.10" />
     </ItemGroup>

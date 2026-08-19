@@ -51,7 +51,10 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test --no-build --configuration Release --settings tests/Droomploeg.Postbode.Aspire.Tests/coverage.runsettings --logger "trx;LogFileName=test-results.trx"
+        run: >
+          dotnet test --no-build --configuration Release --
+          --coverage --coverage-settings tests/Droomploeg.Postbode.Aspire.Tests/coverage.runsettings --coverage-output-format cobertura
+          --report-trx --report-trx-filename test-results.trx
         env:
           DOTNET_RUNNING_IN_CONTAINER: "true"
 

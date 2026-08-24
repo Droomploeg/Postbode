@@ -14,7 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Hosting.Testing" Version="13.4.6" />
+        <PackageReference Include="Aspire.Hosting.Testing" Version="13.5.2" />
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.2" />
         <!-- bunit 2.9.0 brings AngleSharp 1.7.0 (fixes GHSA-pgww-w46g-26qg); explicit override for 1.6.0 removed. -->
         <PackageReference Include="bunit" Version="2.9.0" />

@@ -17,7 +17,7 @@
         <PackageReference Include="Aspire.Hosting.Testing" Version="13.5.3" />
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.2" />
         <!-- bunit 2.10.3 brings AngleSharp 1.8.0 (fixes GHSA-pgww-w46g-26qg); explicit override for 1.6.0 removed. -->
-        <PackageReference Include="bunit" Version="2.10.3" />
+        <PackageReference Include="bunit" Version="2.11.3" />
         <PackageReference Include="Microsoft.AspNetCore.App.Internal.Assets" Version="10.0.12" />
         <!-- MTP replacements for the VSTest-only coverlet.collector and trx logger.
              Coverlet has no MTP equivalent; Microsoft.NET.Test.Sdk and

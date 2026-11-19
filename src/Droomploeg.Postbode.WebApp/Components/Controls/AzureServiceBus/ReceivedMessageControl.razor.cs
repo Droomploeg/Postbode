@@ -1,8 +1,8 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Droomploeg.Postbode.WebApp.Common;
 using Droomploeg.Postbode.WebApp.Common.Extensions;
+using Droomploeg.Postbode.WebApp.Components.Controls.Forms.Models;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Html;
 using System.Text.Json;
 
 namespace Droomploeg.Postbode.WebApp.Components.Controls.AzureServiceBus;
@@ -101,11 +101,11 @@ public partial class ReceivedMessageControl : ComponentBase
         }
 
         var link = ApplicationInsightLink.GetLink(key, value);
-        if (link == null)
+        if (link is null || value is null)
         {
             return null;
         }
 
-        return new MarkupString($"<a href=\"{link}\" target=\"_blank\">{value}</a>");
+        return new LinkValue(link, value);
     }
 }

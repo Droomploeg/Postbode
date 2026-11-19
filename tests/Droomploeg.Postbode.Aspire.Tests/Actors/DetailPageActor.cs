@@ -60,6 +60,17 @@ public class DetailPageActor<TPage> where TPage : IComponent
     public bool HasCustomProperty(string key) =>
         _page.Markup.Contains(key);
 
+    public bool HasElement(string selector) =>
+        _page.FindAll(selector).Any();
+
+    public bool HasPropertyLink(string text) =>
+        _page.FindAll(".property-grid a").Any(a => a.TextContent == text);
+
+    public string? GetPropertyLinkAttribute(string text, string attribute) =>
+        _page.FindAll(".property-grid a")
+            .FirstOrDefault(a => a.TextContent == text)?
+            .GetAttribute(attribute);
+
     public async Task SelectMessageAsync(ServiceBusReceivedMessage message)
     {
         var peekControl = Root.FindComponent<PeekControl>();

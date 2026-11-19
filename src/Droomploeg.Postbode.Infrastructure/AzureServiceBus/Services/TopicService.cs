@@ -51,7 +51,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(SendMessageAsync), topic, $"MessageType: {typeof(TSendMessage).Name}");
         
-        var adapter = _activeTopicAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _activeTopicAdapterFactory.Create();
         return await adapter.SendAsync(topic, message, cancellationToken);
     }
 
@@ -66,7 +66,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(PeekActiveMessagesAsync), $"{topic}/{subscription}", $"FromSeq: {fromSequenceNumber}, Count: {numberOfMessages}");
        
-        var adapter = _activeTopicAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _activeTopicAdapterFactory.Create();
         return await adapter.PeekMessagesAsync(topic, subscription, fromSequenceNumber, numberOfMessages, cancellationToken);
     }
     
@@ -76,13 +76,12 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         var context = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeleteAllActiveMessagesAsync), $"{topic}/{subscription}", "Bulk operation");
         
-        var adapter = _activeTopicAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
             context.CorrelationId,
             $"{topic}\\{subscription}",
             $"Delete all message from '{topic}/{subscription}'",
-            (token) => adapter.DeleteAllMessagesAsync(topic, subscription, token));
+            _activeTopicAdapterFactory.CreateBackgroundAction((adapter, token) => adapter.DeleteAllMessagesAsync(topic, subscription, token)));
 
         _dispatcher.Dispatch(workItem);
         return true;
@@ -94,7 +93,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeleteActiveMessageAsync), $"{topic}/{subscription}");
         
-        var adapter = _activeTopicAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _activeTopicAdapterFactory.Create();
         return await adapter.DeleteMessageAsync(topic, subscription, activeMessage, cancellationToken);
     }
 
@@ -104,7 +103,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeadLetterMessageAsync), $"{topic}/{subscription}", $"Reason: {reason}");
         
-        var adapter = _activeTopicAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _activeTopicAdapterFactory.Create();
         return await adapter.DeadLetterMessageAsync(topic, subscription, deadletterMessage, source, reason, description, cancellationToken);
     }
 
@@ -119,7 +118,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(PeekDeadLetterMessagesAsync), $"{topic}/{subscription}", $"FromSeq: {fromSequenceNumber}, Count: {numberOfMessages}");
 
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _deadLetterAdapterFactory.Create();
         return await adapter.PeekMessagesAsync(topic, subscription, fromSequenceNumber, numberOfMessages, cancellationToken);
     }
 
@@ -131,7 +130,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(ResubmitMessageAsync), $"{topic}/{subscription}", $"Options: {options}");
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _deadLetterAdapterFactory.Create();
         return await adapter.ResubmitMessageAsync(
             topic, subscription, receivedMessage, repairedMessage, options, cancellationToken);
     }
@@ -142,13 +141,12 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         var context = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(ResubmitAllMessagesAsync), $"{topic}/{subscription}", $"Bulk operation, Options: {options}");
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
             context.CorrelationId,
             $"{topic}\\{subscription}",
             $"Resubmit all message from topic",
-            (token) => adapter.ResubmitAllMessagesAsync(topic, subscription, options, token));
+            _deadLetterAdapterFactory.CreateBackgroundAction((adapter, token) => adapter.ResubmitAllMessagesAsync(topic, subscription, options, token)));
 
         _dispatcher.Dispatch(workItem);
         return true;
@@ -160,7 +158,7 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeleteDeadLetterMessageAsync), $"{topic}/{subscription}");
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _deadLetterAdapterFactory.Create();
         return await adapter.DeleteMessageAsync(
             topic, subscription, message, cancellationToken);
     }
@@ -171,13 +169,12 @@ public class TopicService<TSendMessage, TReceiveMessage> : ITopicService<TSendMe
         var context = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeleteAllDeadLetterMessagesAsync), $"{topic}/{subscription}", "Bulk operation");
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
             context.CorrelationId,
             $"{topic}\\{subscription}",
             $"Delete all message from '{topic}/{subscription}'",
-            (token) => adapter.DeleteAllMessagesAsync(topic, subscription, token));
+            _deadLetterAdapterFactory.CreateBackgroundAction((adapter, token) => adapter.DeleteAllMessagesAsync(topic, subscription, token)));
 
         _dispatcher.Dispatch(workItem);
         return true;

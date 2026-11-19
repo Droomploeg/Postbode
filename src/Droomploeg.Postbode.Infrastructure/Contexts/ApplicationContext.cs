@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using Droomploeg.Postbode.Domain.ServiceBus.Types;
 
 namespace Droomploeg.Postbode.Infrastructure.Contexts;
@@ -23,4 +24,10 @@ public class ApplicationContext
     /// Current Service Bus connection.
     /// </summary>
     public ServiceBusConnection CurrentConnection { get; set; } = ServiceBusConnection.Undefined;
+
+    /// <summary>
+    /// Signed-in user. Message operations run with the delegated token of this user, also when
+    /// they run later as a background job. Unauthenticated until the context is set.
+    /// </summary>
+    public ClaimsPrincipal User { get; set; } = new(new ClaimsIdentity());
 }

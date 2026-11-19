@@ -4,7 +4,6 @@ using Droomploeg.Postbode.Domain.ServiceBus.Types;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Extensions;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Factories;
 using Droomploeg.Postbode.Infrastructure.Contexts;
-using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.Postbode.Infrastructure.AzureServiceBus.Adapters;
 
@@ -17,7 +16,6 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
     private readonly TimeProvider _timeProvider;
     private readonly ApplicationContext _context;
     private readonly ISessionInfoProvider _sessionInfoProvider;
-    private readonly IAzureClientFactory<ServiceBusClient> _clientFactory;
     private readonly IUserServiceBusClientProvider _userClientProvider;
 
     /// <summary>
@@ -26,19 +24,16 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
     /// <param name="timeProvider">Provider for retrieving the current time.</param>
     /// <param name="context"><see cref="ApplicationContext"/> for the current request.</param>
     /// <param name="sessionInfoProvider">Provider for determining whether a queue requires sessions.</param>
-    /// <param name="clientFactory">Factory for the service account <see cref="ServiceBusClient"/> instances.</param>
     /// <param name="userClientProvider">Provider for the <see cref="ServiceBusClient"/> of the signed-in user.</param>
     public ActiveQueueAdapter(
         TimeProvider timeProvider,
         ApplicationContext context,
         ISessionInfoProvider sessionInfoProvider,
-        IAzureClientFactory<ServiceBusClient> clientFactory,
         IUserServiceBusClientProvider userClientProvider)
     {
         _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _sessionInfoProvider = sessionInfoProvider ?? throw new ArgumentNullException(nameof(sessionInfoProvider));
-        _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         _userClientProvider = userClientProvider ?? throw new ArgumentNullException(nameof(userClientProvider));
     }
 
@@ -77,7 +72,7 @@ public class ActiveQueueAdapter : IActiveQueueAdapter<ServiceBusMessage, Service
         var timestamp = _timeProvider.GetUtcNow();
         var requiresSession = await _sessionInfoProvider.RequiresSessionAsync(queue, cancellationToken);
 
-        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
+        var client = await _userClientProvider.GetClientAsync(_context.CurrentConnection, cancellationToken);
         if (requiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(queue, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);

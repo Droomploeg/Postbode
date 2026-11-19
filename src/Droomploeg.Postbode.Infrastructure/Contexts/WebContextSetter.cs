@@ -45,6 +45,7 @@ public class WebContextSetter : IContextSetter
 
         _context.CurrentConnection = result.Value.Value;
         _context.UserName = user.Identity?.Name ?? "Anonymous";
+        _context.User = user;
 
         return _context;
     }

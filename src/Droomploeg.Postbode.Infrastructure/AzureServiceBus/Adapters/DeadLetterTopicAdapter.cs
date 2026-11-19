@@ -5,7 +5,6 @@ using Droomploeg.Postbode.Domain.ServiceBus.Types;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Extensions;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Factories;
 using Droomploeg.Postbode.Infrastructure.Contexts;
-using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.Postbode.Infrastructure.AzureServiceBus.Adapters;
 
@@ -14,22 +13,18 @@ public class DeadLetterTopicAdapter : IDeadLetterTopicAdapter<ServiceBusMessage,
 {
     private readonly ApplicationContext _context;
     private readonly TimeProvider _timeProvider;
-    private readonly IAzureClientFactory<ServiceBusClient> _clientFactory;
     private readonly IUserServiceBusClientProvider _userClientProvider;
 
     /// <summary>Initializes a new instance of <see cref="DeadLetterTopicAdapter"/>.</summary>
     /// <param name="timeProvider">Provider for retrieving the current time.</param>
     /// <param name="context"><see cref="ApplicationContext"/> for the current request.</param>
-    /// <param name="clientFactory">Factory for the service account <see cref="ServiceBusClient"/> instances.</param>
     /// <param name="userClientProvider">Provider for the <see cref="ServiceBusClient"/> of the signed-in user.</param>
     public DeadLetterTopicAdapter(
         TimeProvider timeProvider,
         ApplicationContext context,
-        IAzureClientFactory<ServiceBusClient> clientFactory,
         IUserServiceBusClientProvider userClientProvider)
     {
         _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-        _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         _userClientProvider = userClientProvider ?? throw new ArgumentNullException(nameof(userClientProvider));
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
@@ -55,7 +50,7 @@ public class DeadLetterTopicAdapter : IDeadLetterTopicAdapter<ServiceBusMessage,
         var timestamp = _timeProvider.GetUtcNow();
         var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
-        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
+        var client = await _userClientProvider.GetClientAsync(_context.CurrentConnection, cancellationToken);
         var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
         var sender = client.CreateSender(topic);
         if (options.DeleteMessage)
@@ -77,7 +72,7 @@ public class DeadLetterTopicAdapter : IDeadLetterTopicAdapter<ServiceBusMessage,
         var timestamp = _timeProvider.GetUtcNow();
         var deadLetterSubscription = ServiceBusHelper.FormatDeadLetterPath(topic, subscription);
 
-        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
+        var client = await _userClientProvider.GetClientAsync(_context.CurrentConnection, cancellationToken);
         var receiver = client.CreateReceiver(deadLetterSubscription, ServiceBusConstants.PeekLockOptions);
         await receiver.CompleteMessagesAsync(timestamp, cancellationToken);
         await receiver.CloseAsync(cancellationToken);

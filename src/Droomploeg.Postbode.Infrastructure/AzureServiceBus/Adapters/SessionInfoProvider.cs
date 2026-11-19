@@ -1,9 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Azure.Messaging.ServiceBus.Administration;
 using Droomploeg.Postbode.Application.ServiceBus.Adapters;
-using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Extensions;
+using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Factories;
 using Droomploeg.Postbode.Infrastructure.Contexts;
-using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.Postbode.Infrastructure.AzureServiceBus.Adapters;
 
@@ -16,19 +15,19 @@ namespace Droomploeg.Postbode.Infrastructure.AzureServiceBus.Adapters;
 public class SessionInfoProvider : ISessionInfoProvider
 {
     private readonly ApplicationContext _context;
-    private readonly IAzureClientFactory<ServiceBusAdministrationClient> _adminClientFactory;
+    private readonly IServiceAccountAdminClientProvider _adminClientProvider;
 
     /// <summary>
     /// Initializes a new instance of <see cref="SessionInfoProvider"/>.
     /// </summary>
     /// <param name="context"><see cref="ApplicationContext"/> for the current request.</param>
-    /// <param name="adminClientFactory">Factory for creating <see cref="ServiceBusAdministrationClient"/> instances.</param>
+    /// <param name="adminClientProvider">Provider of the service account <see cref="ServiceBusAdministrationClient"/>.</param>
     public SessionInfoProvider(
         ApplicationContext context,
-        IAzureClientFactory<ServiceBusAdministrationClient> adminClientFactory)
+        IServiceAccountAdminClientProvider adminClientProvider)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _adminClientFactory = adminClientFactory ?? throw new ArgumentNullException(nameof(adminClientFactory));
+        _adminClientProvider = adminClientProvider ?? throw new ArgumentNullException(nameof(adminClientProvider));
     }
 
     /// <inheritdoc cref="ISessionInfoProvider.RequiresSessionAsync(string, CancellationToken)"/>
@@ -36,7 +35,7 @@ public class SessionInfoProvider : ISessionInfoProvider
     {
         try
         {
-            var adminClient = _adminClientFactory.CreateClient(_context);
+            var adminClient = _adminClientProvider.GetClient(_context.CurrentConnection);
             var response = await adminClient.GetQueueAsync(queue, cancellationToken);
             return response.Value.RequiresSession;
         }
@@ -51,7 +50,7 @@ public class SessionInfoProvider : ISessionInfoProvider
     {
         try
         {
-            var adminClient = _adminClientFactory.CreateClient(_context);
+            var adminClient = _adminClientProvider.GetClient(_context.CurrentConnection);
             var response = await adminClient.GetSubscriptionAsync(topic, subscription, cancellationToken);
             return response.Value.RequiresSession;
         }

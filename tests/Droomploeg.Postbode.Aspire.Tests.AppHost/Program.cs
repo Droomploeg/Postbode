@@ -15,6 +15,7 @@ serviceBus.AddServiceBusQueue("test-delete-deadletter");
 serviceBus.AddServiceBusQueue("test-runtime-info");
 serviceBus.AddServiceBusQueue("test-send-multiple");
 serviceBus.AddServiceBusQueue("test-delete-all");
+serviceBus.AddServiceBusQueue("test-delete-all-job");
 
 // Topics + subscriptions for SubscriptionDetailPage tests (one per test class for parallel isolation)
 serviceBus.AddServiceBusTopic("test-topic-peek").AddServiceBusSubscription("sub-peek");

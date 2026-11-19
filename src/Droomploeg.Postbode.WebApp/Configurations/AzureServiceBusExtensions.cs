@@ -7,7 +7,6 @@ using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Services;
 using Droomploeg.Postbode.WebApp.Common;
 using Droomploeg.Postbode.WebApp.Configurations.Options;
 using Droomploeg.Postbode.WebApp.Security;
-using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.Postbode.WebApp.Configurations;
 
@@ -32,18 +31,18 @@ internal static class AzureServiceBusExtensions
                 ExcludeManagedIdentityCredential = environment.IsDevelopment()
             });
 
-
-            foreach (var connection in configConnectionList)
-            {
-                services.RegisterAzureServiceAccountConnections(connection, defaultCredential);
-            }
-
-            // User clients are not registered through AddAzureClients: those clients are singletons
-            // and would share one AMQP connection, and its cached token, between all users.
-            IReadOnlyDictionary<string, string> userNamespaces = configConnectionList
+            IReadOnlyDictionary<string, string> namespaces = configConnectionList
                 .ToDictionary(c => c.Name, c => c.FullyQualifiedNamespace, StringComparer.OrdinalIgnoreCase);
+
+            // The service account (managed identity) only reads metadata. Its administration
+            // clients are shared: they always act as the same identity.
+            services.AddSingleton<IServiceAccountAdminClientProvider>(sp =>
+                ActivatorUtilities.CreateInstance<ServiceAccountAdminClientProvider>(sp, namespaces, defaultCredential));
+
+            // Message operations run with the token of the user, on a client per circuit or
+            // background job, so no AMQP connection or cached token is shared between users.
             services.AddScoped<IUserServiceBusClientProvider>(sp =>
-                ActivatorUtilities.CreateInstance<UserServiceBusClientProvider>(sp, userNamespaces));
+                ActivatorUtilities.CreateInstance<UserServiceBusClientProvider>(sp, namespaces));
 
             var connectionList = configConnectionList
                 .Select(c => new ServiceBusConnection(c.Name));
@@ -52,23 +51,6 @@ internal static class AzureServiceBusExtensions
             services
                 .AddSingleton<IConnectionService>(connectionService)
                 .AddTransient<ApplicationInsightsLink>();
-
-            return services;
-        }
-
-        private IServiceCollection RegisterAzureServiceAccountConnections(AzureServiceBusConnection connection, DefaultAzureCredential credential)
-        {
-            services.AddAzureClients(builder =>
-            {
-                var name = ServiceBusConnection.ClientName(connection.Name, ServiceBusConnectionType.ServiceAccount);
-
-                builder.AddServiceBusClientWithNamespace(connection.FullyQualifiedNamespace)
-                    .WithName(name)
-                    .WithCredential(credential);
-                builder.AddServiceBusAdministrationClientWithNamespace(connection.FullyQualifiedNamespace)
-                    .WithName(name)
-                    .WithCredential(credential);
-            });
 
             return services;
         }

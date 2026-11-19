@@ -12,7 +12,6 @@ using Droomploeg.Postbode.Infrastructure.Contexts;
 using Droomploeg.Postbode.Infrastructure.Workers.Services;
 using Droomploeg.Postbode.Application.Workers.Dispatcher;
 using Droomploeg.Postbode.WebApp.Common;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -34,15 +33,9 @@ internal static class TestServiceCollectionExtensions
         services.AddScoped(_ => testContext);
         services.AddTransient<IContextSetter>(_ => new TestContextSetter(testContext));
 
-        // Azure Service Bus clients: the user client and the service account clients all point to the emulator
+        // Azure Service Bus clients: the user client and the service account admin client both point to the emulator
         services.AddScoped<IUserServiceBusClientProvider>(_ => new TestUserServiceBusClientProvider(connectionString));
-        services.AddAzureClients(builder =>
-        {
-            var serviceClientName = ServiceBusConnection.ClientName(connectionName, ServiceBusConnectionType.ServiceAccount);
-            builder.AddServiceBusClient(connectionString).WithName(serviceClientName);
-
-            builder.AddServiceBusAdministrationClient(connectionString).WithName(serviceClientName);
-        });
+        services.AddSingleton<IServiceAccountAdminClientProvider>(new TestServiceAccountAdminClientProvider(connectionString));
 
         // Factories
         services

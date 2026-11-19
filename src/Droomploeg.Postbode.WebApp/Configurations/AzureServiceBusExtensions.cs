@@ -2,6 +2,7 @@
 using Azure.Identity;
 using Droomploeg.Postbode.Application.ServiceBus.Services;
 using Droomploeg.Postbode.Domain.ServiceBus.Types;
+using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Factories;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Services;
 using Droomploeg.Postbode.WebApp.Common;
 using Droomploeg.Postbode.WebApp.Configurations.Options;
@@ -34,11 +35,16 @@ internal static class AzureServiceBusExtensions
 
             foreach (var connection in configConnectionList)
             {
-                services
-                    .RegisterAzureUserAccountConnections(connection)
-                    .RegisterAzureServiceAccountConnections(connection, defaultCredential);
+                services.RegisterAzureServiceAccountConnections(connection, defaultCredential);
             }
-            
+
+            // User clients are not registered through AddAzureClients: those clients are singletons
+            // and would share one AMQP connection, and its cached token, between all users.
+            IReadOnlyDictionary<string, string> userNamespaces = configConnectionList
+                .ToDictionary(c => c.Name, c => c.FullyQualifiedNamespace, StringComparer.OrdinalIgnoreCase);
+            services.AddScoped<IUserServiceBusClientProvider>(sp =>
+                ActivatorUtilities.CreateInstance<UserServiceBusClientProvider>(sp, userNamespaces));
+
             var connectionList = configConnectionList
                 .Select(c => new ServiceBusConnection(c.Name));
 
@@ -46,20 +52,6 @@ internal static class AzureServiceBusExtensions
             services
                 .AddSingleton<IConnectionService>(connectionService)
                 .AddTransient<ApplicationInsightsLink>();
-
-            return services;
-        }
-
-        private IServiceCollection RegisterAzureUserAccountConnections(AzureServiceBusConnection connection)
-        {
-            services.AddAzureClients(builder =>
-            {
-                var name = ServiceBusConnection.ClientName(connection.Name, ServiceBusConnectionType.UserAccount);
-
-                builder.AddServiceBusClientWithNamespace(connection.FullyQualifiedNamespace)
-                    .WithName(name)
-                    .WithCredential(sp => new OnBehalfOfTokenCredential(sp, [OnBehalfOfTokenCredential.ServiceBusScope]));
-            });
 
             return services;
         }

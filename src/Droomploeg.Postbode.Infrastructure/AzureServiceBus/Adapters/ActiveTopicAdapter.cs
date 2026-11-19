@@ -2,6 +2,7 @@ using Azure.Messaging.ServiceBus;
 using Droomploeg.Postbode.Application.ServiceBus.Adapters;
 using Droomploeg.Postbode.Domain.ServiceBus.Types;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Extensions;
+using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Factories;
 using Droomploeg.Postbode.Infrastructure.Contexts;
 using Microsoft.Extensions.Azure;
 
@@ -17,6 +18,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
     private readonly TimeProvider _timeProvider;
     private readonly ISessionInfoProvider _sessionInfoProvider;
     private readonly IAzureClientFactory<ServiceBusClient> _clientFactory;
+    private readonly IUserServiceBusClientProvider _userClientProvider;
 
     /// <summary>
     /// Initializes a new instance of <see cref="ActiveTopicAdapter"/>.
@@ -24,16 +26,19 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
     /// <param name="timeProvider">Provider for retrieving the current time.</param>
     /// <param name="context"><see cref="ApplicationContext"/> for the current request.</param>
     /// <param name="sessionInfoProvider">Provider for determining whether a subscription requires sessions.</param>
-    /// <param name="clientFactory">Factory for creating <see cref="ServiceBusClient"/> instances.</param>
+    /// <param name="clientFactory">Factory for the service account <see cref="ServiceBusClient"/> instances.</param>
+    /// <param name="userClientProvider">Provider for the <see cref="ServiceBusClient"/> of the signed-in user.</param>
     public ActiveTopicAdapter(
         TimeProvider timeProvider,
         ApplicationContext context,
         ISessionInfoProvider sessionInfoProvider,
-        IAzureClientFactory<ServiceBusClient> clientFactory)
+        IAzureClientFactory<ServiceBusClient> clientFactory,
+        IUserServiceBusClientProvider userClientProvider)
     {
         _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         _sessionInfoProvider = sessionInfoProvider ?? throw new ArgumentNullException(nameof(sessionInfoProvider));
         _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
+        _userClientProvider = userClientProvider ?? throw new ArgumentNullException(nameof(userClientProvider));
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
@@ -43,7 +48,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         messages.CorrelationId = _context.CorrelationId.ToString();
         messages.ApplicationProperties["UserName"] = _context.UserName;
 
-        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
+        var client = await _userClientProvider.GetClientAsync(_context.CurrentConnection, cancellationToken);
         var sender = client.CreateSender(topic);
 
         await sender.SendBulkMessageAsync([messages], cancellationToken);
@@ -56,7 +61,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         int numberOfMessages = EntityAdapterConstants.DefaultNumberOfMessage,
         CancellationToken cancellationToken = default)
     {
-        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
+        var client = await _userClientProvider.GetClientAsync(_context.CurrentConnection, cancellationToken);
         var receiver = client.CreateReceiver(topic, subscription, ServiceBusConstants.PeekLockOptions);
         var messages = await receiver.PeekMessagesAsync(numberOfMessages, fromSequenceNumber, cancellationToken);
         await receiver.CloseAsync(cancellationToken);
@@ -91,7 +96,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         var requiresSession = await _sessionInfoProvider.RequiresSessionAsync(topic, subscription, cancellationToken);
 
         var result = false;
-        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
+        var client = await _userClientProvider.GetClientAsync(_context.CurrentConnection, cancellationToken);
         if (requiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);
@@ -125,7 +130,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         var dlqProperties = ServiceBusHelper.GetDeadLetterProperties(source, reason, description);
 
         var result = false;
-        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.UserAccount);
+        var client = await _userClientProvider.GetClientAsync(_context.CurrentConnection, cancellationToken);
         if (requiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);

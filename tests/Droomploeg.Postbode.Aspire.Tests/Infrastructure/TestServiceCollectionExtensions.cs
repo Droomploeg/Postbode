@@ -34,12 +34,10 @@ internal static class TestServiceCollectionExtensions
         services.AddScoped(_ => testContext);
         services.AddTransient<IContextSetter>(_ => new TestContextSetter(testContext));
 
-        // Azure Service Bus clients — both UserAccount and ServiceAccount point to emulator
+        // Azure Service Bus clients: the user client and the service account clients all point to the emulator
+        services.AddScoped<IUserServiceBusClientProvider>(_ => new TestUserServiceBusClientProvider(connectionString));
         services.AddAzureClients(builder =>
         {
-            var userClientName = ServiceBusConnection.ClientName(connectionName, ServiceBusConnectionType.UserAccount);
-            builder.AddServiceBusClient(connectionString).WithName(userClientName);
-
             var serviceClientName = ServiceBusConnection.ClientName(connectionName, ServiceBusConnectionType.ServiceAccount);
             builder.AddServiceBusClient(connectionString).WithName(serviceClientName);
 

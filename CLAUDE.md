@@ -44,9 +44,11 @@ Infrastructure (Implementations - Azure Service Bus, Audit, Workers)
 Azure Service Bus operations are abstracted behind adapter interfaces (`IActiveQueueAdapter`, `IDeadLetterQueueAdapter`, `IActiveTopicAdapter`, `IDeadLetterTopicAdapter`, `IRuntimeInfoAdapter`). Implementations live in Infrastructure.
 
 ### Factory Pattern (AdapterFactory)
-`AdapterFactory<T>` creates adapter instances in two modes:
-- **OnBehalfOf**: User context — uses the logged-in user's delegated token
-- **ServiceAccount**: Elevated permissions — uses managed identity
+`AdapterFactory<T>` creates adapters that always act with the delegated token of the signed-in user:
+- `Create()`: for actions that run directly in the circuit. The client comes from the scoped `IUserServiceBusClientProvider`, one per circuit.
+- `CreateBackgroundAction(...)`: for worker jobs. It captures the user and context, and when the job runs it gets its own DI scope and its own client for that user, so the job keeps running after the circuit ends.
+
+The managed identity is only used for metadata (`RuntimeInfoAdapter`, `SessionInfoProvider`) through the singleton `IServiceAccountAdminClientProvider`. It never sends, receives or deletes messages.
 
 ### Worker / Background Service Pattern
 Long-running user actions are dispatched to a background service:
@@ -87,7 +89,7 @@ postbode/
 │   ├── Droomploeg.Postbode.WebApp/          # Blazor Server app + BackgroundService
 │   │   ├── Components/                       # Blazor components (Layout, Controls, Pages)
 │   │   ├── Configurations/                   # DI extensions (Security, ServiceBus, Workers)
-│   │   ├── Security/                         # OnBehalfOfTokenCredential, route mapping
+│   │   ├── Security/                         # UserTokenCredential, client providers, route mapping
 │   │   ├── HostedServices/                   # WorkerHostedService
 │   │   └── Program.cs                        # App entry point, DI composition root
 │   ├── Droomploeg.Postbode.Application/      # Interfaces only
@@ -134,8 +136,8 @@ postbode/
 
 1. User logs in via Entra ID (OpenID Connect)
 2. App acquires delegated token via `ITokenAcquisition` (MSAL)
-3. `OnBehalfOfTokenCredential` wraps the token for Azure Service Bus SDK
-4. Service account operations use `DefaultAzureCredential` with managed identity
+3. `UserTokenCredential` wraps the token for the Azure Service Bus SDK, bound to one user, so it also works in background jobs (MSAL refreshes the token silently with the cached refresh token)
+4. Metadata reads use `DefaultAzureCredential` with the managed identity
 
 ## Naming Conventions
 
@@ -206,13 +208,13 @@ Before merging a pull request, verify:
 ### Functionality
 - [ ] All message operations are audit-logged via `IAuditLogger`
 - [ ] Long-running operations use the worker/dispatcher pattern (not inline)
-- [ ] New adapters use `AdapterFactory` with correct mode (`OnBehalfOf` vs `ServiceAccount`)
-- [ ] `ApplicationContext` is properly set (CorrelationId, UserName, CurrentConnection)
+- [ ] Message operations use the user's client (`IUserServiceBusClientProvider`); the managed identity is only used for metadata
+- [ ] `ApplicationContext` is properly set (CorrelationId, UserName, CurrentConnection, User)
 
 ### Security
 - [ ] No secrets or credentials committed
 - [ ] Authentication/authorization properly applied
-- [ ] Token flow correct (On-Behalf-Of for user actions, Managed Identity for service actions)
+- [ ] Token flow correct (delegated user token for all message actions, also in background jobs; managed identity only for metadata)
 
 ### Testing
 - [ ] Tests pass (`dotnet test`)

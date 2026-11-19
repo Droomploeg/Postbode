@@ -51,7 +51,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(SendMessageAsync), queue, $"MessageType: {typeof(TSendMessage).Name}");
         
-        var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _activeQueueAdapterFactory.Create();
         return await adapter.SendAsync(queue, message, cancellationToken);
     }
 
@@ -65,7 +65,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(PeekActiveMessagesAsync), queue, $"FromSeq: {fromSequenceNumber}, Count: {numberOfMessages}");
         
-        var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _activeQueueAdapterFactory.Create();
         return await adapter.PeekMessagesAsync(queue, fromSequenceNumber, numberOfMessages, cancellationToken);
     }
 
@@ -75,7 +75,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeleteActiveMessageAsync), queue);
         
-        var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _activeQueueAdapterFactory.Create();
         return await adapter.DeleteMessageAsync(queue, message, cancellationToken);
     }
 
@@ -85,14 +85,13 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         var context = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeleteActiveMessageAsync), queue, "Bulk operation");
         
-        var adapter = _activeQueueAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
             context.CorrelationId,
             queue,
             $"Delete all message from '{queue}'",
-            (token) => adapter.DeleteAllMessagesAsync(
-                queue, token));
+            _activeQueueAdapterFactory.CreateBackgroundAction((adapter, token) => adapter.DeleteAllMessagesAsync(
+                queue, token)));
 
         _dispatcher.Dispatch(workItem);
         return true;
@@ -104,7 +103,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeadLetterMessageAsync), queue, $"Reason: {reason}");
         
-        var adapter = _activeQueueAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _activeQueueAdapterFactory.Create();
         return await adapter.DeadLetterMessageAsync(queue, message, source, reason, description, cancellationToken);
     }
 
@@ -118,7 +117,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(PeekDeadLetterMessagesAsync), queue, $"FromSeq: {fromSequenceNumber}, Count: {numberOfMessages}");
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _deadLetterAdapterFactory.Create();
         return await adapter.PeekMessagesAsync(queue, fromSequenceNumber, numberOfMessages, cancellationToken);
     }
 
@@ -130,7 +129,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(ResubmitMessageAsync), queue, $"Options: {options}");
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _deadLetterAdapterFactory.Create();
         return await adapter.ResubmitMessageAsync(queue, receivedMessage, repairedMessage, options, cancellationToken);
     }
 
@@ -140,14 +139,13 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         var context = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(ResubmitAllMessagesAsync), queue, $"Bulk operation, Options: {options}");
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
             context.CorrelationId,
             queue,
             $"Resubmit all dead letter messages from '{queue}'",
-            (token) => adapter.ResubmitAllMessagesAsync(
-                queue, options, token));
+            _deadLetterAdapterFactory.CreateBackgroundAction((adapter, token) => adapter.ResubmitAllMessagesAsync(
+                queue, options, token)));
 
         _dispatcher.Dispatch(workItem);
         return true;
@@ -159,7 +157,7 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         _ = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeleteDeadLetterMessageAsync), queue);
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.OnBehalfOf);
+        var adapter = _deadLetterAdapterFactory.Create();
         return await adapter.DeleteMessageAsync(queue, message, cancellationToken);
     }
 
@@ -169,14 +167,13 @@ public class QueueService<TSendMessage, TReceiveMessage> : IQueueService<TSendMe
         var context = await _contextSetter.GetAndUpdateAsync();
         await _auditLogger.LogAuditAsync(nameof(DeleteAllDeadLetterMessagesAsync), queue, "Bulk operation");
         
-        var adapter = _deadLetterAdapterFactory.Create(AdapterMode.ManagedIdentity);
         var workItem = new WorkerItem(
             context.UserName,
             context.CorrelationId,
             queue,
             description: $"Delete all dead letter message from '{queue}'",
-            (token) => adapter.DeleteAllMessagesAsync(
-                queue, token));
+            _deadLetterAdapterFactory.CreateBackgroundAction((adapter, token) => adapter.DeleteAllMessagesAsync(
+                queue, token)));
 
         _dispatcher.Dispatch(workItem);
         return true;

@@ -4,7 +4,6 @@ using Droomploeg.Postbode.Domain.ServiceBus.Types;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Extensions;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Factories;
 using Droomploeg.Postbode.Infrastructure.Contexts;
-using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.Postbode.Infrastructure.AzureServiceBus.Adapters;
 
@@ -17,7 +16,6 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
     private readonly ApplicationContext _context;
     private readonly TimeProvider _timeProvider;
     private readonly ISessionInfoProvider _sessionInfoProvider;
-    private readonly IAzureClientFactory<ServiceBusClient> _clientFactory;
     private readonly IUserServiceBusClientProvider _userClientProvider;
 
     /// <summary>
@@ -26,18 +24,15 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
     /// <param name="timeProvider">Provider for retrieving the current time.</param>
     /// <param name="context"><see cref="ApplicationContext"/> for the current request.</param>
     /// <param name="sessionInfoProvider">Provider for determining whether a subscription requires sessions.</param>
-    /// <param name="clientFactory">Factory for the service account <see cref="ServiceBusClient"/> instances.</param>
     /// <param name="userClientProvider">Provider for the <see cref="ServiceBusClient"/> of the signed-in user.</param>
     public ActiveTopicAdapter(
         TimeProvider timeProvider,
         ApplicationContext context,
         ISessionInfoProvider sessionInfoProvider,
-        IAzureClientFactory<ServiceBusClient> clientFactory,
         IUserServiceBusClientProvider userClientProvider)
     {
         _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         _sessionInfoProvider = sessionInfoProvider ?? throw new ArgumentNullException(nameof(sessionInfoProvider));
-        _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         _userClientProvider = userClientProvider ?? throw new ArgumentNullException(nameof(userClientProvider));
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
@@ -75,7 +70,7 @@ public class ActiveTopicAdapter : IActiveTopicAdapter<ServiceBusMessage, Service
         var timestamp = _timeProvider.GetUtcNow();
         var requiresSession = await _sessionInfoProvider.RequiresSessionAsync(topic, subscription, cancellationToken);
 
-        var client = _clientFactory.CreateClient(_context, ServiceBusConnectionType.ServiceAccount);
+        var client = await _userClientProvider.GetClientAsync(_context.CurrentConnection, cancellationToken);
         if (requiresSession)
         {
             var receiver = await client.AcceptNextSessionAsync(topic, subscription, ServiceBusConstants.PeekLockSessionOptions, cancellationToken: cancellationToken);

@@ -3,10 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using Azure.Messaging.ServiceBus.Administration;
 using Droomploeg.Postbode.Application.ServiceBus.Adapters;
 using Droomploeg.Postbode.Domain.ServiceBus.Models;
-using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Extensions;
+using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Factories;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Mappers;
 using Droomploeg.Postbode.Infrastructure.Contexts;
-using Microsoft.Extensions.Azure;
 
 namespace Droomploeg.Postbode.Infrastructure.AzureServiceBus.Adapters;
 
@@ -15,16 +14,16 @@ namespace Droomploeg.Postbode.Infrastructure.AzureServiceBus.Adapters;
 public class RuntimeInfoAdapter : IRuntimeInfoAdapter
 {
     private readonly ApplicationContext _context;
-    private readonly IAzureClientFactory<ServiceBusAdministrationClient> _adminClientFactory;
+    private readonly IServiceAccountAdminClientProvider _adminClientProvider;
 
     /// <summary>Initializes a new instance of <see cref="RuntimeInfoAdapter"/>.</summary>
     /// <param name="context"><see cref="ApplicationContext"/> for the current request.</param>
-    /// <param name="adminClientFactory">Factory for creating <see cref="ServiceBusAdministrationClient"/> instances.</param>
+    /// <param name="adminClientProvider">Provider of the service account <see cref="ServiceBusAdministrationClient"/>.</param>
     public RuntimeInfoAdapter(
         ApplicationContext context,
-        IAzureClientFactory<ServiceBusAdministrationClient> adminClientFactory)
+        IServiceAccountAdminClientProvider adminClientProvider)
     {
-        _adminClientFactory = adminClientFactory ?? throw new ArgumentNullException(nameof(adminClientFactory));
+        _adminClientProvider = adminClientProvider ?? throw new ArgumentNullException(nameof(adminClientProvider));
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
@@ -47,7 +46,7 @@ public class RuntimeInfoAdapter : IRuntimeInfoAdapter
     /// <inheritdoc />
     public async Task<Queue?> GetQueueAsync(string queue, CancellationToken cancellationToken = default)
     {
-        var adminClient = _adminClientFactory.CreateClient(_context);
+        var adminClient = _adminClientProvider.GetClient(_context.CurrentConnection);
         var azureQueueResponse = await adminClient.GetQueueAsync(queue, cancellationToken);
         var azureQueue = azureQueueResponse.Value;
 
@@ -60,7 +59,7 @@ public class RuntimeInfoAdapter : IRuntimeInfoAdapter
     /// <inheritdoc />
     public async Task<Topic?> GetTopicAsync(string topic, CancellationToken cancellationToken = default)
     {
-        var adminClient = _adminClientFactory.CreateClient(_context);
+        var adminClient = _adminClientProvider.GetClient(_context.CurrentConnection);
         var azureTopicResponse = await adminClient.GetTopicAsync(topic, cancellationToken);
         var azureTopic = azureTopicResponse.Value;
         var azureTopicRuntimePropertiesResponse = await adminClient.GetTopicRuntimePropertiesAsync(azureTopic.Name, cancellationToken);
@@ -93,7 +92,7 @@ public class RuntimeInfoAdapter : IRuntimeInfoAdapter
     /// <inheritdoc />
     public async Task<Subscription?> GetSubscriptionAsync(string topic, string subscription, CancellationToken cancellationToken = default)
     {
-        var adminClient = _adminClientFactory.CreateClient(_context);
+        var adminClient = _adminClientProvider.GetClient(_context.CurrentConnection);
         var azureSubscriptionResponse = await adminClient.GetSubscriptionAsync(topic, subscription, cancellationToken);
         var azureSubscription = azureSubscriptionResponse.Value;
 
@@ -112,7 +111,7 @@ public class RuntimeInfoAdapter : IRuntimeInfoAdapter
     /// <inheritdoc />
     public async Task<ICollection<Queue>> GetAllQueuesAsync(CancellationToken cancellationToken = default)
     {
-        var adminClient = _adminClientFactory.CreateClient(_context);
+        var adminClient = _adminClientProvider.GetClient(_context.CurrentConnection);
         var queues = new BlockingCollection<Queue>();
         var azureQueuesResponse = adminClient
             .GetQueuesAsync(cancellationToken)
@@ -136,7 +135,7 @@ public class RuntimeInfoAdapter : IRuntimeInfoAdapter
     {
         var topics = new List<Topic>();
 
-        var adminClient = _adminClientFactory.CreateClient(_context);
+        var adminClient = _adminClientProvider.GetClient(_context.CurrentConnection);
         var azureTopicsResponse = adminClient.GetTopicsAsync(cancellationToken)
             .GetAsyncEnumerator(cancellationToken);
 

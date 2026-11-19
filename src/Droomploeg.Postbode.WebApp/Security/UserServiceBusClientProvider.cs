@@ -2,21 +2,21 @@ using Azure.Messaging.ServiceBus;
 using Droomploeg.Postbode.Domain.ServiceBus.Types;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Exceptions;
 using Droomploeg.Postbode.Infrastructure.AzureServiceBus.Factories;
-using Microsoft.AspNetCore.Components.Authorization;
+using Droomploeg.Postbode.Infrastructure.Contexts;
 using Microsoft.Identity.Web;
 
 namespace Droomploeg.Postbode.WebApp.Security;
 
 /// <summary>
-/// Scoped provider of <see cref="ServiceBusClient"/> instances for the signed-in user. Each
-/// Blazor circuit gets its own instance, and therefore its own AMQP connections and token
-/// cache, so a token acquired for one user is never used for another. Clients are created
-/// lazily and disposed together with the circuit.
+/// Scoped provider of <see cref="ServiceBusClient"/> instances for the user in the
+/// <see cref="ApplicationContext"/>. Each Blazor circuit, and each background job, gets its own
+/// instance, and therefore its own AMQP connections and token cache, so a token acquired for one
+/// user is never used for another. Clients are created lazily and disposed with the scope.
 /// </summary>
 internal sealed partial class UserServiceBusClientProvider : IUserServiceBusClientProvider, IAsyncDisposable, IDisposable
 {
     private readonly IReadOnlyDictionary<string, string> _namespaces;
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly ApplicationContext _context;
     private readonly ITokenAcquisition _tokenAcquisition;
     private readonly ILogger<UserServiceBusClientProvider> _logger;
     private readonly ILoggerFactory _loggerFactory;
@@ -25,19 +25,19 @@ internal sealed partial class UserServiceBusClientProvider : IUserServiceBusClie
     private bool _disposed;
 
     /// <param name="namespaces">Fully qualified namespace per connection name.</param>
-    /// <param name="authenticationStateProvider">Provides the user of the current circuit.</param>
+    /// <param name="context">Holds the user of the current circuit or background job.</param>
     /// <param name="tokenAcquisition">Acquires delegated tokens for that user.</param>
     /// <param name="logger">Logger for this provider.</param>
     /// <param name="loggerFactory">Creates the loggers for the credentials this provider creates.</param>
     public UserServiceBusClientProvider(
         IReadOnlyDictionary<string, string> namespaces,
-        AuthenticationStateProvider authenticationStateProvider,
+        ApplicationContext context,
         ITokenAcquisition tokenAcquisition,
         ILogger<UserServiceBusClientProvider> logger,
         ILoggerFactory loggerFactory)
     {
         _namespaces = namespaces ?? throw new ArgumentNullException(nameof(namespaces));
-        _authenticationStateProvider = authenticationStateProvider ?? throw new ArgumentNullException(nameof(authenticationStateProvider));
+        _context = context ?? throw new ArgumentNullException(nameof(context));
         _tokenAcquisition = tokenAcquisition ?? throw new ArgumentNullException(nameof(tokenAcquisition));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
@@ -63,8 +63,7 @@ internal sealed partial class UserServiceBusClientProvider : IUserServiceBusClie
             throw new InvalidServiceBusConnectionException();
         }
 
-        var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
+        var user = _context.User;
         if (user.Identity?.IsAuthenticated != true)
         {
             LogUnauthenticated(connection.Name);

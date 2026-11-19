@@ -26,6 +26,7 @@ serviceBus.AddServiceBusTopic("test-topic-send").AddServiceBusSubscription("sub-
 serviceBus.AddServiceBusTopic("test-topic-delete-dl").AddServiceBusSubscription("sub-delete-dl");
 serviceBus.AddServiceBusTopic("test-topic-resubmit").AddServiceBusSubscription("sub-resubmit"); 
 serviceBus.AddServiceBusQueue("test-select-message");
+serviceBus.AddServiceBusQueue("test-message-link");
 serviceBus.AddServiceBusTopic("test-topic-select").AddServiceBusSubscription("sub-select");
 serviceBus.AddServiceBusQueue("test-queue-session").WithProperties(q => q.RequiresSession = true);
 var sessionTopic = serviceBus.AddServiceBusTopic("test-topic-session");

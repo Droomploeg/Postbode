@@ -12,9 +12,9 @@
                 <tr>
                     <td class="key">@item.Key</td>
                     <td class="value">
-                        @if (@item.Value is MarkupString markupString)
+                        @if (item.Value is LinkValue linkValue)
                         {
-                            @markupString
+                            <a href="@linkValue.Link.AbsoluteUri" target="_blank" rel="noopener noreferrer">@linkValue.Text</a>
                         }
                         else
                         {
